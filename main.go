@@ -8,10 +8,9 @@ import (
 )
 
 const (
-	host = "localhost"
-	port = 5432
-	user = "postgres"
-	// password = "your-password"
+	host   = "localhost"
+	port   = 5432
+	user   = "postgres"
 	dbname = "money_machine"
 )
 
@@ -29,6 +28,5 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-`
 	fmt.Println("Successfully connected!")
 }
