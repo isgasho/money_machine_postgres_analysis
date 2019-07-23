@@ -23,12 +23,6 @@ type User struct {
 	Email     string
 }
 
-func main() {
-	// id := createEntry(25, "trucker17@gmail.com", "Joe", "Tammison")
-	deleteEntry(5)
-	fmt.Println(readEntry(5))
-}
-
 func createEntry(age int, email string, firstName string, lastName string) int {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
