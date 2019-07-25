@@ -15,19 +15,30 @@ type JSONObject struct {
 	// Email     string
 }
 
+type BrokerageQuery struct {
+	RequestType string
+	Name        string
+}
+
 func coolPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the coolPage!")
 	fmt.Println("Endpoint Hit: coolPage")
 }
-func test(rw http.ResponseWriter, req *http.Request) {
+
+func stockQuery(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	var jsonObject JSONObject
-	err := decoder.Decode(&jsonObject)
+	var brokerageQuery BrokerageQuery
+	err := decoder.Decode(&brokerageQuery)
 	if err != nil {
 		panic(err)
-		fmt.Println("Test error1")
+		fmt.Println("Stock error1")
 	}
-	log.Println(jsonObject.ID, jsonObject.Age, jsonObject.FirstName)
+	fmt.Println(brokerageQuery.RequestType) //brokerageQuery.Name
+	// fmt.Println("Endpoint Hit: coolPage")
+
+	// m := map[string]string{}
+	// 	json.Unmarshal([]byte(body), &m)
+	// 	fmt.Println(m)
 }
 
 // func create(w http.ResponseWriter, r *http.Request) {
@@ -58,10 +69,12 @@ func handleRequests() {
 	// http.HandleFunc("/update", update)
 	// http.HandleFunc("/delete", delete)
 
-	http.HandleFunc("/test", test)
+	http.HandleFunc("/stockQuery", stockQuery)
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
 
 func main() {
+	// post()
+	// get()
 	handleRequests()
 }
