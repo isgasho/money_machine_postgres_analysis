@@ -23,6 +23,15 @@ type User struct {
 	Email     string
 }
 
+type Stock struct {
+	Symbol string
+	Bid    string
+	Ask    string
+	Last   string
+	Pchg   string
+	Pcls   string
+}
+
 func createEntry(age int, email string, firstName string, lastName string) int {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
