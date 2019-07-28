@@ -7,31 +7,6 @@ import (
 	_ "github.com/lib/pq"
 )
 
-const (
-	host   = "localhost"
-	port   = 5432
-	user   = "postgres"
-	dbname = "money_machine"
-)
-
-//User object for DB
-type User struct {
-	ID        int
-	Age       int
-	FirstName string
-	LastName  string
-	Email     string
-}
-
-type Stock struct {
-	Symbol string
-	Bid    string
-	Ask    string
-	Last   string
-	Pchg   string
-	Pcls   string
-}
-
 func createEntry(age int, email string, firstName string, lastName string) int {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
