@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 type JSONObject struct {
@@ -74,7 +75,38 @@ func main() {
 	// get()
 	// handleRequests()
 
-	//wrap in timer
+	// ticker := time.NewTicker(500 * time.Millisecond)
+	// go func() {
+	// 	for t := range ticker.C {
+	// 		fmt.Println("Tick at", t)
+	// 	}
+	// }()
+	// time.Sleep(1600 * time.Millisecond)
+	// h, _ := time.ParseDuration("4h30m")
+	// fmt.Printf("I've got %.1f hours of work left.", h.Hours())
+
+	// ticker.Stop()
+	// fmt.Println("Ticker stopped")
+
+	// numLoops := 144
+	// timePerIteration := time.Duration(3) * time.Second / time.Duration(numLoops)
+	// ticker := time.NewTicker(timePerIteration)
+	// for i := 0; i < numLoops; i++ {
+	// 	// your code
+	// 	fmt.Println("cool")
+	// 	<-ticker.C
+	// }
+	// ticker.Stop()
+
+	index := 0
+	for index < 3 {
+		time.Sleep(2 * time.Second)
+		index++
+		testing()
+	}
+}
+
+func testing() {
 	queryResponseStringParsed := `<?xml version=\"1.0\" encoding=\"UTF-8\"?><response id=\"126565f9-ee57-4117-aff4-dcbf19f4d673\"><elapsedtime>0</elapsedtime>
 		<quotes>
 		<quotetype>Real Time -  market data real time, National Best Bid and Offer</quotetype>
@@ -180,4 +212,5 @@ func main() {
 	var stock Stock
 	stock = parseQuery(queryResponseStringParsed)
 	fmt.Println(stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls)
+
 }
