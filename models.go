@@ -12,25 +12,26 @@ type User struct {
 type Day struct {
 	ID        string
 	DayOfWeek string
+	CreatedAt string
 }
 
 type News struct {
 	ID        string
-	DayID     string
+	DayID     int
 	CreatedAt string
 	NewsInfo  string
 }
 
 type Dow struct {
 	ID        string
-	DayID     string
+	DayID     int
 	CreatedAt string
 	DowInfo   string
 }
 
 type Stock struct {
 	ID           string
-	DayID        string
+	DayID        int
 	CreatedAt    string
 	Monitoring   bool
 	Symbol       string
@@ -60,7 +61,7 @@ type Stock struct {
 
 type TradeInfo struct {
 	ID                string
-	DayID             string
+	DayID             int
 	CreatedAt         string
 	BoughtPrice       string
 	SoldPrice         string

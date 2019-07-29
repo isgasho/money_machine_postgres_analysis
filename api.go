@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 type JSONObject struct {
@@ -98,12 +97,59 @@ func main() {
 	// }
 	// ticker.Stop()
 
-	index := 0
-	for index < 3 {
-		time.Sleep(2 * time.Second)
-		index++
-		testing()
-	}
+	// index := 0
+	// for index < 3 {
+	// 	time.Sleep(2 * time.Second)
+	// 	index++
+	// 	testing()
+	// }
+
+	// insertDay("7")
+	// var newsEntry = News{
+	// 	DayID:    3,
+	// 	NewsInfo: "Awesome news about Dow",
+	// }
+	// // fmt.Println(newsEntry.DayID, newsEntry.NewsInfo)
+	// insertNews(newsEntry)
+
+	// var dowEntry = Dow{
+	// 	DayID:   3,
+	// 	DowInfo: "Awesome Dow about Dow",
+	// }
+	// insertDow(dowEntry)
+
+	// var stockEntry = Stock{
+	// 	DayID:        3,
+	// 	Monitoring:   false,
+	// 	Symbol:       "DEL",
+	// 	Bid:          "2.31",
+	// 	Ask:          "2.30",
+	// 	Last:         "2.28",
+	// 	Pchg:         "13.2",
+	// 	Pcls:         "2.20",
+	// 	Opn:          "2.25",
+	// 	Vl:           "2001",
+	// 	Pvol:         "3001",
+	// 	Volatility12: "1",
+	// 	Wk52hi:       "1",
+	// 	Wk52hidate:   "1",
+	// 	Wk52lo:       "1",
+	// 	Wk52lodate:   "1",
+	// 	Hi:           "1",
+	// 	Low:          "1",
+	// 	PrAdp50:      "1",
+	// 	PrAdp100:     "1",
+	// 	Prchg:        "1",
+	// 	Adp50:        "1",
+	// 	Adp100:       "1",
+	// 	Adv30:        "1",
+	// 	Adv90:        "1",
+	// }
+
+	// fmt.Println(stockEntry.DayID)
+	// insertStock(stockEntry)
+
+	selectAllStock("DEL")
 }
 
 func testing() {
