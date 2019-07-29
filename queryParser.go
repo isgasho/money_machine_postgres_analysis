@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"strings"
 
 	_ "github.com/lib/pq"
@@ -35,6 +36,632 @@ func parseQuery(queryString string) Stock {
 		Pcls:   pcls,
 	}
 	return stock
+}
+
+// <?xml version="1.0" encoding="UTF-8"?>
+// <response id="58d6662f-2410-4e43-ba2b-5298e22c5aae">
+//     <elapsedtime>0</elapsedtime>
+//     <quotes>
+//         <quote>
+//             <chg>28.835</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>808.695</last>
+//             <name>CHIPOTLE MEXICAN GRILL INC</name>
+//             <pchg>3.70</pchg>
+//             <pcls>779.860</pcls>
+//             <rank>1</rank>
+//             <symbol>CMG</symbol>
+//             <vl>922968</vl>
+//         </quote>
+//         <quote>
+//             <chg>10.20</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>396.21</last>
+//             <name>CHEMED CORP</name>
+//             <pchg>2.64</pchg>
+//             <pcls>386.01</pcls>
+//             <rank>2</rank>
+//             <symbol>CHE</symbol>
+//             <vl>140181</vl>
+//         </quote>
+//         <quote>
+//             <chg>5.13</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>79.77</last>
+//             <name>GRUBHUB INC</name>
+//             <pchg>6.87</pchg>
+//             <pcls>74.64</pcls>
+//             <rank>3</rank>
+//             <symbol>GRUB</symbol>
+//             <vl>4742848</vl>
+//         </quote>
+//         <quote>
+//             <chg>5.10</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>94.60</last>
+//             <name>ASBURY AUTOMOTIVE GROUP INC</name>
+//             <pchg>5.70</pchg>
+//             <pcls>89.50</pcls>
+//             <rank>4</rank>
+//             <symbol>ABG</symbol>
+//             <vl>217864</vl>
+//         </quote>
+//         <quote>
+//             <chg>4.89</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>172.19</last>
+//             <name>CIGNA CORP (NEW)</name>
+//             <pchg>2.92</pchg>
+//             <pcls>167.30</pcls>
+//             <rank>5</rank>
+//             <symbol>CI</symbol>
+//             <vl>1281650</vl>
+//         </quote>
+//         <quote>
+//             <chg>4.0200</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>280.8900</last>
+//             <name>HUMANA INC.</name>
+//             <pchg>1.45</pchg>
+//             <pcls>276.8700</pcls>
+//             <rank>6</rank>
+//             <symbol>HUM</symbol>
+//             <vl>635934</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.9900</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>18.3000</last>
+//             <name>NA</name>
+//             <pchg>27.88</pchg>
+//             <pcls>14.3100</pcls>
+//             <rank>7</rank>
+//             <symbol>MDLQ</symbol>
+//             <vl>78743</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.975</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>157.935</last>
+//             <name>GRUPO AEROPORTUARIO DEL SURESTE SA DE CV</name>
+//             <pchg>2.58</pchg>
+//             <pcls>153.960</pcls>
+//             <rank>8</rank>
+//             <symbol>ASR</symbol>
+//             <vl>66202</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.830</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>307.900</last>
+//             <name>ESSEX PROPERTY TRUST INC</name>
+//             <pchg>1.26</pchg>
+//             <pcls>304.070</pcls>
+//             <rank>9</rank>
+//             <symbol>ESS</symbol>
+//             <vl>270050</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.8050</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>18.2500</last>
+//             <name>NA</name>
+//             <pchg>26.34</pchg>
+//             <pcls>14.4450</pcls>
+//             <rank>10</rank>
+//             <symbol>MDLX</symbol>
+//             <vl>23802</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.65</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>99.97</last>
+//             <name>GRUPO AEROPORTUARIO DEL PACIFICO, S.A.B DE C.V.</name>
+//             <pchg>3.79</pchg>
+//             <pcls>96.32</pcls>
+//             <rank>11</rank>
+//             <symbol>PAC</symbol>
+//             <vl>42256</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.54</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>341.52</last>
+//             <name>COOPER COMPANIES, INC. (THE)</name>
+//             <pchg>1.05</pchg>
+//             <pcls>337.98</pcls>
+//             <rank>12</rank>
+//             <symbol>COO</symbol>
+//             <vl>160936</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.40</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>216.25</last>
+//             <name>EDWARDS LIFESCIENCES CORP</name>
+//             <pchg>1.60</pchg>
+//             <pcls>212.85</pcls>
+//             <rank>13</rank>
+//             <symbol>EW</symbol>
+//             <vl>969765</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.380</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>350.540</last>
+//             <name>TELEFLEX INCORPORATED</name>
+//             <pchg>0.97</pchg>
+//             <pcls>347.160</pcls>
+//             <rank>14</rank>
+//             <symbol>TFX</symbol>
+//             <vl>288078</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.25</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>177.48</last>
+//             <name>UNION PACIFIC CORP</name>
+//             <pchg>1.87</pchg>
+//             <pcls>174.23</pcls>
+//             <rank>15</rank>
+//             <symbol>UNP</symbol>
+//             <vl>2672074</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.2000</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>355.7200</last>
+//             <name>NORTHROP GRUMMAN CORP</name>
+//             <pchg>0.91</pchg>
+//             <pcls>352.5200</pcls>
+//             <rank>16</rank>
+//             <symbol>NOC</symbol>
+//             <vl>580233</vl>
+//         </quote>
+//         <quote>
+//             <chg>3.13</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>242.56</last>
+//             <name>PUBLIC STORAGE</name>
+//             <pchg>1.31</pchg>
+//             <pcls>239.43</pcls>
+//             <rank>17</rank>
+//             <symbol>PSA</symbol>
+//             <vl>574935</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.95</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>168.03</last>
+//             <name>DIAGEO PLC</name>
+//             <pchg>1.79</pchg>
+//             <pcls>165.08</pcls>
+//             <rank>18</rank>
+//             <symbol>DEO</symbol>
+//             <vl>544454</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.7200</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>176.7000</last>
+//             <name>3M CO</name>
+//             <pchg>1.56</pchg>
+//             <pcls>173.9800</pcls>
+//             <rank>19</rank>
+//             <symbol>MMM</symbol>
+//             <vl>2313329</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.470</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>129.340</last>
+//             <name>RESMED INC.</name>
+//             <pchg>1.95</pchg>
+//             <pcls>126.870</pcls>
+//             <rank>20</rank>
+//             <symbol>RMD</symbol>
+//             <vl>698084</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.44</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>293.04</last>
+//             <name>WELLCARE HEALTH PLANS INC</name>
+//             <pchg>0.84</pchg>
+//             <pcls>290.60</pcls>
+//             <rank>21</rank>
+//             <symbol>WCG</symbol>
+//             <vl>430786</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.4000</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>744.4500</last>
+//             <name>TEXAS PACIFIC LAND TRUST</name>
+//             <pchg>0.32</pchg>
+//             <pcls>742.0500</pcls>
+//             <rank>22</rank>
+//             <symbol>TPL</symbol>
+//             <vl>8513</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.39</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>71.59</last>
+//             <name>BOOZ ALLEN HAMILTON HOLDING CORP.</name>
+//             <pchg>3.45</pchg>
+//             <pcls>69.20</pcls>
+//             <rank>23</rank>
+//             <symbol>BAH</symbol>
+//             <vl>2440438</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.36</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>104.98</last>
+//             <name>FTI CONSULTING INC.</name>
+//             <pchg>2.30</pchg>
+//             <pcls>102.62</pcls>
+//             <rank>24</rank>
+//             <symbol>FCN</symbol>
+//             <vl>238463</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.34</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>133.07</last>
+//             <name>JOHNSON &amp; JOHNSON</name>
+//             <pchg>1.79</pchg>
+//             <pcls>130.73</pcls>
+//             <rank>25</rank>
+//             <symbol>JNJ</symbol>
+//             <vl>6126923</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.2900</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>141.2400</last>
+//             <name>MCKESSON CORP</name>
+//             <pchg>1.65</pchg>
+//             <pcls>138.9500</pcls>
+//             <rank>26</rank>
+//             <symbol>MCK</symbol>
+//             <vl>881164</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.2291</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>22.9791</last>
+//             <name>MEDLEY CAPITAL CORP</name>
+//             <pchg>10.74</pchg>
+//             <pcls>20.7500</pcls>
+//             <rank>27</rank>
+//             <symbol>MCV</symbol>
+//             <vl>27980</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.1066</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>43.7066</last>
+//             <name>CHESAPEAKE ENERGY CORP.</name>
+//             <pchg>5.06</pchg>
+//             <pcls>41.6000</pcls>
+//             <rank>28</rank>
+//             <symbol>CHK.D</symbol>
+//             <vl>9288</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.09</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>211.26</last>
+//             <name>NEXTERA ENERGY INC</name>
+//             <pchg>1.00</pchg>
+//             <pcls>209.17</pcls>
+//             <rank>29</rank>
+//             <symbol>NEE</symbol>
+//             <vl>1007708</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.070</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>210.450</last>
+//             <name>AVALONBAY COMMUNITIES, INC.</name>
+//             <pchg>0.99</pchg>
+//             <pcls>208.380</pcls>
+//             <rank>30</rank>
+//             <symbol>AVB</symbol>
+//             <vl>381813</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.07</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>192.06</last>
+//             <name>NORFOLK SOUTHERN CORP</name>
+//             <pchg>1.09</pchg>
+//             <pcls>189.99</pcls>
+//             <rank>31</rank>
+//             <symbol>NSC</symbol>
+//             <vl>1382116</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.06</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>88.78</last>
+//             <name>GROUP 1 AUTOMOTIVE, INC.</name>
+//             <pchg>2.38</pchg>
+//             <pcls>86.72</pcls>
+//             <rank>32</rank>
+//             <symbol>GPI</symbol>
+//             <vl>282155</vl>
+//         </quote>
+//         <quote>
+//             <chg>2.015</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>78.285</last>
+//             <name>KIRBY CORP.</name>
+//             <pchg>2.64</pchg>
+//             <pcls>76.270</pcls>
+//             <rank>33</rank>
+//             <symbol>KEX</symbol>
+//             <vl>631439</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.86</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>75.55</last>
+//             <name>COLGATE-PALMOLIVE CO.</name>
+//             <pchg>2.52</pchg>
+//             <pcls>73.69</pcls>
+//             <rank>34</rank>
+//             <symbol>CL</symbol>
+//             <vl>4139703</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.85</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>137.95</last>
+//             <name>WORLDPAY INC</name>
+//             <pchg>1.36</pchg>
+//             <pcls>136.10</pcls>
+//             <rank>35</rank>
+//             <symbol>WP</symbol>
+//             <vl>3321890</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.82</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>171.46</last>
+//             <name>GLOBAL PAYMENTS INC</name>
+//             <pchg>1.07</pchg>
+//             <pcls>169.64</pcls>
+//             <rank>36</rank>
+//             <symbol>GPN</symbol>
+//             <vl>2346662</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.730</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>288.940</last>
+//             <name>THERMO FISHER SCIENTIFIC INC</name>
+//             <pchg>0.60</pchg>
+//             <pcls>287.210</pcls>
+//             <rank>37</rank>
+//             <symbol>TMO</symbol>
+//             <vl>783580</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.68</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>218.96</last>
+//             <name>WEX INC</name>
+//             <pchg>0.77</pchg>
+//             <pcls>217.28</pcls>
+//             <rank>38</rank>
+//             <symbol>WEX</symbol>
+//             <vl>373960</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.67</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>146.32</last>
+//             <name>DISNEY (WALT) CO. (THE)</name>
+//             <pchg>1.15</pchg>
+//             <pcls>144.65</pcls>
+//             <rank>39</rank>
+//             <symbol>DIS</symbol>
+//             <vl>9874091</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.67</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>201.50</last>
+//             <name>L3HARRIS TECHNOLOGIES INC</name>
+//             <pchg>0.84</pchg>
+//             <pcls>199.83</pcls>
+//             <rank>40</rank>
+//             <symbol>LHX</symbol>
+//             <vl>1123499</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.670</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>115.630</last>
+//             <name>ROYAL CARIBBEAN CRUISES LTD</name>
+//             <pchg>1.47</pchg>
+//             <pcls>113.960</pcls>
+//             <rank>41</rank>
+//             <symbol>RCL</symbol>
+//             <vl>1807224</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.660</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>34.110</last>
+//             <name>CHEWY INC</name>
+//             <pchg>5.12</pchg>
+//             <pcls>32.450</pcls>
+//             <rank>42</rank>
+//             <symbol>CHWY</symbol>
+//             <vl>1819448</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.63</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>93.23</last>
+//             <name>FOMENTO ECONOMICO MEXICANO, S.A.B. DE C.V.</name>
+//             <pchg>1.78</pchg>
+//             <pcls>91.60</pcls>
+//             <rank>43</rank>
+//             <symbol>FMX</symbol>
+//             <vl>362280</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.6100</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>1147.7900</last>
+//             <name>AUTOZONE, INC.</name>
+//             <pchg>0.14</pchg>
+//             <pcls>1146.1800</pcls>
+//             <rank>44</rank>
+//             <symbol>AZO</symbol>
+//             <vl>170542</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.590</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>23.600</last>
+//             <name>TENET HEALTHCARE CORP.</name>
+//             <pchg>7.22</pchg>
+//             <pcls>22.010</pcls>
+//             <rank>45</rank>
+//             <symbol>THC</symbol>
+//             <vl>3724356</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.5800</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>134.5000</last>
+//             <name>CATERPILLAR INC.</name>
+//             <pchg>1.19</pchg>
+//             <pcls>132.9200</pcls>
+//             <rank>46</rank>
+//             <symbol>CAT</symbol>
+//             <vl>2412553</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.5700</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>219.2000</last>
+//             <name>WATERS CORP.</name>
+//             <pchg>0.72</pchg>
+//             <pcls>217.6300</pcls>
+//             <rank>47</rank>
+//             <symbol>WAT</symbol>
+//             <vl>729133</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.51</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>143.52</last>
+//             <name>CARLISLE COMPANIES INC.</name>
+//             <pchg>1.06</pchg>
+//             <pcls>142.01</pcls>
+//             <rank>48</rank>
+//             <symbol>CSL</symbol>
+//             <vl>384400</vl>
+//         </quote>
+//         <quote>
+//             <chg>1.490</chg>
+//             <chg_sign>u</chg_sign>
+//             <last>91.590</last>
+//             <name>ENERGIZER HOLDINGS INC (NEW)</name>
+//             <pchg>1.65</pchg>
+//             <pcls>90.100</pcls>
+//             <rank>49</rank>
+//             <symbol>ENR.A</symbol>
+//             <vl>9327</vl>
+//         </quote>
+//     </quotes>
+//     <error>Success</error>
+// </response>
+
+func parseTopStockQuery(queryString string) {
+	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
+	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotes>")[0]
+	// fmt.Println(splitDataQuery2)
+
+	splitDataListQuery3 := strings.Split(splitDataQuery2, "<quote>")
+	// fmt.Println(splitDataListQuery3)
+	// fmt.Println(splitDataListQuery3)
+
+	// fmt.Printf("Pop %d\n", splitDataListQuery3.Pop())
+
+	// s := []string{"one", "two", "three"}
+	splitDataListQuerySpaceIndexRemoved := splitDataListQuery3
+
+	// Find and remove "two"
+	for i, v := range splitDataListQuerySpaceIndexRemoved {
+		// if v == "two" {
+		fmt.Println(v)
+		fmt.Println(i)
+		if i == 0 {
+			splitDataListQuerySpaceIndexRemoved = append(splitDataListQuerySpaceIndexRemoved[:i], splitDataListQuerySpaceIndexRemoved[i+1:]...)
+			break
+		}
+	}
+
+	// fmt.Println(splitDataListQuerySpaceIndexRemoved[0]) // Prints [one three]
+	// list := []string{}
+
+	stringList := []string{}
+	// strings = append(strings, "one")
+	for i, v := range splitDataListQuerySpaceIndexRemoved {
+		fmt.Println(i, v)
+
+		stringParsed := strings.Split(v, "</quote>")[0]
+		stringList = append(stringList, stringParsed)
+
+		// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
+	}
+
+	fmt.Println(stringList[0])
+	for i, v := range splitDataListQuerySpaceIndexRemoved {
+		//Create stock and append to composite
+		fmt.Println(i, v)
+		stringParsed := strings.Split(v, "</quote>")[0]
+		stringList = append(stringList, stringParsed)
+		// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
+	}
+
+	// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
+
+	// splitDataQuery2 := strings.Split(splitDataQuery1, "<symbol>")[1]
+	// symbol := strings.Split(splitDataQuery2, "</symbol>")[0]
+
+	// splitDataQuery2 = strings.Split(splitDataQuery1, "<bid>")[1]
+	// bid := strings.Split(splitDataQuery2, "</bid>")[0]
+
+	// splitDataQuery2 = strings.Split(splitDataQuery1, "<ask>")[1]
+	// ask := strings.Split(splitDataQuery2, "</ask>")[0]
+
+	// splitDataQuery2 = strings.Split(splitDataQuery1, "<last>")[1]
+	// last := strings.Split(splitDataQuery2, "</last>")[0]
+
+	// splitDataQuery2 = strings.Split(splitDataQuery1, "<pchg>")[1]
+	// pchg := strings.Split(splitDataQuery2, "</pchg>")[0]
+
+	// splitDataQuery2 = strings.Split(splitDataQuery1, "<pcls>")[1]
+	// pcls := strings.Split(splitDataQuery2, "</pcls>")[0]
+
+	// stock := Stock{
+	// 	Symbol: symbol,
+	// 	Bid:    bid,
+	// 	Ask:    ask,
+	// 	Last:   last,
+	// 	Pchg:   pchg,
+	// 	Pcls:   pcls,
+	// }
+	// return stock
 }
 
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>

@@ -3,22 +3,22 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
+	"time"
 )
 
 type JSONObject struct {
 	ID        int
 	Age       int
 	FirstName string
-	// LastName  string
-	// Email     string
 }
 
 type BrokerageQuery struct {
 	RequestType string
 	Name        string
 }
+
+var isTimeMonitoringLoop bool
 
 func coolPage(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome to the coolPage!")
@@ -65,8 +65,12 @@ func handleRequests() {
 	// http.HandleFunc("/update", update)
 	// http.HandleFunc("/delete", delete)
 
-	http.HandleFunc("/stockQuery", stockQuery)
-	log.Fatal(http.ListenAndServe(":10000", nil))
+	// http.HandleFunc("/stockQuery", stockQuery)
+	// log.Fatal(http.ListenAndServe(":10000", nil))
+
+	// timein := time.Now().Local().AddDate(Hours, Mins, Sec)
+	// fmt.Println(timein)
+
 }
 
 func main() {
@@ -149,7 +153,129 @@ func main() {
 	// fmt.Println(stockEntry.DayID)
 	// insertStock(stockEntry)
 
-	selectAllStock("DEL")
+	// selectAllStock("DEL")
+
+	query := `<?xml version="1.0" encoding="UTF-8"?>
+	<response id="58d6662f-2410-4e43-ba2b-5298e22c5aae">
+		<elapsedtime>0</elapsedtime>
+		<quotes>
+			<quote>
+				<chg>28.835</chg>
+				<chg_sign>u</chg_sign>
+				<last>808.695</last>
+				<name>CHIPOTLE MEXICAN GRILL INC</name>
+				<pchg>3.70</pchg>
+				<pcls>779.860</pcls>
+				<rank>1</rank>
+				<symbol>CMG</symbol>
+				<vl>922968</vl>
+			</quote>
+			<quote>
+				<chg>10.20</chg>
+				<chg_sign>u</chg_sign>
+				<last>396.21</last>
+				<name>CHEMED CORP</name>
+				<pchg>2.64</pchg>
+				<pcls>386.01</pcls>
+				<rank>2</rank>
+				<symbol>CHE</symbol>
+				<vl>140181</vl>
+			</quote>
+			<quote>
+				<chg>5.13</chg>
+				<chg_sign>u</chg_sign>
+				<last>79.77</last>
+				<name>GRUBHUB INC</name>
+				<pchg>6.87</pchg>
+				<pcls>74.64</pcls>
+				<rank>3</rank>
+				<symbol>GRUB</symbol>
+				<vl>4742848</vl>
+			</quote>
+			<quote>
+				<chg>5.10</chg>
+				<chg_sign>u</chg_sign>
+				<last>94.60</last>
+				<name>ASBURY AUTOMOTIVE GROUP INC</name>
+				<pchg>5.70</pchg>
+				<pcls>89.50</pcls>
+				<rank>4</rank>
+				<symbol>ABG</symbol>
+				<vl>217864</vl>
+			</quote>
+			<quote>
+				<chg>4.89</chg>
+				<chg_sign>u</chg_sign>
+				<last>172.19</last>
+				<name>CIGNA CORP (NEW)</name>
+				<pchg>2.92</pchg>
+				<pcls>167.30</pcls>
+				<rank>5</rank>
+				<symbol>CI</symbol>
+				<vl>1281650</vl>
+			</quote>
+			<quote>
+				<chg>4.0200</chg>
+				<chg_sign>u</chg_sign>
+				<last>280.8900</last>
+				<name>HUMANA INC.</name>
+				<pchg>1.45</pchg>
+				<pcls>276.8700</pcls>
+				<rank>6</rank>
+				<symbol>HUM</symbol>
+				<vl>635934</vl>
+			</quote>
+		</quotes>
+		<error>Success</error>
+	</response>`
+
+	parseTopStockQuery(query)
+
+	// isTimeMonitoringLoop = true
+	// initTimeMonitoring()
+}
+func initTimeMonitoring() {
+	// time excution process looped on regular basis
+	// triggered every few seconds
+	i := 0
+	for isTimeMonitoringLoop {
+		time.Sleep(3 * time.Second)
+		timeConditionExecutionProcess()
+		if i == 3 {
+			fmt.Println("is false")
+			isTimeMonitoringLoop = false
+		}
+		i++
+	}
+}
+func timeConditionExecutionProcess() {
+	currentTime := time.Now()
+	fmt.Println(currentTime.Hour())
+	fmt.Println(currentTime.Minute())
+	fmt.Println(currentTime.Second())
+
+	//Initial monitoring pool
+	if currentTime.Hour() == 15 && currentTime.Minute() == 37 {
+		fmt.Println("hit")
+	}
+	//TSP, trigger individual stock query process,
+	//Update stock monitor and query decision process
+	//trigger update monitoring pool analytics
+	if currentTime.Hour() == 15 && currentTime.Minute() == 37 {
+		fmt.Println("hit")
+	}
+	//TSP, trigger individual stock query process,
+	//Update stock monitor and query decision process
+	//trigger update monitoring pool analytics
+	if currentTime.Hour() == 15 && currentTime.Minute() == 37 {
+		fmt.Println("hit")
+	}
+	//TSP, trigger individual stock query process,
+	//Update stock monitor and query decision process
+	//trigger update monitoring pool analytics
+	if currentTime.Hour() == 15 && currentTime.Minute() == 37 {
+		fmt.Println("hit")
+	}
 }
 
 func testing() {
