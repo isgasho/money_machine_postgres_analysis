@@ -33,6 +33,7 @@ type Stock struct {
 	ID           string
 	DayID        int
 	CreatedAt    string
+	Rank         string
 	Monitoring   bool
 	Symbol       string
 	Bid          string
