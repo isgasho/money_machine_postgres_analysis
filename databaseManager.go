@@ -194,29 +194,67 @@ func selectAllStock(symbolToSearch string) {
 	// fmt.Println(stock.ID, stock.DayID)
 }
 
-// func selectStockCondition(condition int) {
-// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-// 		"dbname=%s sslmode=disable",
-// 		host, port, user, dbname)
-// 	db, err := sql.Open("postgres", psqlInfo)
-// 	if err != nil {
-// 		fmt.Println("Read Error 1")
-// 		panic(err)
-// 	}
-// 	defer db.Close()
+func selectMonitoringStock() []string {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
 
-// 	sqlStatement := `SELECT * FROM users WHERE id=$1;`
-// 	var user User
-// 	row := db.QueryRow(sqlStatement, idToSearch)
-// 	err1 := row.Scan(&user.ID, &user.Age, &user.FirstName,
-// 		&user.LastName, &user.Email)
-// 	if err1 != nil {
-// 		fmt.Println("Read Error 2")
-// 		return 0, 0, "null", "null", "null"
-// 	}
-// 	return user.ID, user.Age, user.Email, user.FirstName, user.LastName
-// }
-func deleteStock() {
+	// sqlStatement := `SELECT symbol FROM stock WHERE monitoring =$1;`
+	// var stock Stock
+	rows, err1 := db.Query("SELECT symbol FROM stock WHERE monitoring=true")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	// idList := make([]string, 0)
+	resultList := make([]string, 0)
+
+	for rows.Next() {
+		var symbol string
+		if err2 := rows.Scan(&symbol); err2 != nil {
+			fmt.Println("err2")
+		}
+
+		resultList = append(resultList, symbol)
+		// fmt.Println(symbol, last)
+	}
+	return resultList
+
+	// row := db.QueryRow(sqlStatement, symbol)
+	// err1 := row.Scan(&user.ID, &user.Age, &user.FirstName,
+	// 	&user.LastName, &user.Email)
+	// if err1 != nil {
+	// 	fmt.Println("Read Error 2")
+	// 	return 0, 0, "null", "null", "null"
+	// }
+	// return user.ID, user.Age, user.Email, user.FirstName, user.LastName
+}
+func deleteStock(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM stock WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
 }
 
 func insertTradeInfo() {

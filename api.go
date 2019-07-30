@@ -122,37 +122,6 @@ func main() {
 	// }
 	// insertDow(dowEntry)
 
-	// var stockEntry = Stock{
-	// 	DayID:        3,
-	// 	Monitoring:   false,
-	// 	Symbol:       "DEL",
-	// 	Bid:          "2.31",
-	// 	Ask:          "2.30",
-	// 	Last:         "2.28",
-	// 	Pchg:         "13.2",
-	// 	Pcls:         "2.20",
-	// 	Opn:          "2.25",
-	// 	Vl:           "2001",
-	// 	Pvol:         "3001",
-	// 	Volatility12: "1",
-	// 	Wk52hi:       "1",
-	// 	Wk52hidate:   "1",
-	// 	Wk52lo:       "1",
-	// 	Wk52lodate:   "1",
-	// 	Hi:           "1",
-	// 	Low:          "1",
-	// 	PrAdp50:      "1",
-	// 	PrAdp100:     "1",
-	// 	Prchg:        "1",
-	// 	Adp50:        "1",
-	// 	Adp100:       "1",
-	// 	Adv30:        "1",
-	// 	Adv90:        "1",
-	// }
-
-	// fmt.Println(stockEntry.DayID)
-	// insertStock(stockEntry)
-
 	// selectAllStock("DEL")
 
 	// query := `<?xml version="1.0" encoding="UTF-8"?>
@@ -779,6 +748,106 @@ func main() {
 	stockList := parseTopStockQuery(query)
 
 	fmt.Println(stockList[0])
+
+	// var stockEntry = Stock{
+	// 	DayID:        3,
+	// 	Monitoring:   true,
+	// 	Symbol:       "TAM",
+	// 	Bid:          "2.31",
+	// 	Ask:          "2.30",
+	// 	Last:         "2.28",
+	// 	Pchg:         "13.2",
+	// 	Pcls:         "2.20",
+	// 	Opn:          "2.25",
+	// 	Vl:           "2001",
+	// 	Pvol:         "3001",
+	// 	Volatility12: "1",
+	// 	Wk52hi:       "1",
+	// 	Wk52hidate:   "1",
+	// 	Wk52lo:       "1",
+	// 	Wk52lodate:   "1",
+	// 	Hi:           "1",
+	// 	Low:          "1",
+	// 	PrAdp50:      "1",
+	// 	PrAdp100:     "1",
+	// 	Prchg:        "1",
+	// 	Adp50:        "1",
+	// 	Adp100:       "1",
+	// 	Adv30:        "1",
+	// 	Adv90:        "1",
+	// }
+
+	// fmt.Println(stockEntry.DayID)
+	// insertStock(stockEntry)
+
+	//STORE INSERT STOCKS. Monitoring condition.
+
+	resultSet := selectMonitoringStock()
+	// fmt.Println(resultSet)
+	// for each result in resultset
+	// if matching query or tsp
+
+	symbolChecking := "DOH"
+	for i, v := range resultSet {
+		if symbolChecking == v {
+			fmt.Println("hit", v)
+		}
+		i++
+	}
+
+	//if not monitoring create query cycle
+	//sequential or all the same
+	//all the same for set query
+	//else individual
+
+	//split process.
+
+	//handle monitor
+	//store monitoring
+	// var stockEntry = Stock{
+	// 	DayID:        3,
+	// 	Monitoring:   false,
+	// 	Symbol:       symbolChecking,
+	// 	Bid:          "2.31",
+	// 	Ask:          "2.30",
+	// 	Last:         "2.28",
+	// 	Pchg:         "13.2",
+	// 	Pcls:         "2.20",
+	// 	Opn:          "2.25",
+	// 	Vl:           "2001",
+	// 	Pvol:         "3001",
+	// 	Volatility12: "1",
+	// 	Wk52hi:       "1",
+	// 	Wk52hidate:   "1",
+	// 	Wk52lo:       "1",
+	// 	Wk52lodate:   "1",
+	// 	Hi:           "1",
+	// 	Low:          "1",
+	// 	PrAdp50:      "1",
+	// 	PrAdp100:     "1",
+	// 	Prchg:        "1",
+	// 	Adp50:        "1",
+	// 	Adp100:       "1",
+	// 	Adv30:        "1",
+	// 	Adv90:        "1",
+	// }
+
+	// insertStock(stockEntry)
+
+	resultSet = selectMonitoringStock()
+	fmt.Println(resultSet)
+
+	//Handle formulate query
+	//Query multistock
+	// post()
+	var stringListToQuery = []string{"A", "B", "C"}
+	queryMultiStockPull(stringListToQuery)
+
+	// deleteStock("TAM")
+
+	//handle query set
+
+	//for a set there will always be three.
 
 	//Query monitoring
 	//Select all matching monitored condition
