@@ -72,3 +72,13 @@ type TradeInfo struct {
 	BuyPerformed      bool
 	SoldPerformed     bool
 }
+
+//Cycle management struct
+type Cycle struct {
+	Name             string
+	BooleanOperate   bool
+	IntervalSpeed    int
+	AmountOfInterval int
+	FunctionToCall   fn
+	Params           interface{}
+}

@@ -7,7 +7,7 @@ func topStockPull() {
 
 func queryMultiStockPull(listSymbols []string) {
 	json := `{
-		"request_type": "top_stock_pull",
+		"request_type": "query_multi_stock",
 		"data": [`
 
 	for i, v := range listSymbols {
