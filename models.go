@@ -1,5 +1,9 @@
 package main
 
+type fn func(params ...interface{})
+
+var cyclePool = []Cycle{}
+
 //User object for DB
 type User struct {
 	ID        int

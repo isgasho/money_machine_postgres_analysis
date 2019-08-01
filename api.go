@@ -861,8 +861,10 @@ func main() {
 	// isTimeMonitoringLoop = true
 	// go initTimeMonitoring()
 
-	go say("world")
+	// go say("world")
 	// say("hello")
+
+	processQueryStockSet()
 	fmt.Scanln()
 	fmt.Println("done")
 }
