@@ -113,18 +113,18 @@ func insertStock(stockEntry Stock) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO stock (day_id, monitoring, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, low, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
+		INSERT INTO stock (day_id, monitoring, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24, $25)
-		RETURNING id, day_id, created_at, monitoring, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, low, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
+		RETURNING id, created_at, day_id, monitoring, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
 		`
-	// ,
 	var stock Stock
-	row := db.QueryRow(sqlStatement, stockEntry.DayID, stockEntry.Monitoring, stockEntry.Symbol, stockEntry.Bid, stockEntry.Ask, stockEntry.Last, stockEntry.Pchg, stockEntry.Pcls, stockEntry.Opn, stockEntry.Vl, stockEntry.Pvol, stockEntry.Volatility12, stockEntry.Wk52hi, stockEntry.Wk52hidate, stockEntry.Wk52lo, stockEntry.Wk52lodate, stockEntry.Hi, stockEntry.Low, stockEntry.PrAdp50, stockEntry.PrAdp100, stockEntry.Prchg, stockEntry.Adp50, stockEntry.Adp100, stockEntry.Adv30, stockEntry.Adv90)
-	err1 := row.Scan(&stock.ID, &stock.DayID, &stock.CreatedAt, &stock.Monitoring, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Low, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90)
+
+	row := db.QueryRow(sqlStatement, stockEntry.DayID, stockEntry.Monitoring, stockEntry.Symbol, stockEntry.Bid, stockEntry.Ask, stockEntry.Last, stockEntry.Pchg, stockEntry.Pcls, stockEntry.Opn, stockEntry.Vl, stockEntry.Pvol, stockEntry.Volatility12, stockEntry.Wk52hi, stockEntry.Wk52hidate, stockEntry.Wk52lo, stockEntry.Wk52lodate, stockEntry.Hi, stockEntry.Lo, stockEntry.PrAdp50, stockEntry.PrAdp100, stockEntry.Prchg, stockEntry.Adp50, stockEntry.Adp100, stockEntry.Adv30, stockEntry.Adv90)
+	err1 := row.Scan(&stock.ID, &stock.CreatedAt, &stock.DayID, &stock.Monitoring, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
-	fmt.Println(stock.ID, stock.DayID, stock.CreatedAt, stock.Monitoring, stock.Symbol, stock.Bid, stock.Ask) //, stock.Symbol, stock.Bid)
+	fmt.Println(stock.ID, stock.CreatedAt, stock.DayID) //, stock.Symbol, stock.Bid)
 }
 func setStock() {
 }
@@ -194,6 +194,28 @@ func selectAllStock(symbolToSearch string) {
 	// fmt.Println(stock.ID, stock.DayID)
 }
 
+func deleteStock(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM stock WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
 func selectMonitoringStock() []string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
@@ -225,17 +247,43 @@ func selectMonitoringStock() []string {
 		// fmt.Println(symbol, last)
 	}
 	return resultList
-
-	// row := db.QueryRow(sqlStatement, symbol)
-	// err1 := row.Scan(&user.ID, &user.Age, &user.FirstName,
-	// 	&user.LastName, &user.Email)
-	// if err1 != nil {
-	// 	fmt.Println("Read Error 2")
-	// 	return 0, 0, "null", "null", "null"
-	// }
-	// return user.ID, user.Age, user.Email, user.FirstName, user.LastName
 }
-func deleteStock(symbolToDel string) {
+
+func selectAllMonitoringStock() []string {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// sqlStatement := `SELECT symbol FROM stock WHERE monitoring =$1;`
+	// var stock Stock
+	rows, err1 := db.Query("SELECT symbol FROM stock WHERE monitoring=true LIMIT 1")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	// idList := make([]string, 0)
+	// resultList := make([]string, 0)
+	resultList := []string{}
+
+	for rows.Next() {
+		var symbol string
+		if err2 := rows.Scan(&symbol); err2 != nil {
+			fmt.Println("err2")
+		}
+
+		resultList = append(resultList, symbol)
+		// fmt.Println(symbol, last)
+	}
+	return resultList
+}
+
+func deleteMonitoredStock(symbolToDel string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -255,6 +303,31 @@ func deleteStock(symbolToDel string) {
 		fmt.Println("Delete Error 3")
 	}
 	fmt.Println(count)
+}
+
+func insertMonitorSymbol(symbolEntry string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO monitor_symbol (symbol)
+			VALUES ($1)
+			RETURNING symbol
+		`
+	var stock Stock
+
+	row := db.QueryRow(sqlStatement, symbolEntry)
+	err1 := row.Scan(&stock.Symbol)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+	fmt.Println(stock.Symbol)
 }
 
 func insertTradeInfo() {

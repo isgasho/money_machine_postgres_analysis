@@ -4,6 +4,8 @@ type fn func(params ...interface{})
 
 var cyclePool = []Cycle{}
 
+var dayID = 3
+
 //User object for DB
 type User struct {
 	ID        int
@@ -54,7 +56,7 @@ type Stock struct {
 	Wk52lo       string
 	Wk52lodate   string
 	Hi           string
-	Low          string
+	Lo           string
 	PrAdp50      string
 	PrAdp100     string
 	Prchg        string

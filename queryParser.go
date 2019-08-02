@@ -38,6 +38,272 @@ func parseQuery(queryString string) Stock {
 	return stock
 }
 
+func parseStockSetQuery(queryString string) []Stock {
+	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
+	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotetype>")[1]
+	splitDataQuery3 := strings.Split(splitDataQuery2, "</quotes>")[0]
+	splitDataListQuery4 := strings.Split(splitDataQuery3, "<quote>")
+
+	for i := range splitDataListQuery4 {
+		if i == 0 {
+			splitDataListQuery4 = append(splitDataListQuery4[:i], splitDataListQuery4[i+1:]...)
+			break
+		}
+	}
+
+	// fmt.Println(splitDataListQuery4[0])
+
+	parseList := []string{}
+	for i, v := range splitDataListQuery4 {
+		i++
+		stringParsed := strings.Split(v, "</quote>")[0]
+		parseList = append(parseList, stringParsed)
+	}
+
+	var stockList = []Stock{}
+
+	// fmt.Println(parseList[0])
+	for i, v := range parseList {
+		//Create stock and append to composite
+		// fmt.Println(i, v)
+		i++
+
+		symbolUnparsed := strings.Split(v, "<symbol>")[1]
+		symbol := strings.Split(symbolUnparsed, "</symbol>")[0]
+
+		bidUnparsed := strings.Split(v, "<bid>")[1]
+		bid := strings.Split(bidUnparsed, "</bid>")[0]
+
+		askUnparsed := strings.Split(v, "<ask>")[1]
+		ask := strings.Split(askUnparsed, "</ask>")[0]
+
+		lastUnparsed := strings.Split(v, "<last>")[1]
+		last := strings.Split(lastUnparsed, "</last>")[0]
+
+		pchgUnparsed := strings.Split(v, "<pchg>")[1]
+		pchg := strings.Split(pchgUnparsed, "</pchg>")[0]
+
+		pclsUnparsed := strings.Split(v, "<pcls>")[1]
+		pcls := strings.Split(pclsUnparsed, "</pcls>")[0]
+
+		opnUnparsed := strings.Split(v, "<opn>")[1]
+		opn := strings.Split(opnUnparsed, "</opn>")[0]
+
+		vlUnparsed := strings.Split(v, "<vl>")[1]
+		vl := strings.Split(vlUnparsed, "</vl>")[0]
+
+		pvolUnparsed := strings.Split(v, "<pvol>")[1]
+		pvol := strings.Split(pvolUnparsed, "</pvol>")[0]
+
+		volatility12Unparsed := strings.Split(v, "<volatility12>")[1]
+		volatility12 := strings.Split(volatility12Unparsed, "</volatility12>")[0]
+
+		wk52hiUnparsed := strings.Split(v, "<wk52hi>")[1]
+		wk52hi := strings.Split(wk52hiUnparsed, "</wk52hi>")[0]
+
+		wk52hidateUnparsed := strings.Split(v, "<wk52hidate>")[1]
+		wk52hidate := strings.Split(wk52hidateUnparsed, "</wk52hidate>")[0]
+
+		wk52loUnparsed := strings.Split(v, "<wk52lo>")[1]
+		wk52lo := strings.Split(wk52loUnparsed, "</wk52lo>")[0]
+
+		wk52lodateUnparsed := strings.Split(v, "<wk52lodate>")[1]
+		wk52lodate := strings.Split(wk52lodateUnparsed, "</wk52lodate>")[0]
+
+		hiUnparsed := strings.Split(v, "<hi>")[1]
+		hi := strings.Split(hiUnparsed, "</hi>")[0]
+
+		loUnparsed := strings.Split(v, "<lo>")[1]
+		lo := strings.Split(loUnparsed, "</lo>")[0]
+
+		prAdp50Unparsed := strings.Split(v, "<pr_adp_50>")[1]
+		prAdp50 := strings.Split(prAdp50Unparsed, "</pr_adp_50>")[0]
+
+		prAdp100Unparsed := strings.Split(v, "<pr_adp_100>")[1]
+		prAdp100 := strings.Split(prAdp100Unparsed, "</pr_adp_100>")[0]
+
+		prchgUnparsed := strings.Split(v, "<prchg>")[1]
+		prchg := strings.Split(prchgUnparsed, "</prchg>")[0]
+
+		adp50Unparsed := strings.Split(v, "<adp_50>")[1]
+		adp50 := strings.Split(adp50Unparsed, "</adp_50>")[0]
+
+		adp100Unparsed := strings.Split(v, "<adp_100>")[1]
+		adp100 := strings.Split(adp100Unparsed, "</adp_100>")[0]
+
+		adv30Unparsed := strings.Split(v, "<adv_30>")[1]
+		adv30 := strings.Split(adv30Unparsed, "</adv_30>")[0]
+
+		adv90Unparsed := strings.Split(v, "<adv_90>")[1]
+		adv90 := strings.Split(adv90Unparsed, "</adv_90>")[0]
+
+		fmt.Println(dayID)
+		var stock = Stock{
+			DayID:        dayID,
+			Monitoring:   false,
+			Symbol:       symbol,
+			Bid:          bid,
+			Ask:          ask,
+			Last:         last,
+			Pchg:         pchg,
+			Pcls:         pcls,
+			Opn:          opn,
+			Vl:           vl,
+			Pvol:         pvol,
+			Volatility12: volatility12,
+			Wk52hi:       wk52hi,
+			Wk52hidate:   wk52hidate,
+			Wk52lo:       wk52lo,
+			Wk52lodate:   wk52lodate,
+			Hi:           hi,
+			Lo:           lo,
+			PrAdp50:      prAdp50,
+			PrAdp100:     prAdp100,
+			Prchg:        prchg,
+			Adp50:        adp50,
+			Adp100:       adp100,
+			Adv30:        adv30,
+			Adv90:        adv90,
+		}
+		// fmt.Println(stock.Symbol, stock.Bid, stock.Ask)
+		stockList = append(stockList, stock)
+	}
+	return stockList
+}
+
+func parseMonitoredStockQuery(queryString string) []Stock {
+	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
+	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotetype>")[1]
+	splitDataQuery3 := strings.Split(splitDataQuery2, "</quotes>")[0]
+	splitDataListQuery4 := strings.Split(splitDataQuery3, "<quote>")
+
+	for i := range splitDataListQuery4 {
+		if i == 0 {
+			splitDataListQuery4 = append(splitDataListQuery4[:i], splitDataListQuery4[i+1:]...)
+			break
+		}
+	}
+
+	// fmt.Println(splitDataListQuery4[0])
+
+	parseList := []string{}
+	for i, v := range splitDataListQuery4 {
+		i++
+		stringParsed := strings.Split(v, "</quote>")[0]
+		parseList = append(parseList, stringParsed)
+	}
+
+	var stockList = []Stock{}
+
+	// fmt.Println(parseList[0])
+	for i, v := range parseList {
+		//Create stock and append to composite
+		// fmt.Println(i, v)
+		i++
+
+		symbolUnparsed := strings.Split(v, "<symbol>")[1]
+		symbol := strings.Split(symbolUnparsed, "</symbol>")[0]
+
+		bidUnparsed := strings.Split(v, "<bid>")[1]
+		bid := strings.Split(bidUnparsed, "</bid>")[0]
+
+		askUnparsed := strings.Split(v, "<ask>")[1]
+		ask := strings.Split(askUnparsed, "</ask>")[0]
+
+		lastUnparsed := strings.Split(v, "<last>")[1]
+		last := strings.Split(lastUnparsed, "</last>")[0]
+
+		pchgUnparsed := strings.Split(v, "<pchg>")[1]
+		pchg := strings.Split(pchgUnparsed, "</pchg>")[0]
+
+		pclsUnparsed := strings.Split(v, "<pcls>")[1]
+		pcls := strings.Split(pclsUnparsed, "</pcls>")[0]
+
+		opnUnparsed := strings.Split(v, "<opn>")[1]
+		opn := strings.Split(opnUnparsed, "</opn>")[0]
+
+		vlUnparsed := strings.Split(v, "<vl>")[1]
+		vl := strings.Split(vlUnparsed, "</vl>")[0]
+
+		pvolUnparsed := strings.Split(v, "<pvol>")[1]
+		pvol := strings.Split(pvolUnparsed, "</pvol>")[0]
+
+		volatility12Unparsed := strings.Split(v, "<volatility12>")[1]
+		volatility12 := strings.Split(volatility12Unparsed, "</volatility12>")[0]
+
+		wk52hiUnparsed := strings.Split(v, "<wk52hi>")[1]
+		wk52hi := strings.Split(wk52hiUnparsed, "</wk52hi>")[0]
+
+		wk52hidateUnparsed := strings.Split(v, "<wk52hidate>")[1]
+		wk52hidate := strings.Split(wk52hidateUnparsed, "</wk52hidate>")[0]
+
+		wk52loUnparsed := strings.Split(v, "<wk52lo>")[1]
+		wk52lo := strings.Split(wk52loUnparsed, "</wk52lo>")[0]
+
+		wk52lodateUnparsed := strings.Split(v, "<wk52lodate>")[1]
+		wk52lodate := strings.Split(wk52lodateUnparsed, "</wk52lodate>")[0]
+
+		hiUnparsed := strings.Split(v, "<hi>")[1]
+		hi := strings.Split(hiUnparsed, "</hi>")[0]
+
+		loUnparsed := strings.Split(v, "<lo>")[1]
+		lo := strings.Split(loUnparsed, "</lo>")[0]
+
+		prAdp50Unparsed := strings.Split(v, "<pr_adp_50>")[1]
+		prAdp50 := strings.Split(prAdp50Unparsed, "</pr_adp_50>")[0]
+
+		prAdp100Unparsed := strings.Split(v, "<pr_adp_100>")[1]
+		prAdp100 := strings.Split(prAdp100Unparsed, "</pr_adp_100>")[0]
+
+		prchgUnparsed := strings.Split(v, "<prchg>")[1]
+		prchg := strings.Split(prchgUnparsed, "</prchg>")[0]
+
+		adp50Unparsed := strings.Split(v, "<adp_50>")[1]
+		adp50 := strings.Split(adp50Unparsed, "</adp_50>")[0]
+
+		adp100Unparsed := strings.Split(v, "<adp_100>")[1]
+		adp100 := strings.Split(adp100Unparsed, "</adp_100>")[0]
+
+		adv30Unparsed := strings.Split(v, "<adv_30>")[1]
+		adv30 := strings.Split(adv30Unparsed, "</adv_30>")[0]
+
+		adv90Unparsed := strings.Split(v, "<adv_90>")[1]
+		adv90 := strings.Split(adv90Unparsed, "</adv_90>")[0]
+
+		fmt.Println(dayID)
+		var stock = Stock{
+			DayID:        dayID,
+			Monitoring:   true,
+			Symbol:       symbol,
+			Bid:          bid,
+			Ask:          ask,
+			Last:         last,
+			Pchg:         pchg,
+			Pcls:         pcls,
+			Opn:          opn,
+			Vl:           vl,
+			Pvol:         pvol,
+			Volatility12: volatility12,
+			Wk52hi:       wk52hi,
+			Wk52hidate:   wk52hidate,
+			Wk52lo:       wk52lo,
+			Wk52lodate:   wk52lodate,
+			Hi:           hi,
+			Lo:           lo,
+			PrAdp50:      prAdp50,
+			PrAdp100:     prAdp100,
+			Prchg:        prchg,
+			Adp50:        adp50,
+			Adp100:       adp100,
+			Adv30:        adv30,
+			Adv90:        adv90,
+		}
+		// fmt.Println(stock.Symbol, stock.Bid, stock.Ask)
+		stockList = append(stockList, stock)
+	}
+	return stockList
+}
+
 func parseTopStockQuery(queryString string) []Stock {
 	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
 	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotes>")[0]
@@ -77,7 +343,7 @@ func parseTopStockQuery(queryString string) []Stock {
 	}
 
 	var stockList = []Stock{}
-	// parseList1 := []string{}
+
 	fmt.Println(parseList[0])
 	for i, v := range parseList {
 		//Create stock and append to composite
@@ -109,38 +375,7 @@ func parseTopStockQuery(queryString string) []Stock {
 		// return stockList
 		// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
 	}
-
-	// fmt.Println(stockList[4])
 	return stockList
-	// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
-
-	// splitDataQuery2 := strings.Split(splitDataQuery1, "<symbol>")[1]
-	// symbol := strings.Split(splitDataQuery2, "</symbol>")[0]
-
-	// splitDataQuery2 = strings.Split(splitDataQuery1, "<bid>")[1]
-	// bid := strings.Split(splitDataQuery2, "</bid>")[0]
-
-	// splitDataQuery2 = strings.Split(splitDataQuery1, "<ask>")[1]
-	// ask := strings.Split(splitDataQuery2, "</ask>")[0]
-
-	// splitDataQuery2 = strings.Split(splitDataQuery1, "<last>")[1]
-	// last := strings.Split(splitDataQuery2, "</last>")[0]
-
-	// splitDataQuery2 = strings.Split(splitDataQuery1, "<pchg>")[1]
-	// pchg := strings.Split(splitDataQuery2, "</pchg>")[0]
-
-	// splitDataQuery2 = strings.Split(splitDataQuery1, "<pcls>")[1]
-	// pcls := strings.Split(splitDataQuery2, "</pcls>")[0]
-
-	// stock := Stock{
-	// 	Symbol: symbol,
-	// 	Bid:    bid,
-	// 	Ask:    ask,
-	// 	Last:   last,
-	// 	Pchg:   pchg,
-	// 	Pcls:   pcls,
-	// }
-	// return stock
 }
 
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>
