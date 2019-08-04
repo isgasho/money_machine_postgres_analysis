@@ -50,9 +50,6 @@ func parseStockSetQuery(queryString string) []Stock {
 			break
 		}
 	}
-
-	// fmt.Println(splitDataListQuery4[0])
-
 	parseList := []string{}
 	for i, v := range splitDataListQuery4 {
 		i++
@@ -62,7 +59,6 @@ func parseStockSetQuery(queryString string) []Stock {
 
 	var stockList = []Stock{}
 
-	// fmt.Println(parseList[0])
 	for i, v := range parseList {
 		//Create stock and append to composite
 		// fmt.Println(i, v)
@@ -137,7 +133,6 @@ func parseStockSetQuery(queryString string) []Stock {
 		adv90Unparsed := strings.Split(v, "<adv_90>")[1]
 		adv90 := strings.Split(adv90Unparsed, "</adv_90>")[0]
 
-		fmt.Println(dayID)
 		var stock = Stock{
 			DayID:        dayID,
 			Monitoring:   false,
@@ -165,7 +160,6 @@ func parseStockSetQuery(queryString string) []Stock {
 			Adv30:        adv30,
 			Adv90:        adv90,
 		}
-		// fmt.Println(stock.Symbol, stock.Bid, stock.Ask)
 		stockList = append(stockList, stock)
 	}
 	return stockList
