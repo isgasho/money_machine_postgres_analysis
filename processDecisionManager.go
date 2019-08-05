@@ -25,7 +25,7 @@ func checkIfMonitoring() {
 //type fn func(params ...interface{})
 
 func processTimelineStart() {
-	createCycle(5, 5, handleTimelineConditionalTriggers)
+	createCycle(5, 10000, handleTimelineConditionalTriggers)
 	operatingCycle := cyclePool[0]
 	go startCycle(&operatingCycle)
 }
@@ -55,8 +55,9 @@ func processQueryStockSet() {
 	// operatingCycle := cyclePool[0]
 	// go startCycle(&operatingCycle)
 
-	createCycle(7, 1, handleQueryStockList)
-	operatingCycle := cyclePool[0]
+	fmt.Println("cyclepool", cyclePool)
+	createCycle(3, 10000, handleQueryStockList)
+	operatingCycle := cyclePool[1]
 	go startCycle(&operatingCycle)
 
 	// createCycle(7, 1, handleQueryStockList)
@@ -76,6 +77,21 @@ func processTSPRefresh() {
 }
 
 var baselineSecond int
+var baselineMinute int
+var calculatingMinute int
+
+var conditionOneSecond int
+var conditionOneMinute int
+var conditionOneHour int
+
+var conditionTwoSecond int
+var conditionTwoMinute int
+var conditionTwoHour int
+
+var conditionThreeSecond int
+var conditionThreeMinute int
+var conditionThreeHour int
+
 var boolOperate1 = true
 var boolOperate2 = true
 var boolOperate3 = true
@@ -88,25 +104,45 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 
 	if timelineOperationIndex == 0 {
-		baselineSecond = currentTime.Second()
+		baselineMinute = currentTime.Minute()
+		// calculatingMinute = baselineMinute + 1
+
+		conditionOneSecond = 5
+		conditionOneMinute = baselineMinute + 1
+		conditionOneHour = currentTime.Hour()
+
+		conditionTwoSecond = 15
+		conditionTwoMinute = baselineMinute + 1
+		conditionTwoHour = currentTime.Hour()
+
+		conditionThreeSecond = 25
+		conditionThreeMinute = baselineMinute + 1
+		conditionThreeHour = currentTime.Hour()
+
 		timelineOperationIndex++
 	}
 
-	fmt.Println(baselineSecond)
+	// fmt.Println(baselineMinute)
+	// fmt.Println(calculatingMinute)
 
 	//
 	//Timeline events
 	//
 	//Initial monitoring pool
-	if currentTime.Second() >= (baselineSecond+5) && boolOperate1 {
+	if currentTime.Second() >= conditionOneSecond && currentTime.Minute() >= conditionOneMinute && currentTime.Hour() >= conditionOneHour && boolOperate1 {
 		fmt.Println("hit1")
 		boolOperate1 = false
+		handleTSPRefresh()
+		// processQueryStockSet()
+		// fmt.Println(conditionOneSecond)
 	}
-	if currentTime.Second() >= (baselineSecond+10) && boolOperate2 {
+	if currentTime.Second() >= conditionTwoSecond && currentTime.Minute() >= conditionTwoMinute && currentTime.Hour() >= conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
 		boolOperate2 = false
+		// handleTSPRefresh()
+		// handleQueryStockList()
 	}
-	if currentTime.Second() >= (baselineSecond+15) && boolOperate3 {
+	if currentTime.Second() >= conditionThreeSecond && currentTime.Minute() >= conditionThreeMinute && currentTime.Hour() >= conditionThreeHour && boolOperate3 {
 		fmt.Println("hit3")
 		boolOperate3 = false
 	}
@@ -158,28 +194,28 @@ func handleTSPRefresh(params ...interface{}) {
 
 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 	insertAnalyticsOperations(stockRanking)
-
 	//Query follow-crossover should be handled by concurrent monitor cycle.
 }
 
-func handleTopStockPull(params ...interface{}) {
-	//
-	//Monitor_Symbol and Analytics_Operation store
-	//
-	var queryResponse = queryTSP()
-	//Top 3 stocks
-	stockList := parseTopStockQuery(queryResponse)
-	topRankList := []Stock{}
-	//Store in symbol table
-	for i, v := range stockList {
-		if i < 3 {
-			topRankList = append(topRankList, v)
-		}
-		insertMonitorSymbol(v)
-	}
-	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
-	insertAnalyticsOperations(stockRanking)
-}
+// func handleTopStockPull(params ...interface{}) {
+// 	//
+// 	//Monitor_Symbol and Analytics_Operation store
+// 	//
+// 	var queryResponse = queryTSP()
+// 	//Top 3 stocks
+// 	stockList := parseTopStockQuery(queryResponse)
+// 	topRankList := []Stock{}
+// 	//Store in symbol table
+// 	for i, v := range stockList {
+// 		if i < 3 {
+// 			topRankList = append(topRankList, v)
+// 		}
+// 		insertMonitorSymbol(v)
+// 	}
+// 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
+// 	insertAnalyticsOperations(stockRanking)
+// }
+
 func handleQueryStockList(params ...interface{}) {
 	//Query monitor_symbol
 	symbolList := selectMonitorSymbol()

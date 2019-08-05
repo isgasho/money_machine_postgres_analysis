@@ -31,16 +31,15 @@ func startCycle(cycleInstance *Cycle) {
 	var i = 0
 	//time cycle
 	var functionToCall = cycleInstance.FunctionToCall
-	var duration int = cycleInstance.AmountOfInterval
-
-	for i < cycleInstance.AmountOfInterval {
+	var duration = cycleInstance.AmountOfInterval
+	var intervalSpeed = cycleInstance.IntervalSpeed
+	fmt.Println("amount", duration)
+	fmt.Println("interval speed", intervalSpeed)
+	for i < duration {
+		fmt.Println("i iteration ", i)
 		if cycleInstance.BooleanOperate {
 			functionToCall(cycleInstance.Params)
-			time.Sleep(time.Duration(duration) * time.Second)
-			if i == 2 {
-				fmt.Println("hit")
-				cancelCycle(cycleInstance)
-			}
+			time.Sleep(time.Duration(intervalSpeed) * time.Second)
 		}
 		i++
 	}
