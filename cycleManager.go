@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+var creationIndex = 0
+
 func test(params ...interface{}) {
 	listVal := reflect.ValueOf(params[0])
 	for i := 0; i < listVal.Len(); i++ {
@@ -15,7 +17,7 @@ func test(params ...interface{}) {
 
 func createCycle(intervalSpeed int, amountOfInterval int, functionToCall fn, params ...interface{}) {
 	var cycleInstance = Cycle{
-		Name:             "1",
+		CreationIndex:    creationIndex,
 		BooleanOperate:   true,
 		IntervalSpeed:    intervalSpeed,
 		AmountOfInterval: amountOfInterval,
@@ -25,6 +27,7 @@ func createCycle(intervalSpeed int, amountOfInterval int, functionToCall fn, par
 
 	// fmt.Println(cycleInstance.Params)
 	cyclePool = append(cyclePool, cycleInstance)
+	creationIndex++
 }
 
 func startCycle(cycleInstance *Cycle) {
@@ -38,8 +41,13 @@ func startCycle(cycleInstance *Cycle) {
 	for i < duration {
 		fmt.Println("i iteration ", i)
 		if cycleInstance.BooleanOperate {
+			fmt.Println("cycleInstance.CreationIndex: ", cycleInstance.CreationIndex)
+			fmt.Println("cycleInstance.BooleanOperate: ", cycleInstance.BooleanOperate)
 			functionToCall(cycleInstance.Params)
 			time.Sleep(time.Duration(intervalSpeed) * time.Second)
+		}
+		if cycleInstance.BooleanOperate == false {
+			break
 		}
 		i++
 	}

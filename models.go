@@ -82,7 +82,7 @@ type TradeInfo struct {
 
 //Cycle management struct
 type Cycle struct {
-	Name             string
+	CreationIndex    int
 	BooleanOperate   bool
 	IntervalSpeed    int
 	AmountOfInterval int

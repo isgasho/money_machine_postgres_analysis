@@ -6,23 +6,12 @@ import (
 	"time"
 )
 
-//Take top 3 stocks store them
-func storeStocks() {
-}
-
-//If stocks don't already exist in monitoring add them.
-func handleMonitoring() {
-}
+var queryCycle Cycle
 
 func checkIfMonitoring() {
 	//Get all stocks being monitored
 	//queryParser
 }
-
-//Handle variant processes and entry processes.
-//Retrieve TSP
-
-//type fn func(params ...interface{})
 
 func processTimelineStart() {
 	createCycle(5, 10000, handleTimelineConditionalTriggers)
@@ -31,57 +20,18 @@ func processTimelineStart() {
 }
 
 func processQueryStockSet() {
-	// var stringListToQuery = []string{"AAPL", "AMD", "GE"}
-	// queryMultiStockPull(stringListToQuery)
-
-	// createCycle(3, 10, test, "dog", "frog", 2, false)
-	// createCycle(3, 10, test, stringListToQuery)
-
-	// createCycle(7, 1, handleTopStockPull, stringListToQuery)
-	// operatingCycle := cyclePool[0]
-	// go startCycle(&operatingCycle)
-
-	// createCycle(7, 1, queryMultiStockPull, stringListToQuery)
-	// operatingCycle := cyclePool[0]
-	// go startCycle(&operatingCycle)
-
-	// queryTestStoreQueryMonitored
-
-	// createCycle(7, 1, queryStoreQueryMonitored, stringListToQuery)
-	// operatingCycle := cyclePool[0]
-	// go startCycle(&operatingCycle)
-
-	// createCycle(7, 1, queryMonitoredStocks, stringListToQuery)
-	// operatingCycle := cyclePool[0]
-	// go startCycle(&operatingCycle)
-
 	fmt.Println("cyclepool", cyclePool)
-	createCycle(3, 10000, handleQueryStockList)
-	operatingCycle := cyclePool[1]
-	go startCycle(&operatingCycle)
-
-	// createCycle(7, 1, handleQueryStockList)
-	// operatingCycle := cyclePool[0]
-	// go startCycle(&operatingCycle)
-
-	// deleteMonitoredStock("Test1")
-	// deleteMonitoredStock("Test2")
-	// deleteMonitoredStock("Test3")
-
-	// fmt.Println(selectAllMonitoringStock())
-}
-func processTSPRefresh() {
-	createCycle(7, 1, handleTSPRefresh)
-	operatingCycle := cyclePool[0]
-	go startCycle(&operatingCycle)
+	createCycle(3, 100000, handleQueryStockList)
+	queryCycle = cyclePool[1]
+	go startCycle(&queryCycle)
 }
 
 // var baselineSecond int
 // var baselineMinute int
 // var calculatingMinute int
 
-var conditionOneMinute = 45
-var conditionOneHour = 7
+var conditionOneMinute = 42
+var conditionOneHour = 12
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
@@ -134,8 +84,8 @@ var conditionSeventeenHour = 15
 var conditionEighteenMinute = 0
 var conditionEighteenHour = 16
 
-var conditionNineteenMinute = 1
-var conditionNineteenHour = 16
+var conditionNineteenMinute = 43
+var conditionNineteenHour = 12
 
 var boolOperate1 = true
 var boolOperate2 = true
@@ -192,7 +142,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		boolOperate1 = false
 		boolOperate19 = true
 		handleTSPRefresh()
-		handleQueryStockList()
+		processQueryStockSet()
 	}
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
@@ -280,6 +230,15 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	}
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
+		boolOperate19 = false
+		handleDayReset()
+		fmt.Println("length: ", len(cyclePool))
+		// operatingCycle := &cyclePool[1]
+		// operatingCycle.BooleanOperate = false
+		// operatingCycle := &cyclePool[1]
+		queryCycle.BooleanOperate = false
+
+		// cancelCycle(operatingCycle)
 	}
 }
 

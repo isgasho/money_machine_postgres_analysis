@@ -124,7 +124,7 @@ func insertStock(stockEntry Stock) {
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
-	fmt.Println("stockID: ", stock.ID) //, stock.Symbol, stock.Bid)
+	// fmt.Println("stockID: ", stock.ID) //, stock.Symbol, stock.Bid)
 }
 
 func setStock() {
