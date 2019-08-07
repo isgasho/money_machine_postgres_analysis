@@ -76,25 +76,87 @@ func processTSPRefresh() {
 	go startCycle(&operatingCycle)
 }
 
-var baselineSecond int
-var baselineMinute int
-var calculatingMinute int
+// var baselineSecond int
+// var baselineMinute int
+// var calculatingMinute int
 
-var conditionOneSecond int
-var conditionOneMinute int
-var conditionOneHour int
+var conditionOneMinute = 45
+var conditionOneHour = 7
 
-var conditionTwoSecond int
-var conditionTwoMinute int
-var conditionTwoHour int
+var conditionTwoMinute = 0
+var conditionTwoHour = 8
 
-var conditionThreeSecond int
-var conditionThreeMinute int
-var conditionThreeHour int
+var conditionThreeMinute = 30
+var conditionThreeHour = 8
+
+var conditionFourMinute = 0
+var conditionFourHour = 9
+
+var conditionFiveMinute = 30
+var conditionFiveHour = 9
+
+var conditionSixMinute = 0
+var conditionSixHour = 10
+
+var conditionSevenMinute = 30
+var conditionSevenHour = 10
+
+var conditionEightMinute = 0
+var conditionEightHour = 11
+
+var conditionNineMinute = 30
+var conditionNineHour = 11
+
+var conditionTenMinute = 0
+var conditionTenHour = 12
+
+var conditionElevenMinute = 30
+var conditionElevenHour = 12
+
+var conditionTwelveMinute = 0
+var conditionTwelveHour = 13
+
+var conditionThirteenMinute = 30
+var conditionThirteenHour = 13
+
+var conditionFourteenMinute = 0
+var conditionFourteenHour = 14
+
+var conditionFifteenMinute = 30
+var conditionFifteenHour = 14
+
+var conditionSixteenMinute = 0
+var conditionSixteenHour = 15
+
+var conditionSeventeenMinute = 30
+var conditionSeventeenHour = 15
+
+var conditionEighteenMinute = 0
+var conditionEighteenHour = 16
+
+var conditionNineteenMinute = 1
+var conditionNineteenHour = 16
 
 var boolOperate1 = true
 var boolOperate2 = true
 var boolOperate3 = true
+var boolOperate4 = true
+var boolOperate5 = true
+var boolOperate6 = true
+var boolOperate7 = true
+var boolOperate8 = true
+var boolOperate9 = true
+var boolOperate10 = true
+var boolOperate11 = true
+var boolOperate12 = true
+var boolOperate13 = true
+var boolOperate14 = true
+var boolOperate15 = true
+var boolOperate16 = true
+var boolOperate17 = true
+var boolOperate18 = true
+var boolOperate19 = true
+
 var timelineOperationIndex = 0
 
 func handleTimelineConditionalTriggers(params ...interface{}) {
@@ -104,46 +166,121 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 
 	if timelineOperationIndex == 0 {
-		baselineMinute = currentTime.Minute()
-		// calculatingMinute = baselineMinute + 1
+		// baselineMinute = currentTime.Minute()
+		// // calculatingMinute = baselineMinute + 1
 
-		conditionOneSecond = 5
-		conditionOneMinute = baselineMinute + 1
-		conditionOneHour = currentTime.Hour()
+		// conditionOneSecond = 5
+		// conditionOneMinute = baselineMinute + 1
+		// conditionOneHour = currentTime.Hour()
 
-		conditionTwoSecond = 25
-		conditionTwoMinute = baselineMinute + 1
-		conditionTwoHour = currentTime.Hour()
+		// conditionTwoSecond = 25
+		// conditionTwoMinute = baselineMinute + 1
+		// conditionTwoHour = currentTime.Hour()
 
 		// conditionThreeSecond = 25
 		// conditionThreeMinute = baselineMinute + 1
 		// conditionThreeHour = currentTime.Hour()
-
 		timelineOperationIndex++
 	}
+
 	//
 	//Timeline events
 	//
 	//Initial monitoring pool
-	if currentTime.Second() >= conditionOneSecond && currentTime.Minute() >= conditionOneMinute && currentTime.Hour() >= conditionOneHour && boolOperate1 {
-		fmt.Println("hit1")
+	if currentTime.Minute() == conditionOneMinute && currentTime.Hour() == conditionOneHour && boolOperate1 {
+		fmt.Println("hit1 init operations")
 		boolOperate1 = false
+		boolOperate19 = true
 		handleTSPRefresh()
-		// processQueryStockSet()
-		// fmt.Println(conditionOneSecond)
+		handleQueryStockList()
 	}
-	if currentTime.Second() >= conditionTwoSecond && currentTime.Minute() >= conditionTwoMinute && currentTime.Hour() >= conditionTwoHour && boolOperate2 {
+	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
 		boolOperate2 = false
-		// handleTSPRefresh()
-		// handleQueryStockList()
+		handleTSPRefresh()
 	}
-	// if currentTime.Second() >= conditionThreeSecond && currentTime.Minute() >= conditionThreeMinute && currentTime.Hour() >= conditionThreeHour && boolOperate3 {
-	// 	fmt.Println("hit3")
-	// 	boolOperate3 = false
-	// 	handleTSPRefresh()
-	// }
-
+	if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
+		fmt.Println("hit3")
+		boolOperate3 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
+		fmt.Println("hit4")
+		boolOperate4 = false
+	}
+	if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate5 {
+		fmt.Println("hit5")
+		boolOperate5 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionSixMinute && currentTime.Hour() == conditionSixHour && boolOperate6 {
+		fmt.Println("hit6")
+		boolOperate6 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionSevenMinute && currentTime.Hour() == conditionSevenHour && boolOperate7 {
+		fmt.Println("hit7")
+		boolOperate7 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionEightMinute && currentTime.Hour() == conditionEightHour && boolOperate8 {
+		fmt.Println("hit8")
+		boolOperate8 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionNineMinute && currentTime.Hour() == conditionNineHour && boolOperate9 {
+		fmt.Println("hit9")
+		boolOperate9 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionTenMinute && currentTime.Hour() == conditionTenHour && boolOperate10 {
+		fmt.Println("hit10")
+		boolOperate10 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionElevenMinute && currentTime.Hour() == conditionElevenHour && boolOperate11 {
+		fmt.Println("hit11")
+		boolOperate11 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionTwelveMinute && currentTime.Hour() == conditionTwelveHour && boolOperate12 {
+		fmt.Println("hit12")
+		boolOperate12 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionThirteenMinute && currentTime.Hour() == conditionThirteenHour && boolOperate13 {
+		fmt.Println("hit13")
+		boolOperate13 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionFourteenMinute && currentTime.Hour() == conditionFourteenHour && boolOperate14 {
+		fmt.Println("hit14")
+		boolOperate14 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionFifteenMinute && currentTime.Hour() == conditionFifteenHour && boolOperate15 {
+		fmt.Println("hit15")
+		boolOperate15 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionSixteenMinute && currentTime.Hour() == conditionSixteenHour && boolOperate16 {
+		fmt.Println("hit16")
+		boolOperate16 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionSeventeenMinute && currentTime.Hour() == conditionSeventeenHour && boolOperate17 {
+		fmt.Println("hit17")
+		boolOperate17 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionEighteenMinute && currentTime.Hour() == conditionEighteenHour && boolOperate18 {
+		fmt.Println("hit18")
+		boolOperate18 = false
+		handleTSPRefresh()
+	}
+	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
+		fmt.Println("hit19")
+	}
 }
 
 func handleTSPRefresh(params ...interface{}) {
@@ -175,16 +312,10 @@ func handleTSPRefresh(params ...interface{}) {
 				boolStockMonitorMap[v.Symbol] = true
 				break
 			}
-
-			// fmt.Println(i1)
-			// fmt.Println(len(monitorList))
-			// fmt.Println((len(monitorList) - 1))
-
 			if i1 == (len(monitorList) - 1) {
-				fmt.Println("last symbol ", v.Symbol)
+				// fmt.Println("last symbol ", v.Symbol)
 				boolStockMonitorMap[v.Symbol] = false
 			}
-			// i1++
 		}
 		i++
 	}
@@ -201,7 +332,7 @@ func handleTSPRefresh(params ...interface{}) {
 
 	for k, v := range boolStockMonitorMap {
 		// fmt.Printf("key[%s] value[%s]\n", k, v)
-		if v {
+		if v == false {
 			insertMonitorSymbol(k, false)
 		}
 	}
@@ -214,25 +345,6 @@ func handleTSPRefresh(params ...interface{}) {
 	insertAnalyticsOperations(stockRanking)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
 }
-
-// func handleTopStockPull(params ...interface{}) {
-// 	//
-// 	//Monitor_Symbol and Analytics_Operation store
-// 	//
-// 	var queryResponse = queryTSP()
-// 	//Top 3 stocks
-// 	stockList := parseTopStockQuery(queryResponse)
-// 	topRankList := []Stock{}
-// 	//Store in symbol table
-// 	for i, v := range stockList {
-// 		if i < 3 {
-// 			topRankList = append(topRankList, v)
-// 		}
-// 		insertMonitorSymbol(v)
-// 	}
-// 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
-// 	insertAnalyticsOperations(stockRanking)
-// }
 
 func handleQueryStockList(params ...interface{}) {
 	//Query monitor_symbol
@@ -247,7 +359,7 @@ func handleQueryStockList(params ...interface{}) {
 		formattedSymbolList = append(formattedSymbolList, v)
 		i++
 	}
-	fmt.Println(formattedSymbolList)
+	// fmt.Println(formattedSymbolList)
 
 	//Form query to Node -> Brokerage
 	queryResponse := queryMultiStockPull(formattedSymbolList)
@@ -255,15 +367,28 @@ func handleQueryStockList(params ...interface{}) {
 
 	//Store Stocks in DB
 	for i, v := range stockList {
-		fmt.Println(v.Symbol)
 		insertStock(v)
 		i++
 	}
 }
 
-//Iteration, subjectable to cancelling.
-
-//Retrieve monitor stock list
-//Stock symbol query list.
-
-//Store Stock
+func handleDayReset() {
+	boolOperate1 = true
+	boolOperate2 = true
+	boolOperate3 = true
+	boolOperate4 = true
+	boolOperate5 = true
+	boolOperate6 = true
+	boolOperate7 = true
+	boolOperate8 = true
+	boolOperate9 = true
+	boolOperate10 = true
+	boolOperate11 = true
+	boolOperate12 = true
+	boolOperate13 = true
+	boolOperate14 = true
+	boolOperate15 = true
+	boolOperate16 = true
+	boolOperate17 = true
+	boolOperate18 = true
+}

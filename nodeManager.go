@@ -670,7 +670,7 @@ func queryMultiStockPull(symbolList []string) string {
 
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
-	fmt.Println(response)
+	// fmt.Println(response)
 
 	// response := `<?xml version="1.0" encoding="UTF-8"?><response id="2d8f6fce-8ac2-459c-b3cd-6d32775d7792"><elapsedtime>0</elapsedtime>
 	// <quotes>
