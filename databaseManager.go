@@ -306,7 +306,7 @@ func deleteMonitoredStock(symbolToDel string) {
 	fmt.Println(count)
 }
 
-func insertMonitorSymbol(stockEntry Stock) {
+func insertMonitorSymbol(symbol string, userInput bool) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -323,7 +323,7 @@ func insertMonitorSymbol(stockEntry Stock) {
 		`
 	var stock Stock
 
-	row := db.QueryRow(sqlStatement, stockEntry.Symbol, stockEntry.UserInputed)
+	row := db.QueryRow(sqlStatement, symbol, userInput)
 	err1 := row.Scan(&stock.Symbol)
 	if err1 != nil {
 		fmt.Println("Create Error 2")

@@ -111,20 +111,16 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		conditionOneMinute = baselineMinute + 1
 		conditionOneHour = currentTime.Hour()
 
-		conditionTwoSecond = 15
+		conditionTwoSecond = 25
 		conditionTwoMinute = baselineMinute + 1
 		conditionTwoHour = currentTime.Hour()
 
-		conditionThreeSecond = 25
-		conditionThreeMinute = baselineMinute + 1
-		conditionThreeHour = currentTime.Hour()
+		// conditionThreeSecond = 25
+		// conditionThreeMinute = baselineMinute + 1
+		// conditionThreeHour = currentTime.Hour()
 
 		timelineOperationIndex++
 	}
-
-	// fmt.Println(baselineMinute)
-	// fmt.Println(calculatingMinute)
-
 	//
 	//Timeline events
 	//
@@ -142,10 +138,11 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		// handleTSPRefresh()
 		// handleQueryStockList()
 	}
-	if currentTime.Second() >= conditionThreeSecond && currentTime.Minute() >= conditionThreeMinute && currentTime.Hour() >= conditionThreeHour && boolOperate3 {
-		fmt.Println("hit3")
-		boolOperate3 = false
-	}
+	// if currentTime.Second() >= conditionThreeSecond && currentTime.Minute() >= conditionThreeMinute && currentTime.Hour() >= conditionThreeHour && boolOperate3 {
+	// 	fmt.Println("hit3")
+	// 	boolOperate3 = false
+	// 	handleTSPRefresh()
+	// }
 
 }
 
@@ -167,27 +164,48 @@ func handleTSPRefresh(params ...interface{}) {
 	//Query monitorSymbol
 	monitorList := selectMonitorSymbol()
 
-	boolStockMonitorList := []bool{false, false, false}
+	boolStockMonitorMap := make(map[string]bool)
 
-	for i, v := range topRankList {
+	fmt.Println("hit before stocklist")
+	// for i, v := range topRankList {
+	for i, v := range stockList {
 		for i1, v1 := range monitorList {
 			if v.Symbol == v1 {
 				fmt.Println(v.Symbol)
-				boolStockMonitorList[i] = true
+				boolStockMonitorMap[v.Symbol] = true
+				break
 			}
-			i1++
+
+			// fmt.Println(i1)
+			// fmt.Println(len(monitorList))
+			// fmt.Println((len(monitorList) - 1))
+
+			if i1 == (len(monitorList) - 1) {
+				fmt.Println("last symbol ", v.Symbol)
+				boolStockMonitorMap[v.Symbol] = false
+			}
+			// i1++
 		}
 		i++
 	}
 	// fmt.Println("this are", boolStockMonitorList)
 
 	//Insert symbol into monitor table if it doesn't exist there
-	for i, v := range boolStockMonitorList {
-		if v == false {
-			// fmt.Println(topRankList[i].Symbol)
-			insertMonitorSymbol(topRankList[i])
+	// for i, v := range boolStockMonitorMap {
+	// 	if v == false {
+	// 		// fmt.Println(topRankList[i].Symbol)
+	// 		fmt
+	// 		insertMonitorSymbol(topRankList[i])
+	// 	}
+	// }
+
+	for k, v := range boolStockMonitorMap {
+		// fmt.Printf("key[%s] value[%s]\n", k, v)
+		if v {
+			insertMonitorSymbol(k, false)
 		}
 	}
+
 	// deleteMonitorSymbol("CMG")
 	// deleteMonitorSymbol("CHE")
 	// deleteMonitorSymbol("GRUB")

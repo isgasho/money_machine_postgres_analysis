@@ -14,21 +14,10 @@ func queryTSP() string {
 	json := `{
 		"request_type": "top_stock_pull"
 		}`
-	// "data": [
-	// `
-
-	// for i, v := range symbolList {
-	// 	json += "\"" + v + "\"" //,"
-	// 	if i != (len(symbolList) - 1) {
-	// 		json += ","
-	// 	}
-	// }
-
-	// json = json + `]}`
-
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
-	// fmt.Println(response)
+
+	fmt.Println(response)
 
 	// response := `<?xml version="1.0" encoding="UTF-8"?>
 	// <response id="58d6662f-2410-4e43-ba2b-5298e22c5aae">
@@ -116,7 +105,7 @@ func queryTSP() string {
 	//             <pchg>3.70</pchg>
 	//             <pcls>779.860</pcls>
 	//             <rank>1</rank>
-	//             <symbol>CMG</symbol>
+	//             <symbol>TOP</symbol>
 	//             <vl>922968</vl>
 	//         </quote>
 	//         <quote>
@@ -127,7 +116,7 @@ func queryTSP() string {
 	//             <pchg>2.64</pchg>
 	//             <pcls>386.01</pcls>
 	//             <rank>2</rank>
-	//             <symbol>CHE</symbol>
+	//             <symbol>BOT</symbol>
 	//             <vl>140181</vl>
 	//         </quote>
 	//         <quote>
@@ -138,7 +127,7 @@ func queryTSP() string {
 	//             <pchg>6.87</pchg>
 	//             <pcls>74.64</pcls>
 	//             <rank>3</rank>
-	//             <symbol>GRUB</symbol>
+	//             <symbol>LEFT</symbol>
 	//             <vl>4742848</vl>
 	//         </quote>
 	//         <quote>
