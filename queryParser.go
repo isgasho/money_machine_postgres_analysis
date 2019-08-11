@@ -372,6 +372,23 @@ func parseTopStockQuery(queryString string) []Stock {
 	return stockList
 }
 
+func parseDowWebscrape(queryString string) (string, string, string) {
+	currentDowValueQuery1 := strings.Split(queryString, "st_3lrv4Jo st_8u0ePN3 st_2oUi2Vb st_31YdEUQ st_8u0ePN3 st_2mehCkH st_3kXJm4P")[1]
+	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "</span>")[0]
+	currentDowValue := strings.Split(currentDowValueQuery2, " ")[1]
+
+	pointsChangedQuery1 := strings.Split(queryString, "st_3E7muvq st_8u0ePN3 st_3kXJm4P st_2KQW5_v st_37VuZWc")[1]
+	pointsChangedQuery2 := strings.Split(pointsChangedQuery1, "</path>")[1]
+	pointsChangedQuery3 := strings.Split(pointsChangedQuery2, "</span>")[1]
+	pointsChanged := strings.Split(pointsChangedQuery3, "\\n")[0]
+	percentageChange := strings.TrimSpace(strings.Split(pointsChangedQuery3, "\\n")[1])
+
+	s1 := strings.Replace(percentageChange, "(", "", -1)
+	s2 := strings.Replace(s1, ")", "", -1)
+	percentageChange = strings.Replace(s2, "%", "", -1)
+	return currentDowValue, pointsChanged, percentageChange
+}
+
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>
 // <quotes>
 //   <quotetype>Real Time -  market data real time, National Best Bid and Offer</quotetype>

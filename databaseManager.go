@@ -72,7 +72,7 @@ func selectNews() {
 func deleteNews() {
 }
 
-func insertDow(dowEntry Dow) {
+func insertDow(currentDowValue string, pointsChanged string, percentageChange string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -83,17 +83,17 @@ func insertDow(dowEntry Dow) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO news (day_id, news_info)
-		VALUES ($1, $2)
-		RETURNING id, day_id, created_at, news_info
+		INSERT INTO dow (current_dow_value, points_changed, percentage_change)
+		VALUES ($1, $2, $3)
+		RETURNING id
 		`
 	var dow Dow
-	row := db.QueryRow(sqlStatement, dowEntry.DayID, dowEntry.DowInfo)
-	err1 := row.Scan(&dow.ID, &dow.DayID, &dow.CreatedAt, &dow.DowInfo)
+	row := db.QueryRow(sqlStatement, currentDowValue, pointsChanged, percentageChange)
+	err1 := row.Scan(&dow.ID)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
-	fmt.Println(dow.ID, dow.DayID, dow.CreatedAt, dow.DowInfo)
+	fmt.Println(dow.ID)
 }
 func setDow() {
 }

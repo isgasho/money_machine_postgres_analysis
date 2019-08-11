@@ -89,3 +89,8 @@ type Cycle struct {
 	FunctionToCall   fn
 	Params           interface{}
 }
+
+// type BrokerageQuery struct {
+// 	RequestType string
+// 	Name        string
+// }

@@ -114,6 +114,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Hour())
 	fmt.Println(currentTime.Minute())
 	fmt.Println(currentTime.Second())
+	fmt.Println(currentTime.Date())
 
 	if timelineOperationIndex == 0 {
 		// baselineMinute = currentTime.Minute()

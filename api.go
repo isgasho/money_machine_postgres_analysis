@@ -3,20 +3,10 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"time"
 )
-
-type JSONObject struct {
-	ID        int
-	Age       int
-	FirstName string
-}
-
-type BrokerageQuery struct {
-	RequestType string
-	Name        string
-}
 
 var isTimeMonitoringLoop bool
 
@@ -27,14 +17,25 @@ func coolPage(w http.ResponseWriter, r *http.Request) {
 
 func stockQuery(rw http.ResponseWriter, req *http.Request) {
 	decoder := json.NewDecoder(req.Body)
-	var brokerageQuery BrokerageQuery
-	err := decoder.Decode(&brokerageQuery)
+	// var brokerageQuery BrokerageQuery
+	var requestCase string
+	err := decoder.Decode(&requestCase)
 	if err != nil {
 		panic(err)
 		fmt.Println("Stock error1")
 	}
-	fmt.Println(brokerageQuery.RequestType)
+	fmt.Println(requestCase)
+}
 
+func databaseQuery(rw http.ResponseWriter, req *http.Request) {
+	// decoder := json.NewDecoder(req.Body)
+	// // var brokerageQuery BrokerageQuery
+	// err := decoder.Decode(&brokerageQuery)
+	// if err != nil {
+	// 	panic(err)
+	// 	fmt.Println("Stock error1")
+	// }
+	// fmt.Println(brokerageQuery.RequestType)
 }
 
 // func create(w http.ResponseWriter, r *http.Request) {
@@ -65,8 +66,8 @@ func handleRequests() {
 	// http.HandleFunc("/update", update)
 	// http.HandleFunc("/delete", delete)
 
-	// http.HandleFunc("/stockQuery", stockQuery)
-	// log.Fatal(http.ListenAndServe(":10000", nil))
+	http.HandleFunc("/databaseQuery", databaseQuery)
+	log.Fatal(http.ListenAndServe(":10000", nil))
 
 	// timein := time.Now().Local().AddDate(Hours, Mins, Sec)
 	// fmt.Println(timein)
@@ -869,7 +870,14 @@ func main() {
 	//processMonitorStockSetQuery
 
 	// processTSPRefresh()
-	processTimelineStart()
+	// processTimelineStart()
+	// checkIfHoliday()
+	// performWebscrape()
+	response := queryWebscrape()
+
+	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
+	insertDow(currentDowValue, pointsChanged, percentageChange)
+
 	fmt.Scanln()
 	fmt.Println("done")
 }
