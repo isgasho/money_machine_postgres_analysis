@@ -15,22 +15,6 @@ func queryWebscrape() string {
 		}`
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
-
-	// outFile, err := os.Create("output.html")
-	// check(err)
-	// defer outFile.Close()
-
-	// Copy data from HTTP response to file
-	// _, err = io.Copy(outFile, response)
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
-	// n3, err := outFile.WriteString(response)
-	// fmt.Printf("wrote %d bytes\n", n3)
-
-	// fmt.Println(response)
-
 	return response
 }
 
@@ -1610,4 +1594,15 @@ func queryMonitoredStocks(params ...interface{}) {
 	// 	insertStock(v)
 	// 	i++
 	// }
+}
+
+func queryIsBrokerageResponding() string {
+	json := `
+	{
+		"request_type": "query_stock"
+	}
+	`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
 }

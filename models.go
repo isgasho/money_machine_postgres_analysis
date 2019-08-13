@@ -8,11 +8,21 @@ var dayID = 3
 
 //User object for DB
 type User struct {
-	ID        int
-	Age       int
-	FirstName string
-	LastName  string
-	Email     string
+	ID          int
+	Age         int
+	FirstName   string
+	LastName    string
+	Email       string
+	RequestType string
+}
+
+type DatabaseQuery struct {
+	RequestType string
+	Data        string
+}
+
+type DatabaseResponse struct {
+	Data string
 }
 
 type Day struct {
@@ -90,7 +100,7 @@ type Cycle struct {
 	Params           interface{}
 }
 
-// type BrokerageQuery struct {
-// 	RequestType string
-// 	Name        string
-// }
+type BrokerageQuery struct {
+	request_type string
+	Name         string
+}

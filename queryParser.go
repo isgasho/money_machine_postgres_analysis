@@ -165,6 +165,30 @@ func parseStockSetQuery(queryString string) []Stock {
 	return stockList
 }
 
+func parseAskTimeQuery(queryString string) string {
+	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
+	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotetype>")[1]
+	splitDataQuery3 := strings.Split(splitDataQuery2, "</quotes>")[0]
+	splitDataListQuery4 := strings.Split(splitDataQuery3, "<quote>")
+
+	for i := range splitDataListQuery4 {
+		if i == 0 {
+			splitDataListQuery4 = append(splitDataListQuery4[:i], splitDataListQuery4[i+1:]...)
+			break
+		}
+	}
+	parseList := []string{}
+	for i, v := range splitDataListQuery4 {
+		i++
+		stringParsed := strings.Split(v, "</quote>")[0]
+		parseList = append(parseList, stringParsed)
+	}
+	askTimeUnparsed := strings.Split(parseList[0], "<ask_time>")[1]
+	askTime := strings.Split(askTimeUnparsed, "</ask_time>")[0]
+
+	return askTime
+}
+
 func parseMonitoredStockQuery(queryString string) []Stock {
 	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
 	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotetype>")[1]

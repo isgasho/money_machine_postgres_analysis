@@ -20,18 +20,35 @@ func processTimelineStart() {
 }
 
 func processQueryStockSet() {
-	fmt.Println("cyclepool", cyclePool)
-	createCycle(3, 100000, handleQueryStockList)
-	queryCycle = cyclePool[1]
-	go startCycle(&queryCycle)
+	if initialOperationPerformed == false {
+		createCycle(3, 100000, handleQueryStockList)
+		queryCycle = cyclePool[1]
+		go startCycle(&queryCycle)
+	}
+	if initialOperationPerformed == true {
+		go startCycle(&queryCycle)
+	}
 }
 
-// var baselineSecond int
-// var baselineMinute int
-// var calculatingMinute int
+func processTSPRefresh() {
+	go handleTSPRefresh()
+}
 
-var conditionOneMinute = 42
-var conditionOneHour = 12
+func processDowWebscrape() {
+	go handleDowWebscrape()
+}
+
+var checkIsMarketOpenMinute = 45
+var checkIsMarketOpenHour = 7
+
+// var checkIsMarketOpenFollowUpMinute = 46
+// var checkIsMarketOpenFollowUpHour = 7
+
+var conditionOneMinute = 46
+var conditionOneHour = 7
+
+// var testOneMinute = 42
+// var testOneHour = 11
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
@@ -84,9 +101,11 @@ var conditionSeventeenHour = 15
 var conditionEighteenMinute = 0
 var conditionEighteenHour = 16
 
-var conditionNineteenMinute = 43
-var conditionNineteenHour = 12
+var conditionNineteenMinute = 1
+var conditionNineteenHour = 16
 
+var checkIsMarketOpenBool = true
+var checkIsMarketOpenFollowUpBool = true
 var boolOperate1 = true
 var boolOperate2 = true
 var boolOperate3 = true
@@ -107,7 +126,7 @@ var boolOperate17 = true
 var boolOperate18 = true
 var boolOperate19 = true
 
-var timelineOperationIndex = 0
+var initialOperationPerformed = false
 
 func handleTimelineConditionalTriggers(params ...interface{}) {
 	currentTime := time.Now()
@@ -116,130 +135,157 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 	fmt.Println(currentTime.Date())
 
-	if timelineOperationIndex == 0 {
-		// baselineMinute = currentTime.Minute()
-		// // calculatingMinute = baselineMinute + 1
-
-		// conditionOneSecond = 5
-		// conditionOneMinute = baselineMinute + 1
-		// conditionOneHour = currentTime.Hour()
-
-		// conditionTwoSecond = 25
-		// conditionTwoMinute = baselineMinute + 1
-		// conditionTwoHour = currentTime.Hour()
-
-		// conditionThreeSecond = 25
-		// conditionThreeMinute = baselineMinute + 1
-		// conditionThreeHour = currentTime.Hour()
-		timelineOperationIndex++
-	}
-
 	//
 	//Timeline events
 	//
-	//Initial monitoring pool
+
+	//Conditional operate
+	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
+		checKIsBrokerageResponding()
+
+		if isMarketClosed == false {
+			setTimelineOperationsFalse()
+		}
+		checkIsMarketOpenBool = false
+		boolOperate19 = true
+	}
+	//
+	// if currentTime.Minute() == checkIsMarketOpenFollowUpMinute && currentTime.Hour() == checkIsMarketOpenFollowUpHour && checkIsMarketOpenFollowUpBool {
+	// 	// if isMarketClosed == false {
+
+	// 	// }
+	// 	checkIsMarketOpenBool = true
+	// 	checkIsMarketOpenFollowUpBool = false
+	// }
+
+	//Initiate monitoring pool query on cycle
+	//Periodic TSP refresh
 	if currentTime.Minute() == conditionOneMinute && currentTime.Hour() == conditionOneHour && boolOperate1 {
 		fmt.Println("hit1 init operations")
+		queryCycle.BooleanOperate = true
 		boolOperate1 = false
-		boolOperate19 = true
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 		processQueryStockSet()
+		initialOperationPerformed = true
 	}
+	// if currentTime.Minute() == testOneMinute && currentTime.Hour() == testOneHour && boolOperate1 {
+	// 	fmt.Println("hit1 init operations")
+	// 	queryCycle.BooleanOperate = true
+	// 	boolOperate1 = false
+	// 	boolOperate19 = true
+	// 	handleTSPRefresh()
+	// 	processQueryStockSet()
+	// 	initialOperationPerformed = true
+	// }
+
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
 		boolOperate2 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
 		fmt.Println("hit3")
 		boolOperate3 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
 		boolOperate4 = false
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate5 {
 		fmt.Println("hit5")
 		boolOperate5 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionSixMinute && currentTime.Hour() == conditionSixHour && boolOperate6 {
 		fmt.Println("hit6")
 		boolOperate6 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionSevenMinute && currentTime.Hour() == conditionSevenHour && boolOperate7 {
 		fmt.Println("hit7")
 		boolOperate7 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionEightMinute && currentTime.Hour() == conditionEightHour && boolOperate8 {
 		fmt.Println("hit8")
 		boolOperate8 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionNineMinute && currentTime.Hour() == conditionNineHour && boolOperate9 {
 		fmt.Println("hit9")
 		boolOperate9 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionTenMinute && currentTime.Hour() == conditionTenHour && boolOperate10 {
 		fmt.Println("hit10")
 		boolOperate10 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionElevenMinute && currentTime.Hour() == conditionElevenHour && boolOperate11 {
 		fmt.Println("hit11")
 		boolOperate11 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionTwelveMinute && currentTime.Hour() == conditionTwelveHour && boolOperate12 {
 		fmt.Println("hit12")
 		boolOperate12 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionThirteenMinute && currentTime.Hour() == conditionThirteenHour && boolOperate13 {
 		fmt.Println("hit13")
 		boolOperate13 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionFourteenMinute && currentTime.Hour() == conditionFourteenHour && boolOperate14 {
 		fmt.Println("hit14")
 		boolOperate14 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionFifteenMinute && currentTime.Hour() == conditionFifteenHour && boolOperate15 {
 		fmt.Println("hit15")
 		boolOperate15 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionSixteenMinute && currentTime.Hour() == conditionSixteenHour && boolOperate16 {
 		fmt.Println("hit16")
 		boolOperate16 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionSeventeenMinute && currentTime.Hour() == conditionSeventeenHour && boolOperate17 {
 		fmt.Println("hit17")
 		boolOperate17 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionEighteenMinute && currentTime.Hour() == conditionEighteenHour && boolOperate18 {
 		fmt.Println("hit18")
 		boolOperate18 = false
-		handleTSPRefresh()
+		processTSPRefresh()
+		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
 		boolOperate19 = false
-		handleDayReset()
-		fmt.Println("length: ", len(cyclePool))
-		// operatingCycle := &cyclePool[1]
-		// operatingCycle.BooleanOperate = false
-		// operatingCycle := &cyclePool[1]
 		queryCycle.BooleanOperate = false
-
-		// cancelCycle(operatingCycle)
+		handleDayReset()
 	}
 }
 
@@ -332,6 +378,12 @@ func handleQueryStockList(params ...interface{}) {
 	}
 }
 
+func handleDowWebscrape(params ...interface{}) {
+	response := queryWebscrape()
+	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
+	insertDow(currentDowValue, pointsChanged, percentageChange)
+}
+
 func handleDayReset() {
 	boolOperate1 = true
 	boolOperate2 = true
@@ -351,4 +403,27 @@ func handleDayReset() {
 	boolOperate16 = true
 	boolOperate17 = true
 	boolOperate18 = true
+	checkIsMarketOpenBool = true
+	isMarketClosed = false
+}
+
+func setTimelineOperationsFalse() {
+	boolOperate1 = false
+	boolOperate2 = false
+	boolOperate3 = false
+	boolOperate4 = false
+	boolOperate5 = false
+	boolOperate6 = false
+	boolOperate7 = false
+	boolOperate8 = false
+	boolOperate9 = false
+	boolOperate10 = false
+	boolOperate11 = false
+	boolOperate12 = false
+	boolOperate13 = false
+	boolOperate14 = false
+	boolOperate15 = false
+	boolOperate16 = false
+	boolOperate17 = false
+	boolOperate18 = false
 }
