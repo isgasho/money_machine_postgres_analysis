@@ -17,12 +17,18 @@ type User struct {
 }
 
 type DatabaseQuery struct {
-	RequestType string
-	Data        string
+	RequestType  string
+	Data         string
+	RangeForData string
 }
 
 type DatabaseResponse struct {
-	Data string
+	Data      string
+	StockList []Stock
+}
+
+type DatabaseStockListResponse struct {
+	StockList []Stock
 }
 
 type Day struct {

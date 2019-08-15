@@ -98,6 +98,27 @@ func insertDow(currentDowValue string, pointsChanged string, percentageChange st
 func setDow() {
 }
 func selectDow() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO dow (current_dow_value, points_changed, percentage_change)
+		VALUES ($1, $2, $3)
+		RETURNING id
+		`
+	var dow Dow
+	row := db.QueryRow(sqlStatement)
+	err1 := row.Scan(&dow.ID)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+	fmt.Println(dow.ID)
 }
 func deleteDow() {
 }
@@ -129,7 +150,8 @@ func insertStock(stockEntry Stock) {
 
 func setStock() {
 }
-func selectAllStock(symbolToSearch string) {
+
+func selectAllStockOfSymbol(symbolToSearch string) []Stock {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -142,57 +164,19 @@ func selectAllStock(symbolToSearch string) {
 
 	rows, err1 := db.Query("SELECT id, symbol, last FROM stock WHERE symbol=$1", symbolToSearch)
 	if err1 != nil {
-		// log.Fatal(err)
 		fmt.Println(err1)
 	}
 	defer rows.Close()
-	// idList := make([]string, 0)
-	// symbolList := make([]string, 0)
+	stockList := make([]Stock, 0)
 
 	for rows.Next() {
-		var id string
-		var symbol string
-		var last string
-		if err2 := rows.Scan(&id, &symbol, &last); err2 != nil {
-			// Check for a scan error.
-			// Query rows will be closed with defer.
-			// log.Fatal(err)
+		var stock Stock
+		if err2 := rows.Scan(&stock.ID, &stock.Symbol, &stock.Last); err2 != nil {
 			fmt.Println("err2")
 		}
-		fmt.Println(id, symbol, last)
-		// idList = append(idList, id)
-		// symbolList = append(symbolList, id)
-		// fmt.Println(idList)
+		stockList = append(stockList, stock)
 	}
-
-	// sqlStatement := `SELECT id FROM stock WHERE symbol=$1;`
-
-	// // var stock Stock
-	// rows, err1 := db.Query(sqlStatement, symbolToSearch)
-	// if err1 != nil {
-	// 	// handle this error better than this
-	// 	// panic(err)
-	// 	fmt.Println("Select all error1")
-	// }
-	// for rows.Next() {
-	// 	var id int
-	// 	// var Symbol string
-	// 	err2 := rows.Scan(id)
-	// 	if err2 != nil {
-	// 		// handle this error
-	// 		// panic(err)
-	// 		print("Error 2")
-	// 	}
-	// 	fmt.Println(id)
-	// }
-
-	// var stock Stock
-	// row := db.QueryRow(sqlStatement, symbolToSearch)
-	// err1 := row.Scan(&stock.ID, &stock.DayID)
-	// if err1 != nil {
-	// 	fmt.Println("Read Error 2")
-	// }
-	// fmt.Println(stock.ID, stock.DayID)
+	return stockList
 }
 
 func deleteStock(symbolToDel string) {
@@ -217,94 +201,68 @@ func deleteStock(symbolToDel string) {
 	fmt.Println(count)
 }
 
-func selectMonitoringStock() []string {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
+// func selectMonitoringStock() []string {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
 
-	// sqlStatement := `SELECT symbol FROM stock WHERE monitoring =$1;`
-	// var stock Stock
-	rows, err1 := db.Query("SELECT symbol FROM stock WHERE monitoring=true")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	defer rows.Close()
-	// idList := make([]string, 0)
-	resultList := make([]string, 0)
+// 	rows, err1 := db.Query("SELECT symbol FROM stock WHERE monitoring=true")
+// 	if err1 != nil {
+// 		fmt.Println(err1)
+// 	}
+// 	defer rows.Close()
+// 	resultList := make([]string, 0)
 
-	for rows.Next() {
-		var symbol string
-		if err2 := rows.Scan(&symbol); err2 != nil {
-			fmt.Println("err2")
-		}
+// 	for rows.Next() {
+// 		var symbol string
+// 		if err2 := rows.Scan(&symbol); err2 != nil {
+// 			fmt.Println("err2")
+// 		}
 
-		resultList = append(resultList, symbol)
-		// fmt.Println(symbol, last)
-	}
-	return resultList
-}
+// 		resultList = append(resultList, symbol)
+// 	}
+// 	return resultList
+// }
 
-func selectAllMonitoringStock() []string {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
+// func selectAllMonitoringStock() []string {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
 
-	// sqlStatement := `SELECT symbol FROM stock WHERE monitoring =$1;`
-	// var stock Stock
-	rows, err1 := db.Query("SELECT symbol FROM stock WHERE monitoring=true LIMIT 1")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	defer rows.Close()
-	// idList := make([]string, 0)
-	// resultList := make([]string, 0)
-	resultList := []string{}
+// 	// sqlStatement := `SELECT symbol FROM stock WHERE monitoring =$1;`
+// 	// var stock Stock
+// 	rows, err1 := db.Query("SELECT symbol FROM stock WHERE monitoring=true LIMIT 1")
+// 	if err1 != nil {
+// 		fmt.Println(err1)
+// 	}
+// 	defer rows.Close()
+// 	// idList := make([]string, 0)
+// 	// resultList := make([]string, 0)
+// 	resultList := []string{}
 
-	for rows.Next() {
-		var symbol string
-		if err2 := rows.Scan(&symbol); err2 != nil {
-			fmt.Println("err2")
-		}
+// 	for rows.Next() {
+// 		var symbol string
+// 		if err2 := rows.Scan(&symbol); err2 != nil {
+// 			fmt.Println("err2")
+// 		}
 
-		resultList = append(resultList, symbol)
-		// fmt.Println(symbol, last)
-	}
-	return resultList
-}
-
-func deleteMonitoredStock(symbolToDel string) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec("DELETE FROM stock WHERE symbol=$1", symbolToDel)
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
+// 		resultList = append(resultList, symbol)
+// 		// fmt.Println(symbol, last)
+// 	}
+// 	return resultList
+// }
 
 func insertMonitorSymbol(symbol string, userInput bool) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -343,20 +301,22 @@ func selectMonitorSymbol() []string {
 
 	rows, err1 := db.Query("SELECT symbol FROM monitor_symbol")
 	if err1 != nil {
+		// log.Fatal(err)
 		fmt.Println(err1)
 	}
 	defer rows.Close()
-	resultList := []string{}
+	symbolList := make([]string, 0)
 
 	for rows.Next() {
 		var symbol string
 		if err2 := rows.Scan(&symbol); err2 != nil {
 			fmt.Println("err2")
 		}
-		resultList = append(resultList, symbol)
+		symbolList = append(symbolList, symbol)
 	}
-	return resultList
+	return symbolList
 }
+
 func deleteMonitorSymbol(symbolToDel string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",

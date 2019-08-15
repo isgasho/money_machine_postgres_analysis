@@ -44,8 +44,8 @@ var checkIsMarketOpenHour = 7
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 46
-var conditionOneHour = 7
+var conditionOneMinute = 42
+var conditionOneHour = 19
 
 // var testOneMinute = 42
 // var testOneHour = 11
@@ -140,16 +140,16 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	//
 
 	//Conditional operate
-	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
-		checKIsBrokerageResponding()
+	// if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
+	// 	checKIsBrokerageResponding()
 
-		if isMarketClosed == false {
-			setTimelineOperationsFalse()
-		}
-		checkIsMarketOpenBool = false
-		boolOperate19 = true
-	}
-	//
+	// 	if isMarketClosed == false {
+	// 		setTimelineOperationsFalse()
+	// 	}
+	// 	checkIsMarketOpenBool = false
+	// 	boolOperate19 = true
+	// }
+	// //
 	// if currentTime.Minute() == checkIsMarketOpenFollowUpMinute && currentTime.Hour() == checkIsMarketOpenFollowUpHour && checkIsMarketOpenFollowUpBool {
 	// 	// if isMarketClosed == false {
 
@@ -162,11 +162,15 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	//Periodic TSP refresh
 	if currentTime.Minute() == conditionOneMinute && currentTime.Hour() == conditionOneHour && boolOperate1 {
 		fmt.Println("hit1 init operations")
-		queryCycle.BooleanOperate = true
+
+		if initialOperationPerformed == true {
+			queryCycle.BooleanOperate = true
+		}
+
 		boolOperate1 = false
-		processTSPRefresh()
+		// processTSPRefresh()
 		processDowWebscrape()
-		processQueryStockSet()
+		// processQueryStockSet()
 		initialOperationPerformed = true
 	}
 	// if currentTime.Minute() == testOneMinute && currentTime.Hour() == testOneHour && boolOperate1 {
@@ -285,6 +289,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		fmt.Println("hit19")
 		boolOperate19 = false
 		queryCycle.BooleanOperate = false
+		handleEndOfDayAnalyticsOperations()
 		handleDayReset()
 	}
 }
@@ -382,6 +387,14 @@ func handleDowWebscrape(params ...interface{}) {
 	response := queryWebscrape()
 	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
 	insertDow(currentDowValue, pointsChanged, percentageChange)
+}
+
+func handleEndOfDayAnalyticsOperations() {
+	//handle on table
+
+	//conditional if market closed
+
+	//insert table entry
 }
 
 func handleDayReset() {

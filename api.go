@@ -31,25 +31,60 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	err := json.NewDecoder(req.Body).Decode(&databaseQuery)
 	check(err)
 	requestType := databaseQuery.RequestType
+	data := databaseQuery.Data
+	rangeForData := databaseQuery.RangeForData
 
+	fmt.Println(requestType)
+	fmt.Println(data)
+	fmt.Println(rangeForData)
+
+	//Select all monitor symbol
 	if requestType == "0" {
-		fmt.Println("selected data")
+		fmt.Println("case 0")
+		// monitorSymbolList := selectMonitorSymbol()
+		// databaseResponse := DatabaseResponse{monitorSymbolList[0]}
+		// js, err := json.Marshal(databaseResponse)
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
+		// w.Header().Set("Content-Type", "application/json")
+		// w.Write(js)
 	}
+	//Select all stock where symbol == data
 	if requestType == "1" {
-		fmt.Println("inserted data")
+		fmt.Println("case 1", data)
+		//Handle data
+		// stockList := selectAllStockOfSymbol(data)
+
+		//Return ID list, and then stock objects
+		// databaseResponse := DatabaseResponse{stockList[0]}
+		// js, err := json.Marshal(databaseResponse)
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
+		// w.Header().Set("Content-Type", "application/json")
+		// w.Write(js)
+	}
+	//Select all stock where symbol == data
+	if requestType == "2" {
+		fmt.Println("case 2")
+		//Handle range within created time.
+
+		monitorSymbolList := selectAllStockOfSymbol(data)
+		// databaseResponse := DatabaseResponse{monitorSymbolList[0]}
+		databaseStockListResponse := DatabaseStockListResponse{[]Stock{monitorSymbolList[0], monitorSymbolList[1]}}
+		js, err := json.Marshal(databaseStockListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 
 	// databaseResponse := DatabaseResponse{"Alex", []string{"snowboarding", "programming"}}
-
-	databaseResponse := DatabaseResponse{"Alex"}
-
-	js, err := json.Marshal(databaseResponse)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(js)
 }
 
 func handleRequests() {
@@ -63,7 +98,7 @@ func main() {
 	// go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
-	// processTimelineStart()
+	processTimelineStart()
 	// checKIsBrokerageResponding()
 	fmt.Scanln()
 	fmt.Println("done")
