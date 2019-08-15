@@ -44,8 +44,8 @@ var checkIsMarketOpenHour = 7
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 42
-var conditionOneHour = 19
+var conditionOneMinute = 52
+var conditionOneHour = 10
 
 // var testOneMinute = 42
 // var testOneHour = 11
@@ -101,8 +101,8 @@ var conditionSeventeenHour = 15
 var conditionEighteenMinute = 0
 var conditionEighteenHour = 16
 
-var conditionNineteenMinute = 1
-var conditionNineteenHour = 16
+var conditionNineteenMinute = 13
+var conditionNineteenHour = 11
 
 var checkIsMarketOpenBool = true
 var checkIsMarketOpenFollowUpBool = true
@@ -140,16 +140,15 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	//
 
 	//Conditional operate
-	// if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
-	// 	checKIsBrokerageResponding()
+	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
+		checKIsBrokerageResponding()
 
-	// 	if isMarketClosed == false {
-	// 		setTimelineOperationsFalse()
-	// 	}
-	// 	checkIsMarketOpenBool = false
-	// 	boolOperate19 = true
-	// }
-	// //
+		if isMarketClosed == false {
+			setTimelineOperationsFalse()
+		}
+		checkIsMarketOpenBool = false
+		boolOperate19 = true
+	}
 	// if currentTime.Minute() == checkIsMarketOpenFollowUpMinute && currentTime.Hour() == checkIsMarketOpenFollowUpHour && checkIsMarketOpenFollowUpBool {
 	// 	// if isMarketClosed == false {
 
@@ -288,7 +287,10 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
 		boolOperate19 = false
-		queryCycle.BooleanOperate = false
+		if initialOperationPerformed {
+			queryCycle.BooleanOperate = false
+		}
+		//
 		handleEndOfDayAnalyticsOperations()
 		handleDayReset()
 	}
@@ -390,11 +392,8 @@ func handleDowWebscrape(params ...interface{}) {
 }
 
 func handleEndOfDayAnalyticsOperations() {
-	//handle on table
-
-	//conditional if market closed
-
-	//insert table entry
+	//insert into table conditional
+	insertEndOfDayAnalyticsOperations(isMarketClosed)
 }
 
 func handleDayReset() {

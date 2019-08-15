@@ -392,3 +392,26 @@ func selectTradeInfo() {
 }
 func deleteTradeInfo() {
 }
+
+func insertEndOfDayAnalyticsOperations(marketOpen bool) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO end_of_day_analytics_operations (market_open)
+		VALUES ($1)
+		RETURNING id
+		`
+	var dow Dow
+	row := db.QueryRow(sqlStatement, marketOpen)
+	err1 := row.Scan(&dow.ID)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
