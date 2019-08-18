@@ -31,13 +31,14 @@ func checKIsBrokerageResponding() {
 	//Multi-stock query simulation
 	response := queryIsBrokerageResponding()
 	askTime := parseAskTimeQuery(response)
+	fmt.Println("asktime is:", askTime)
 	//Conditional if Ask time set to 0
 	checkConditionalIsAskTime(askTime)
 	if isMarketClosed == false {
-		fmt.Println("is false")
+		fmt.Println("marketOpened is false")
 	}
 	if isMarketClosed == true {
-		fmt.Println("is true")
+		fmt.Println("marketClosed is true")
 	}
 }
 

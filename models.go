@@ -17,14 +17,23 @@ type User struct {
 }
 
 type DatabaseQuery struct {
-	RequestType  string
-	Data         string
-	RangeForData string
+	RequestType string
+	Data        string
+	Range1      string
+	Range2      string
 }
 
 type DatabaseResponse struct {
 	Data      string
 	StockList []Stock
+}
+
+type DatabaseMonitorSymbolListResponse struct {
+	MonitorSymbolList []string
+}
+
+type DatabaseDowListResponse struct {
+	DowList []Dow
 }
 
 type DatabaseStockListResponse struct {

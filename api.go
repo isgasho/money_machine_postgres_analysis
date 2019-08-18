@@ -30,65 +30,61 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	var databaseQuery DatabaseQuery
 	err := json.NewDecoder(req.Body).Decode(&databaseQuery)
 	check(err)
+
 	requestType := databaseQuery.RequestType
 	data := databaseQuery.Data
-	rangeForData := databaseQuery.RangeForData
+	range1 := databaseQuery.Range1
+	range2 := databaseQuery.Range2
+
+	// "2019-08-06T00:32:12"
+	// "2019-08-16T11:00:30"
+
+	// "2019-08-06T00:32:12"
+	// "2019-08-16T11:00:30"
 
 	fmt.Println(requestType)
 	fmt.Println(data)
-	fmt.Println(rangeForData)
+	// fmt.Println(rangeForData)
 
 	//Select all monitor symbol
 	if requestType == "0" {
-		fmt.Println("case 0")
-		// monitorSymbolList := selectMonitorSymbol()
-		// databaseResponse := DatabaseResponse{monitorSymbolList[0]}
-		// js, err := json.Marshal(databaseResponse)
-		// if err != nil {
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
-		// w.Header().Set("Content-Type", "application/json")
-		// w.Write(js)
-	}
-	//Select all stock where symbol == data
-	if requestType == "1" {
-		fmt.Println("case 1", data)
-		//Handle data
-		// stockList := selectAllStockOfSymbol(data)
-
-		//Return ID list, and then stock objects
-		// databaseResponse := DatabaseResponse{stockList[0]}
-		// js, err := json.Marshal(databaseResponse)
-		// if err != nil {
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
-		// w.Header().Set("Content-Type", "application/json")
-		// w.Write(js)
-	}
-	//Select all stock where symbol == data
-	if requestType == "2" {
-		fmt.Println("case 2")
-		//Handle range within created time.
-
-		// stockList := selectAllStockOfSymbol(data)
-		dowList := selectDow()
-		for i, v := range dowList {
-			fmt.Println(v.CreatedAt)
-			i++
+		monitorSymbolList := selectMonitorSymbol()
+		monitorSymbolResponse := DatabaseMonitorSymbolListResponse{monitorSymbolList}
+		js, err := json.Marshal(monitorSymbolResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		// databaseResponse := DatabaseResponse{monitorSymbolList[0]}
-		// databaseStockListResponse := DatabaseStockListResponse{[]Stock{monitorSymbolList[0], monitorSymbolList[1]}}
-		// js, err := json.Marshal(databaseStockListResponse)
-		// if err != nil {
-		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
-		// 	return
-		// }
-		// w.Header().Set("Content-Type", "application/json")
-		// w.Write(js)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	//Select all dow within range
+	if requestType == "1" {
+		dowList := selectDow()
+		dowMatchList := filterDowEntriesWithinTimeset(dowList, range1, range2)
 
-		// filterEntriesWithinTimeset(stockList)
+		dowListResponse := DatabaseDowListResponse{dowMatchList}
+		js, err := json.Marshal(dowListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	//Select all stock where symbol == data within range
+	if requestType == "2" {
+		stockList := selectAllStockOfSymbol(data)
+		stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+
+		stockListResponse := DatabaseStockListResponse{stockMatchList}
+		js, err := json.Marshal(stockListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
 	}
 
 	// databaseResponse := DatabaseResponse{"Alex", []string{"snowboarding", "programming"}}
@@ -102,7 +98,7 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	// go handleRequests()
+	go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
 	// processTimelineStart()
@@ -113,23 +109,22 @@ func main() {
 
 	// fmt.Println(dowMatchList)
 
-	stockList := selectAllStockOfSymbol("CAT")
-
-	fmt.Println(stockList[0].CreatedAt)
-	fmt.Println(stockList[1].CreatedAt)
-	fmt.Println(stockList[5].CreatedAt)
-	fmt.Println(stockList[(len(stockList) - 2)].CreatedAt)
-	fmt.Println(stockList[(len(stockList) - 1)].CreatedAt)
-
-	stockMatchList := filterStockEntriesWithinTimeset(stockList, "2019-08-05T13:32:12", "2019-08-16T11:00:31")
+	// fmt.Println(stockList[0].CreatedAt)
+	// fmt.Println(stockList[1].CreatedAt)
+	// fmt.Println(stockList[5].CreatedAt)
+	// fmt.Println(stockList[(len(stockList) - 2)].CreatedAt)
+	// fmt.Println(stockList[(len(stockList) - 1)].CreatedAt)
 
 	// not case where less than second, but match on point.
 
-	fmt.Println("break")
-	fmt.Println(len(stockMatchList))
-	fmt.Println(stockMatchList[0].CreatedAt)
-	fmt.Println(stockMatchList[(len(stockMatchList) - 1)].CreatedAt)
+	// fmt.Println("break")
+	// fmt.Println(len(stockMatchList))
+	// fmt.Println(stockMatchList[0].CreatedAt)
+	// fmt.Println(stockMatchList[(len(stockMatchList) - 3)].CreatedAt)
+	// fmt.Println(stockMatchList[(len(stockMatchList) - 2)].CreatedAt)
+	// fmt.Println(stockMatchList[(len(stockMatchList) - 1)].CreatedAt)
 
+	// checKIsBrokerageResponding()
 	fmt.Scanln()
 	fmt.Println("done")
 }

@@ -979,8 +979,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if hour == hour2 {
 							if minute == minute2 {
 								if second == second2 {
-									// fmt.Println("batch 1 case 1")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -992,8 +992,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 		//batch 1 case 2
 		if year > year1 {
 			if year < year2 {
-				// fmt.Println("batch 1 case 2")
 				matchInRangeList = append(matchInRangeList, v)
+				continue
 			}
 		}
 
@@ -1001,8 +1001,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 		if year > year1 {
 			if year == year2 {
 				if month < month2 {
-					// fmt.Println("batch 1 case 3")
 					matchInRangeList = append(matchInRangeList, v)
+					continue
 				}
 			}
 		}
@@ -1012,8 +1012,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 			if year == year2 {
 				if month == month2 {
 					if day < day2 {
-						// fmt.Println("batch 1 case 4")
 						matchInRangeList = append(matchInRangeList, v)
+						continue
 					}
 				}
 			}
@@ -1025,8 +1025,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 				if month == month2 {
 					if day == day2 {
 						if hour < hour2 {
-							// fmt.Println("batch 1 case 5")
 							matchInRangeList = append(matchInRangeList, v)
+							continue
 						}
 					}
 				}
@@ -1040,8 +1040,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 					if day == day2 {
 						if hour == hour2 {
 							if minute < minute2 {
-								// fmt.Println("batch 1 case 6")
 								matchInRangeList = append(matchInRangeList, v)
+								continue
 							}
 						}
 					}
@@ -1057,8 +1057,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if hour == hour2 {
 							if minute == minute2 {
 								if second < second2 {
-									// fmt.Println("batch 1 case 7")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -1076,8 +1076,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 							if hour == hour2 {
 								if minute == minute2 {
 									if second == second2 {
-										// fmt.Println("batch 2 case 1")
 										matchInRangeList = append(matchInRangeList, v)
+										continue
 									}
 								}
 							}
@@ -1091,8 +1091,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 		if year == year1 {
 			if month > month1 {
 				if year < year2 {
-					// fmt.Println("batch 2 case 2")
 					matchInRangeList = append(matchInRangeList, v)
+					continue
 				}
 			}
 		}
@@ -1102,8 +1102,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 			if month > month1 {
 				if year == year2 {
 					if month < month2 {
-						// fmt.Println("batch 2 case 3")
 						matchInRangeList = append(matchInRangeList, v)
+						continue
 					}
 				}
 			}
@@ -1115,8 +1115,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 				if year == year2 {
 					if month == month2 {
 						if day < day2 {
-							// fmt.Println("batch 2 case 4")
 							matchInRangeList = append(matchInRangeList, v)
+							continue
 						}
 					}
 				}
@@ -1130,8 +1130,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 					if month == month2 {
 						if day == day2 {
 							if hour < hour2 {
-								// fmt.Println("batch 2 case 5")
 								matchInRangeList = append(matchInRangeList, v)
+								continue
 							}
 						}
 					}
@@ -1147,8 +1147,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if day == day2 {
 							if hour == hour2 {
 								if minute < minute2 {
-									// fmt.Println("batch 2 case 6")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -1166,8 +1166,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 							if hour == hour2 {
 								if minute == minute2 {
 									if second < second2 {
-										// fmt.Println("batch 2 case 7")
 										matchInRangeList = append(matchInRangeList, v)
+										continue
 									}
 								}
 							}
@@ -1187,8 +1187,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 								if hour == hour2 {
 									if minute == minute2 {
 										if second == second2 {
-											// fmt.Println("batch 3 case 1")
 											matchInRangeList = append(matchInRangeList, v)
+											continue
 										}
 									}
 								}
@@ -1204,8 +1204,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 			if month == month1 {
 				if day > day1 {
 					if year < year2 {
-						// fmt.Println("batch 3 case 2")
 						matchInRangeList = append(matchInRangeList, v)
+						continue
 					}
 				}
 			}
@@ -1217,8 +1217,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 				if day > day1 {
 					if year == year2 {
 						if month < month2 {
-							// fmt.Println("batch 3 case 3")
 							matchInRangeList = append(matchInRangeList, v)
+							continue
 						}
 					}
 				}
@@ -1232,8 +1232,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 					if year == year2 {
 						if month == month2 {
 							if day < day2 {
-								// fmt.Println("batch 3 case 4")
 								matchInRangeList = append(matchInRangeList, v)
+								continue
 							}
 						}
 					}
@@ -1249,8 +1249,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if month == month2 {
 							if day == day2 {
 								if hour < hour2 {
-									// fmt.Println("batch 3 case 5")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -1268,8 +1268,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 							if day == day2 {
 								if hour == hour2 {
 									if minute < minute2 {
-										// fmt.Println("batch 3 case 6")
 										matchInRangeList = append(matchInRangeList, v)
+										continue
 									}
 								}
 							}
@@ -1289,8 +1289,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 								if hour == hour2 {
 									if minute == minute2 {
 										if second < second2 {
-											// fmt.Println("batch 3 case 7")
 											matchInRangeList = append(matchInRangeList, v)
+											continue
 										}
 									}
 								}
@@ -1319,8 +1319,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 								if hour == hour2 {
 									if minute == minute2 {
 										if second == second2 {
-											// fmt.Println("batch 3 case 8")
 											matchInRangeList = append(matchInRangeList, v)
+											continue
 										}
 									}
 								}
@@ -1342,8 +1342,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 									if hour == hour2 {
 										if minute == minute2 {
 											if second == second2 {
-												// fmt.Println("batch 4 case 1")
 												matchInRangeList = append(matchInRangeList, v)
+												continue
 											}
 										}
 									}
@@ -1361,8 +1361,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 				if day == day1 {
 					if hour > hour1 {
 						if year < year2 {
-							// fmt.Println("batch 4 case 2")
 							matchInRangeList = append(matchInRangeList, v)
+							continue
 						}
 					}
 				}
@@ -1376,8 +1376,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 					if hour > hour1 {
 						if year == year2 {
 							if month < month2 {
-								// fmt.Println("batch 4 case 3")
 								matchInRangeList = append(matchInRangeList, v)
+								continue
 							}
 						}
 					}
@@ -1393,8 +1393,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if year == year2 {
 							if month == month2 {
 								if day < day2 {
-									// fmt.Println("batch 4 case 4")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -1412,8 +1412,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 							if month == month2 {
 								if day == day2 {
 									if hour < hour2 {
-										// fmt.Println("batch 4 case 5")
 										matchInRangeList = append(matchInRangeList, v)
+										continue
 									}
 								}
 							}
@@ -1433,8 +1433,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 								if day == day2 {
 									if hour == hour2 {
 										if minute < minute2 {
-											// fmt.Println("batch 4 case 6")
 											matchInRangeList = append(matchInRangeList, v)
+											continue
 										}
 									}
 								}
@@ -1456,8 +1456,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 									if hour == hour2 {
 										if minute == minute2 {
 											if second < second2 {
-												// fmt.Println("batch 4 case 7")
 												matchInRangeList = append(matchInRangeList, v)
+												continue
 											}
 										}
 									}
@@ -1481,8 +1481,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 										if hour == hour2 {
 											if minute == minute2 {
 												if second == second2 {
-													// fmt.Println("batch 5 case 1")
 													matchInRangeList = append(matchInRangeList, v)
+													continue
 												}
 											}
 										}
@@ -1502,8 +1502,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 					if hour == hour1 {
 						if minute > minute1 {
 							if year < year2 {
-								// fmt.Println("batch 5 case 2")
 								matchInRangeList = append(matchInRangeList, v)
+								continue
 							}
 						}
 					}
@@ -1519,8 +1519,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if minute > minute1 {
 							if year == year2 {
 								if month < month2 {
-									// fmt.Println("batch 5 case 3")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -1538,8 +1538,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 							if year == year2 {
 								if month == month2 {
 									if day < day2 {
-										// fmt.Println("batch 5 case 4")
 										matchInRangeList = append(matchInRangeList, v)
+										continue
 									}
 								}
 							}
@@ -1559,8 +1559,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 								if month == month2 {
 									if day == day2 {
 										if hour < hour2 {
-											// fmt.Println("batch 5 case 5")
 											matchInRangeList = append(matchInRangeList, v)
+											continue
 										}
 									}
 								}
@@ -1582,8 +1582,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 									if day == day2 {
 										if hour == hour2 {
 											if minute < minute2 {
-												// fmt.Println("batch 5 case 6")
 												matchInRangeList = append(matchInRangeList, v)
+												continue
 											}
 										}
 									}
@@ -1607,8 +1607,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 										if hour == hour2 {
 											if minute == minute2 {
 												if second < second2 {
-													// fmt.Println("batch 5 case 7")
 													matchInRangeList = append(matchInRangeList, v)
+													continue
 												}
 											}
 										}
@@ -1634,8 +1634,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 											if hour == hour2 {
 												if minute == minute2 {
 													if second == second2 {
-														// fmt.Println("batch 6 case 1")
 														matchInRangeList = append(matchInRangeList, v)
+														continue
 													}
 												}
 											}
@@ -1657,8 +1657,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 						if minute == minute1 {
 							if second > second1 {
 								if year < year2 {
-									// fmt.Println("batch 6 case 2")
 									matchInRangeList = append(matchInRangeList, v)
+									continue
 								}
 							}
 						}
@@ -1676,8 +1676,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 							if second > second1 {
 								if year == year2 {
 									if month < month2 {
-										// fmt.Println("batch 6 case 3")
 										matchInRangeList = append(matchInRangeList, v)
+										continue
 									}
 								}
 							}
@@ -1697,8 +1697,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 								if year == year2 {
 									if month == month2 {
 										if day < day2 {
-											// fmt.Println("batch 6 case 4")
 											matchInRangeList = append(matchInRangeList, v)
+											continue
 										}
 									}
 								}
@@ -1720,8 +1720,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 									if month == month2 {
 										if day == day2 {
 											if hour < hour2 {
-												// fmt.Println("batch 6 case 5")
 												matchInRangeList = append(matchInRangeList, v)
+												continue
 											}
 										}
 									}
@@ -1745,8 +1745,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 										if day == day2 {
 											if hour == hour2 {
 												if minute < minute2 {
-													// fmt.Println("batch 6 case 6")
 													matchInRangeList = append(matchInRangeList, v)
+													continue
 												}
 											}
 										}
@@ -1772,8 +1772,8 @@ func filterStockEntriesWithinTimeset(dataset []Stock, conditionRange1 string, co
 											if hour == hour2 {
 												if minute == minute2 {
 													if second < second2 {
-														// fmt.Println("batch 6 case 7")
 														matchInRangeList = append(matchInRangeList, v)
+														continue
 													}
 												}
 											}
