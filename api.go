@@ -72,16 +72,23 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("case 2")
 		//Handle range within created time.
 
-		monitorSymbolList := selectAllStockOfSymbol(data)
-		// databaseResponse := DatabaseResponse{monitorSymbolList[0]}
-		databaseStockListResponse := DatabaseStockListResponse{[]Stock{monitorSymbolList[0], monitorSymbolList[1]}}
-		js, err := json.Marshal(databaseStockListResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
+		// stockList := selectAllStockOfSymbol(data)
+		dowList := selectDow()
+		for i, v := range dowList {
+			fmt.Println(v.CreatedAt)
+			i++
 		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
+		// databaseResponse := DatabaseResponse{monitorSymbolList[0]}
+		// databaseStockListResponse := DatabaseStockListResponse{[]Stock{monitorSymbolList[0], monitorSymbolList[1]}}
+		// js, err := json.Marshal(databaseStockListResponse)
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
+		// w.Header().Set("Content-Type", "application/json")
+		// w.Write(js)
+
+		// filterEntriesWithinTimeset(stockList)
 	}
 
 	// databaseResponse := DatabaseResponse{"Alex", []string{"snowboarding", "programming"}}
@@ -98,8 +105,31 @@ func main() {
 	// go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
-	processTimelineStart()
+	// processTimelineStart()
 	// checKIsBrokerageResponding()
+
+	// dowList := selectDow()
+	// dowMatchList := filterDowEntriesWithinTimeset(dowList, "2019-06-10T23:11:39", "2019-08-16T11:00:29")
+
+	// fmt.Println(dowMatchList)
+
+	stockList := selectAllStockOfSymbol("CAT")
+
+	fmt.Println(stockList[0].CreatedAt)
+	fmt.Println(stockList[1].CreatedAt)
+	fmt.Println(stockList[5].CreatedAt)
+	fmt.Println(stockList[(len(stockList) - 2)].CreatedAt)
+	fmt.Println(stockList[(len(stockList) - 1)].CreatedAt)
+
+	stockMatchList := filterStockEntriesWithinTimeset(stockList, "2019-08-05T13:32:12", "2019-08-16T11:00:31")
+
+	// not case where less than second, but match on point.
+
+	fmt.Println("break")
+	fmt.Println(len(stockMatchList))
+	fmt.Println(stockMatchList[0].CreatedAt)
+	fmt.Println(stockMatchList[(len(stockMatchList) - 1)].CreatedAt)
+
 	fmt.Scanln()
 	fmt.Println("done")
 }

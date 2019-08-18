@@ -55,3 +55,17 @@ func parseDate() {
 	fmt.Println(yr)
 	fmt.Println(mt, day)
 }
+
+func getDayOfWeek() time.Weekday {
+	// currentTime := time.Now()
+	// day := fmt.Sprintf("%b", currentTime.Day())
+	// day := currentTime.Weekday()
+
+	// weekday := time.Now().Weekday()
+	// fmt.Println("hit day " + string(day)
+	weekday := time.Now().Weekday()
+	fmt.Println(weekday)      // "Tuesday"
+	fmt.Println(int(weekday)) // "2"
+
+	return weekday
+}

@@ -397,19 +397,39 @@ func parseTopStockQuery(queryString string) []Stock {
 }
 
 func parseDowWebscrape(queryString string) (string, string, string) {
-	currentDowValueQuery1 := strings.Split(queryString, "st_3lrv4Jo st_8u0ePN3 st_2oUi2Vb st_31YdEUQ st_8u0ePN3 st_2mehCkH st_3kXJm4P")[1]
-	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "</span>")[0]
-	currentDowValue := strings.Split(currentDowValueQuery2, " ")[1]
+	currentDowValueQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
+	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "PM EDT")[0]
+	currentDowValueQuery3 := strings.Split(currentDowValueQuery2, "</span>")[1]
+	currentDowValueQuery4 := strings.Split(currentDowValueQuery3, ">")
+	currentDowValueQuery5 := strings.TrimSpace(currentDowValueQuery4[(len(currentDowValueQuery4) - 1)])
+	currentDowValue := currentDowValueQuery5
+	// currentDowValue := "p"
 
-	pointsChangedQuery1 := strings.Split(queryString, "st_3E7muvq st_8u0ePN3 st_3kXJm4P st_2KQW5_v st_37VuZWc")[1]
-	pointsChangedQuery2 := strings.Split(pointsChangedQuery1, "</path>")[1]
-	pointsChangedQuery3 := strings.Split(pointsChangedQuery2, "</span>")[1]
-	pointsChanged := strings.Split(pointsChangedQuery3, "\\n")[0]
-	percentageChange := strings.TrimSpace(strings.Split(pointsChangedQuery3, "\\n")[1])
+	pointsChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
+	pointsChangedQuery2 := strings.Split(pointsChangedQuery1, "PM EDT")[0]
+	pointsChangedQuery3 := strings.Split(pointsChangedQuery2, "</span>")[4]
+	pointsChangedQuery4 := strings.Split(pointsChangedQuery3, ">")
+	pointsChangedQuery5 := strings.TrimSpace(pointsChangedQuery4[(len(pointsChangedQuery4) - 1)])
+	pointsChanged := pointsChangedQuery5
 
-	s1 := strings.Replace(percentageChange, "(", "", -1)
-	s2 := strings.Replace(s1, ")", "", -1)
-	percentageChange = strings.Replace(s2, "%", "", -1)
+	percentageChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
+	percentageChangedQuery2 := strings.Split(percentageChangedQuery1, "PM EDT")[0]
+	percentageChangedQuery3 := strings.Split(percentageChangedQuery2, "Up by ")[1]
+	percentageChangedQuery4 := strings.Split(percentageChangedQuery3, "%")[0]
+	percentageChange := percentageChangedQuery4
+
+	// f, err := os.Create("output.html")
+	// check(err)
+	// n3, err1 := f.WriteString(currentDowValue + pointsChanged + percentageChange)
+	// check(err1)
+	// fmt.Printf("wrote %d bytes\n", n3)
+	// f.Sync()
+
+	// percentageChange := strings.TrimSpace(strings.Split(pointsChangedQuery3, "\\n")[1])
+	// percentageChange := "b"
+	// s1 := strings.Replace(percentageChange, "(", "", -1)
+	// s2 := strings.Replace(s1, ")", "", -1)
+	// percentageChange = strings.Replace(s2, "%", "", -1)
 	return currentDowValue, pointsChanged, percentageChange
 }
 

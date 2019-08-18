@@ -38,14 +38,14 @@ func processDowWebscrape() {
 	go handleDowWebscrape()
 }
 
-var checkIsMarketOpenMinute = 45
-var checkIsMarketOpenHour = 7
+var checkIsMarketOpenMinute = 32
+var checkIsMarketOpenHour = 14
 
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 52
-var conditionOneHour = 10
+var conditionOneMinute = checkIsMarketOpenMinute + 1
+var conditionOneHour = 14
 
 // var testOneMinute = 42
 // var testOneHour = 11
@@ -101,8 +101,8 @@ var conditionSeventeenHour = 15
 var conditionEighteenMinute = 0
 var conditionEighteenHour = 16
 
-var conditionNineteenMinute = 13
-var conditionNineteenHour = 11
+var conditionNineteenMinute = 0
+var conditionNineteenHour = 13
 
 var checkIsMarketOpenBool = true
 var checkIsMarketOpenFollowUpBool = true
@@ -135,6 +135,9 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 	fmt.Println(currentTime.Date())
 
+	// checkIsMarketOpenMinute := currentTime.Minute()
+	conditionOneMinute := currentTime.Minute()
+	conditionOneHour := currentTime.Hour()
 	//
 	//Timeline events
 	//
@@ -143,7 +146,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
 		checKIsBrokerageResponding()
 
-		if isMarketClosed == false {
+		if isMarketClosed {
 			setTimelineOperationsFalse()
 		}
 		checkIsMarketOpenBool = false
@@ -168,8 +171,9 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 
 		boolOperate1 = false
 		// processTSPRefresh()
-		processDowWebscrape()
-		// processQueryStockSet()
+		// processDowWebscrape()
+		// handleEndOfDayAnalyticsOperations()
+		processQueryStockSet()
 		initialOperationPerformed = true
 	}
 	// if currentTime.Minute() == testOneMinute && currentTime.Hour() == testOneHour && boolOperate1 {
@@ -185,7 +189,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
 		boolOperate2 = false
-		processTSPRefresh()
+		// processTSPRefresh()
 		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
@@ -387,13 +391,19 @@ func handleQueryStockList(params ...interface{}) {
 
 func handleDowWebscrape(params ...interface{}) {
 	response := queryWebscrape()
+	fmt.Println(response)
 	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
+
+	// fmt.Println(currentDowValue)
+	// fmt.Println(pointsChanged)
+	// fmt.Println(percentageChange)
 	insertDow(currentDowValue, pointsChanged, percentageChange)
 }
 
 func handleEndOfDayAnalyticsOperations() {
+	day := getDayOfWeek()
 	//insert into table conditional
-	insertEndOfDayAnalyticsOperations(isMarketClosed)
+	insertEndOfDayAnalyticsOperations(isMarketClosed, day.String())
 }
 
 func handleDayReset() {

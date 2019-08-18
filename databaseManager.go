@@ -97,29 +97,35 @@ func insertDow(currentDowValue string, pointsChanged string, percentageChange st
 }
 func setDow() {
 }
-func selectDow() {
+func selectDow() []Dow {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
-		fmt.Println("Create Error 1")
+		fmt.Println("Read Error 1")
+		panic(err)
 	}
 	defer db.Close()
 
-	sqlStatement := `
-		INSERT INTO dow (current_dow_value, points_changed, percentage_change)
-		VALUES ($1, $2, $3)
-		RETURNING id
-		`
-	var dow Dow
-	row := db.QueryRow(sqlStatement)
-	err1 := row.Scan(&dow.ID)
+	rows, err1 := db.Query("SELECT id, created_at, current_dow_value, points_changed, percentage_change FROM dow")
 	if err1 != nil {
-		fmt.Println("Create Error 2")
+		fmt.Println(err1)
 	}
-	fmt.Println(dow.ID)
+	defer rows.Close()
+	dowList := make([]Dow, 0)
+
+	for rows.Next() {
+		// var symbol string
+		var dowInstance Dow
+		if err2 := rows.Scan(&dowInstance.ID, &dowInstance.CreatedAt, &dowInstance.CurrentDowValue, &dowInstance.PointsChanged, &dowInstance.PercentageChange); err2 != nil {
+			fmt.Println("err2")
+		}
+		dowList = append(dowList, dowInstance)
+	}
+	return dowList
 }
+
 func deleteDow() {
 }
 
@@ -162,7 +168,7 @@ func selectAllStockOfSymbol(symbolToSearch string) []Stock {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT id, symbol, last FROM stock WHERE symbol=$1", symbolToSearch)
+	rows, err1 := db.Query("SELECT id, symbol, last, created_at FROM stock WHERE symbol=$1", symbolToSearch)
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -171,7 +177,7 @@ func selectAllStockOfSymbol(symbolToSearch string) []Stock {
 
 	for rows.Next() {
 		var stock Stock
-		if err2 := rows.Scan(&stock.ID, &stock.Symbol, &stock.Last); err2 != nil {
+		if err2 := rows.Scan(&stock.ID, &stock.Symbol, &stock.Last, &stock.CreatedAt); err2 != nil {
 			fmt.Println("err2")
 		}
 		stockList = append(stockList, stock)
@@ -393,7 +399,7 @@ func selectTradeInfo() {
 func deleteTradeInfo() {
 }
 
-func insertEndOfDayAnalyticsOperations(marketOpen bool) {
+func insertEndOfDayAnalyticsOperations(marketClosed bool, day string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -404,12 +410,12 @@ func insertEndOfDayAnalyticsOperations(marketOpen bool) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO end_of_day_analytics_operations (market_open)
-		VALUES ($1)
+		INSERT INTO end_of_day_analytics_operations (market_closed, day_of_week)
+		VALUES ($1, $2)
 		RETURNING id
 		`
 	var dow Dow
-	row := db.QueryRow(sqlStatement, marketOpen)
+	row := db.QueryRow(sqlStatement, marketClosed, day)
 	err1 := row.Scan(&dow.ID)
 	if err1 != nil {
 		fmt.Println("Create Error 2")

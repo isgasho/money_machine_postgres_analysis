@@ -45,10 +45,11 @@ type News struct {
 }
 
 type Dow struct {
-	ID        string
-	DayID     int
-	CreatedAt string
-	DowInfo   string
+	ID               string
+	CreatedAt        string
+	CurrentDowValue  string
+	PointsChanged    string
+	PercentageChange string
 }
 
 type Stock struct {
