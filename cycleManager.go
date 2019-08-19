@@ -41,12 +41,13 @@ func startCycle(cycleInstance *Cycle) {
 	for i < duration {
 		fmt.Println("i iteration ", i)
 		if cycleInstance.BooleanOperate {
-			fmt.Println("cycleInstance.CreationIndex: ", cycleInstance.CreationIndex)
+			// fmt.Println("cycleInstance.CreationIndex: ", cycleInstance.Name)
 			fmt.Println("cycleInstance.BooleanOperate: ", cycleInstance.BooleanOperate)
 			functionToCall(cycleInstance.Params)
 			time.Sleep(time.Duration(intervalSpeed) * time.Second)
 		}
 		if cycleInstance.BooleanOperate == false {
+			cycleInstance.BooleanOperate = true
 			break
 		}
 		i++

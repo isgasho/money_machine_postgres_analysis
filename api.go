@@ -86,7 +86,6 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
-
 	// databaseResponse := DatabaseResponse{"Alex", []string{"snowboarding", "programming"}}
 }
 
@@ -98,10 +97,10 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	go handleRequests()
+	// go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
-	// processTimelineStart()
+	processTimelineStart()
 	// checKIsBrokerageResponding()
 
 	// dowList := selectDow()

@@ -20,13 +20,14 @@ func processTimelineStart() {
 }
 
 func processQueryStockSet() {
-	if initialOperationPerformed == false {
+	if initialStockQueryPerformed == true {
+		go startCycle(&queryCycle)
+	}
+	if initialStockQueryPerformed == false {
 		createCycle(3, 100000, handleQueryStockList)
 		queryCycle = cyclePool[1]
 		go startCycle(&queryCycle)
-	}
-	if initialOperationPerformed == true {
-		go startCycle(&queryCycle)
+		initialStockQueryPerformed = true
 	}
 }
 
@@ -38,14 +39,14 @@ func processDowWebscrape() {
 	go handleDowWebscrape()
 }
 
-var checkIsMarketOpenMinute = 32
-var checkIsMarketOpenHour = 14
+var checkIsMarketOpenMinute = 45
+var checkIsMarketOpenHour = 7
 
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = checkIsMarketOpenMinute + 1
-var conditionOneHour = 14
+var conditionOneMinute = 46
+var conditionOneHour = 7
 
 // var testOneMinute = 42
 // var testOneHour = 11
@@ -101,8 +102,8 @@ var conditionSeventeenHour = 15
 var conditionEighteenMinute = 0
 var conditionEighteenHour = 16
 
-var conditionNineteenMinute = 0
-var conditionNineteenHour = 13
+var conditionNineteenMinute = 1
+var conditionNineteenHour = 16
 
 var checkIsMarketOpenBool = true
 var checkIsMarketOpenFollowUpBool = true
@@ -126,7 +127,7 @@ var boolOperate17 = true
 var boolOperate18 = true
 var boolOperate19 = true
 
-var initialOperationPerformed = false
+var initialStockQueryPerformed = false
 
 func handleTimelineConditionalTriggers(params ...interface{}) {
 	currentTime := time.Now()
@@ -135,9 +136,6 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 	fmt.Println(currentTime.Date())
 
-	// checkIsMarketOpenMinute := currentTime.Minute()
-	conditionOneMinute := currentTime.Minute()
-	conditionOneHour := currentTime.Hour()
 	//
 	//Timeline events
 	//
@@ -152,29 +150,14 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		checkIsMarketOpenBool = false
 		boolOperate19 = true
 	}
-	// if currentTime.Minute() == checkIsMarketOpenFollowUpMinute && currentTime.Hour() == checkIsMarketOpenFollowUpHour && checkIsMarketOpenFollowUpBool {
-	// 	// if isMarketClosed == false {
-
-	// 	// }
-	// 	checkIsMarketOpenBool = true
-	// 	checkIsMarketOpenFollowUpBool = false
-	// }
-
 	//Initiate monitoring pool query on cycle
 	//Periodic TSP refresh
 	if currentTime.Minute() == conditionOneMinute && currentTime.Hour() == conditionOneHour && boolOperate1 {
 		fmt.Println("hit1 init operations")
-
-		if initialOperationPerformed == true {
-			queryCycle.BooleanOperate = true
-		}
-
 		boolOperate1 = false
-		// processTSPRefresh()
-		// processDowWebscrape()
-		// handleEndOfDayAnalyticsOperations()
+		processTSPRefresh()
+		processDowWebscrape()
 		processQueryStockSet()
-		initialOperationPerformed = true
 	}
 	// if currentTime.Minute() == testOneMinute && currentTime.Hour() == testOneHour && boolOperate1 {
 	// 	fmt.Println("hit1 init operations")
@@ -185,11 +168,10 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	// 	processQueryStockSet()
 	// 	initialOperationPerformed = true
 	// }
-
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
 		boolOperate2 = false
-		// processTSPRefresh()
+		processTSPRefresh()
 		processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
@@ -291,13 +273,77 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
 		boolOperate19 = false
-		if initialOperationPerformed {
+		if queryCycle.BooleanOperate {
 			queryCycle.BooleanOperate = false
 		}
-		//
 		handleEndOfDayAnalyticsOperations()
 		handleDayReset()
 	}
+
+	//
+
+	//Conditional operate
+	// if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
+	// 	checKIsBrokerageResponding()
+
+	// 	if isMarketClosed {
+	// 		setTimelineOperationsFalse()
+	// 	}
+	// 	boolOperate3 = false
+	// 	boolOperate19 = true
+	// }
+	// //Initiate monitoring pool query on cycle
+	// //Periodic TSP refresh
+	// if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
+	// 	fmt.Println("hit1 init operations")
+	// 	boolOperate4 = false
+	// 	// processTSPRefresh()
+	// 	// processDowWebscrape()
+	// 	processQueryStockSet()
+	// }
+
+	// if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate19 {
+	// 	fmt.Println("hit19")
+	// 	boolOperate19 = false
+	// 	if queryCycle.BooleanOperate {
+	// 		queryCycle.BooleanOperate = false
+	// 	}
+	// 	handleEndOfDayAnalyticsOperations()
+	// 	handleDayReset()
+	// }
+
+	// //
+
+	// //Conditional operate
+	// if currentTime.Minute() == conditionSixMinute && currentTime.Hour() == conditionSixHour && boolOperate6 {
+	// 	checKIsBrokerageResponding()
+
+	// 	if isMarketClosed {
+	// 		setTimelineOperationsFalse()
+	// 	}
+	// 	boolOperate6 = false
+	// 	boolOperate19 = true
+	// }
+	// //Initiate monitoring pool query on cycle
+	// //Periodic TSP refresh
+	// if currentTime.Minute() == conditionSevenMinute && currentTime.Hour() == conditionSevenHour && boolOperate7 {
+	// 	fmt.Println("hit1 init operations")
+	// 	boolOperate7 = false
+	// 	processTSPRefresh()
+	// 	processDowWebscrape()
+	// 	processQueryStockSet()
+	// }
+
+	// if currentTime.Minute() == conditionEightMinute && currentTime.Hour() == conditionEightHour && boolOperate19 {
+	// 	fmt.Println("hit19")
+	// 	boolOperate19 = false
+	// 	if queryCycle.BooleanOperate {
+	// 		queryCycle.BooleanOperate = false
+	// 	}
+	// 	handleEndOfDayAnalyticsOperations()
+	// 	handleDayReset()
+	// }
+
 }
 
 func handleTSPRefresh(params ...interface{}) {
@@ -354,16 +400,13 @@ func handleTSPRefresh(params ...interface{}) {
 		}
 	}
 
-	// deleteMonitorSymbol("CMG")
-	// deleteMonitorSymbol("CHE")
-	// deleteMonitorSymbol("GRUB")
-
 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 	insertAnalyticsOperations(stockRanking)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
 }
 
 func handleQueryStockList(params ...interface{}) {
+	fmt.Println("hit handleQueryStockList")
 	//Query monitor_symbol
 	symbolList := selectMonitorSymbol()
 
@@ -376,8 +419,6 @@ func handleQueryStockList(params ...interface{}) {
 		formattedSymbolList = append(formattedSymbolList, v)
 		i++
 	}
-	// fmt.Println(formattedSymbolList)
-
 	//Form query to Node -> Brokerage
 	queryResponse := queryMultiStockPull(formattedSymbolList)
 	stockList := parseStockSetQuery(queryResponse)
@@ -393,10 +434,6 @@ func handleDowWebscrape(params ...interface{}) {
 	response := queryWebscrape()
 	fmt.Println(response)
 	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
-
-	// fmt.Println(currentDowValue)
-	// fmt.Println(pointsChanged)
-	// fmt.Println(percentageChange)
 	insertDow(currentDowValue, pointsChanged, percentageChange)
 }
 

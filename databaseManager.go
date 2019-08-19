@@ -168,7 +168,7 @@ func selectAllStockOfSymbol(symbolToSearch string) []Stock {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT id, symbol, last, created_at FROM stock WHERE symbol=$1", symbolToSearch)
+	rows, err1 := db.Query("SELECT id, created_at, monitoring, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock WHERE symbol=$1", symbolToSearch)
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -177,7 +177,7 @@ func selectAllStockOfSymbol(symbolToSearch string) []Stock {
 
 	for rows.Next() {
 		var stock Stock
-		if err2 := rows.Scan(&stock.ID, &stock.Symbol, &stock.Last, &stock.CreatedAt); err2 != nil {
+		if err2 := rows.Scan(&stock.ID, &stock.CreatedAt, &stock.Monitoring, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90); err2 != nil {
 			fmt.Println("err2")
 		}
 		stockList = append(stockList, stock)
