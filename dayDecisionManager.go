@@ -35,7 +35,7 @@ func checKIsBrokerageResponding() {
 	//Conditional if Ask time set to 0
 	checkConditionalIsAskTime(askTime)
 	if isMarketClosed == false {
-		fmt.Println("marketOpened is false")
+		fmt.Println("isMarketClosed is false")
 	}
 	if isMarketClosed == true {
 		fmt.Println("marketClosed is true")

@@ -414,7 +414,7 @@ func parseDowWebscrape(queryString string) (string, string, string) {
 
 	percentageChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
 	percentageChangedQuery2 := strings.Split(percentageChangedQuery1, "PM EDT")[0]
-	percentageChangedQuery3 := strings.Split(percentageChangedQuery2, "Up by ")[1]
+	percentageChangedQuery3 := strings.Split(percentageChangedQuery2, " by ")[1]
 	percentageChangedQuery4 := strings.Split(percentageChangedQuery3, "%")[0]
 	percentageChange := percentageChangedQuery4
 

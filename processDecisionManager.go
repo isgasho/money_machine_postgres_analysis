@@ -39,14 +39,14 @@ func processDowWebscrape() {
 	go handleDowWebscrape()
 }
 
-var checkIsMarketOpenMinute = 45
-var checkIsMarketOpenHour = 7
+var checkIsMarketOpenMinute = 58
+var checkIsMarketOpenHour = 16
 
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 46
-var conditionOneHour = 7
+var conditionOneMinute = 59
+var conditionOneHour = 16
 
 // var testOneMinute = 42
 // var testOneHour = 11
