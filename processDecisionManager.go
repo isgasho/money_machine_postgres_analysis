@@ -19,12 +19,24 @@ func processTimelineStart() {
 	go startCycle(&operatingCycle)
 }
 
-func processQueryStockSet() {
+func processWisemenQueryStockSet() {
 	if initialStockQueryPerformed == true {
 		go startCycle(&queryCycle)
 	}
 	if initialStockQueryPerformed == false {
-		createCycle(3, 100000, handleQueryStockList)
+		createCycle(3, 1000000000000, handleWisemenQueryStockList)
+		queryCycle = cyclePool[1]
+		go startCycle(&queryCycle)
+		initialStockQueryPerformed = true
+	}
+}
+
+func processWhaleQueryStockSet() {
+	if initialStockQueryPerformed == true {
+		go startCycle(&queryCycle)
+	}
+	if initialStockQueryPerformed == false {
+		createCycle(300, 1000000000000, handleWhaleQueryStockList)
 		queryCycle = cyclePool[1]
 		go startCycle(&queryCycle)
 		initialStockQueryPerformed = true
@@ -33,6 +45,10 @@ func processQueryStockSet() {
 
 func processTSPRefresh() {
 	go handleTSPRefresh()
+}
+
+func processFillHolds() {
+	go handleFillHolds()
 }
 
 func processDowWebscrape() {
@@ -157,7 +173,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		boolOperate1 = false
 		processTSPRefresh()
 		processDowWebscrape()
-		processQueryStockSet()
+		processWisemenQueryStockSet()
+		processWhaleQueryStockSet()
 	}
 	// if currentTime.Minute() == testOneMinute && currentTime.Hour() == testOneHour && boolOperate1 {
 	// 	fmt.Println("hit1 init operations")
@@ -346,6 +363,15 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 
 }
 
+func checkWhaleDelimiterMet() bool {
+	isWhaleDelimiterMet := false
+	symbolList := selectWhaleSymbolHold()
+	if len(symbolList) >= 200 {
+		isWhaleDelimiterMet = true
+	}
+	return isWhaleDelimiterMet
+}
+
 func handleTSPRefresh(params ...interface{}) {
 	//TSP
 	var queryResponse = queryTSP()
@@ -396,19 +422,28 @@ func handleTSPRefresh(params ...interface{}) {
 	for k, v := range boolStockMonitorMap {
 		// fmt.Printf("key[%s] value[%s]\n", k, v)
 		if v == false {
-			insertMonitorSymbol(k, false)
+			insertTempSymbolHold(k, false)
 		}
 	}
+	//Here the temp hold will be filled and we can filter data to the other algorithm holds.
+	//Do we want to select from temp hold? and then fill other holds?
+	//Yes we want to fill holds retroactively.
+	// for k, v:=
 
 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 	insertAnalyticsOperations(stockRanking)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
 }
 
-func handleQueryStockList(params ...interface{}) {
-	fmt.Println("hit handleQueryStockList")
+func handleFillHolds(params ...interface{}) {
+	tempSymbolHoldList := selectTempSymbolHold()
+	fmt.Println(tempSymbolHoldList)
+}
+
+func handleWisemenQueryStockList(params ...interface{}) {
+	fmt.Println("hit handleWisemenQueryStockList")
 	//Query monitor_symbol
-	symbolList := selectMonitorSymbol()
+	symbolList := selectWisemenSymbolHold()
 
 	//Parse format errors in symbols
 	formattedSymbolList := []string{}
@@ -425,7 +460,32 @@ func handleQueryStockList(params ...interface{}) {
 
 	//Store Stocks in DB
 	for i, v := range stockList {
-		insertStock(v)
+		insertStockWisemen(v)
+		i++
+	}
+}
+
+func handleWhaleQueryStockList(params ...interface{}) {
+	fmt.Println("hit handleWhaleQueryStockList")
+	//Query monitor_symbol
+	symbolList := selectWhaleSymbolHold()
+
+	//Parse format errors in symbols
+	formattedSymbolList := []string{}
+	for i, v := range symbolList {
+		if strings.Contains(v, ".") {
+			continue
+		}
+		formattedSymbolList = append(formattedSymbolList, v)
+		i++
+	}
+	//Form query to Node -> Brokerage
+	queryResponse := queryMultiStockPull(formattedSymbolList)
+	stockList := parseStockSetQuery(queryResponse)
+
+	//Store Stocks in DB
+	for i, v := range stockList {
+		insertStockWhale(v)
 		i++
 	}
 }

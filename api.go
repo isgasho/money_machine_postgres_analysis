@@ -100,9 +100,13 @@ func main() {
 	// go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
-	processTimelineStart()
+	// processTimelineStart()
 	// checKIsBrokerageResponding()
+	insertWhaleSymbolHold("AAPL", false)
+	checkWhaleDelimiterMet()
+	if checkWhaleDelimiterMet {
 
+	}
 	// dowList := selectDow()
 	// dowMatchList := filterDowEntriesWithinTimeset(dowList, "2019-06-10T23:11:39", "2019-08-16T11:00:29")
 
