@@ -48,7 +48,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 
 	//Select all monitor symbol
 	if requestType == "0" {
-		monitorSymbolList := selectMonitorSymbol()
+		monitorSymbolList := selectTempSymbolHold()
 		monitorSymbolResponse := DatabaseMonitorSymbolListResponse{monitorSymbolList}
 		js, err := json.Marshal(monitorSymbolResponse)
 		if err != nil {
@@ -100,13 +100,24 @@ func main() {
 	// go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
-	// processTimelineStart()
-	// checKIsBrokerageResponding()
-	insertWhaleSymbolHold("AAPL", false)
-	checkWhaleDelimiterMet()
-	if checkWhaleDelimiterMet {
+	processTimelineStart()
 
-	}
+	// processFillHolds()
+	// handleWisemenQueryStockList()
+	// processWisemenQueryStockSet()
+	// processWhaleQueryStockSet()
+
+	// handleWisemenQueryStockList()
+	// handleWhaleQueryStockList()
+
+	// checKIsBrokerageResponding()
+	// insertWhaleSymbolHold("AAPL", false)
+	// checkWhaleDelimiterMet()
+	// dropWisemenSymbolHold()
+	// dropTempSymbolHold()
+	// createWisemenSymbolHold()
+	// createTempSymbolHold()
+
 	// dowList := selectDow()
 	// dowMatchList := filterDowEntriesWithinTimeset(dowList, "2019-06-10T23:11:39", "2019-08-16T11:00:29")
 

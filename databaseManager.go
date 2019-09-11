@@ -140,8 +140,8 @@ func insertStockWisemen(stockEntry Stock) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO stock (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
+		INSERT INTO stock_wisemen (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
 		RETURNING id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
 		`
 	var stock Stock
@@ -164,8 +164,8 @@ func insertStockWhale(stockEntry Stock) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO stock (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23, $24)
+		INSERT INTO stock_whale (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
 		RETURNING id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
 		`
 	var stock Stock
@@ -370,6 +370,57 @@ func deleteTempSymbolHold(symbolToDel string) {
 	fmt.Println(count)
 }
 
+func dropTempSymbolHold() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table temp_symbol_hold")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createTempSymbolHold() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   user_inputed boolean
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
 //
 func insertWisemenSymbolHold(symbol string, userInput bool) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -436,6 +487,57 @@ func deleteWisemenSymbolHold(symbolToDel string) {
 	defer db.Close()
 
 	res, err1 := db.Exec("DELETE FROM wisemen_symbol_hold WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func dropWisemenSymbolHold() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table wisemen_symbol_hold")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createWisemenSymbolHold() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE wisemen_symbol_hold
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   user_inputed boolean
+	);`)
+
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}

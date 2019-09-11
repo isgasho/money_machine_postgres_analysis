@@ -134,7 +134,6 @@ func parseStockSetQuery(queryString string) []Stock {
 		adv90 := strings.Split(adv90Unparsed, "</adv_90>")[0]
 
 		var stock = Stock{
-			DayID:        dayID,
 			Monitoring:   false,
 			Symbol:       symbol,
 			Bid:          bid,
@@ -288,9 +287,8 @@ func parseMonitoredStockQuery(queryString string) []Stock {
 		adv90Unparsed := strings.Split(v, "<adv_90>")[1]
 		adv90 := strings.Split(adv90Unparsed, "</adv_90>")[0]
 
-		fmt.Println(dayID)
+		// fmt.Println(dayID)
 		var stock = Stock{
-			DayID:        dayID,
 			Monitoring:   true,
 			Symbol:       symbol,
 			Bid:          bid,

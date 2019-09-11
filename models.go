@@ -2,9 +2,11 @@ package main
 
 type fn func(params ...interface{})
 
-var cyclePool = []Cycle{}
+// var cyclePool = map[]Cycle{}
 
-var dayID = 3
+var cycleMapPool = make(map[string]*Cycle)
+
+// var dayID = 3
 
 //User object for DB
 type User struct {
@@ -108,6 +110,7 @@ type TradeInfo struct {
 
 //Cycle management struct
 type Cycle struct {
+	Name             string
 	CreationIndex    int
 	BooleanOperate   bool
 	IntervalSpeed    int

@@ -6,63 +6,14 @@ import (
 	"time"
 )
 
-var queryCycle Cycle
-
-func checkIfMonitoring() {
-	//Get all stocks being monitored
-	//queryParser
-}
-
-func processTimelineStart() {
-	createCycle(5, 10000, handleTimelineConditionalTriggers)
-	operatingCycle := cyclePool[0]
-	go startCycle(&operatingCycle)
-}
-
-func processWisemenQueryStockSet() {
-	if initialStockQueryPerformed == true {
-		go startCycle(&queryCycle)
-	}
-	if initialStockQueryPerformed == false {
-		createCycle(3, 1000000000000, handleWisemenQueryStockList)
-		queryCycle = cyclePool[1]
-		go startCycle(&queryCycle)
-		initialStockQueryPerformed = true
-	}
-}
-
-func processWhaleQueryStockSet() {
-	if initialStockQueryPerformed == true {
-		go startCycle(&queryCycle)
-	}
-	if initialStockQueryPerformed == false {
-		createCycle(300, 1000000000000, handleWhaleQueryStockList)
-		queryCycle = cyclePool[1]
-		go startCycle(&queryCycle)
-		initialStockQueryPerformed = true
-	}
-}
-
-func processTSPRefresh() {
-	go handleTSPRefresh()
-}
-
-func processFillHolds() {
-	go handleFillHolds()
-}
-
-func processDowWebscrape() {
-	go handleDowWebscrape()
-}
-
-var checkIsMarketOpenMinute = 58
-var checkIsMarketOpenHour = 16
+var checkIsMarketOpenMinute = 28
+var checkIsMarketOpenHour = 13
 
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 59
-var conditionOneHour = 16
+var conditionOneMinute = 29
+var conditionOneHour = 13
 
 // var testOneMinute = 42
 // var testOneHour = 11
@@ -144,6 +95,56 @@ var boolOperate18 = true
 var boolOperate19 = true
 
 var initialStockQueryPerformed = false
+var initialWisemenStockQueryPerformed = false
+var initialWhaleStockQueryPerformed = false
+
+func checkIfMonitoring() {
+	//Get all stocks being monitored
+	//queryParser
+}
+
+func processTimelineStart() {
+	cycleMapPool = map[string]*Cycle{}
+	createCycle(5, 10000, handleTimelineConditionalTriggers, "handleTimelineConditionalTriggers")
+	operatingCycle := cycleMapPool["handleTimelineConditionalTriggers"]
+	go startCycle(operatingCycle)
+}
+
+func processWisemenQueryStockSet() {
+	if initialWisemenStockQueryPerformed == true {
+		go startCycle(cycleMapPool["handleWisemenQueryStockList"])
+	}
+	if initialWisemenStockQueryPerformed == false {
+		createCycle(3, 1000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
+		operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
+		go startCycle(operatingCycle)
+		initialStockQueryPerformed = true
+	}
+}
+
+func processWhaleQueryStockSet() {
+	if initialWhaleStockQueryPerformed == true {
+		go startCycle(cycleMapPool["handleWhaleQueryStockList"])
+	}
+	if initialWhaleStockQueryPerformed == false {
+		createCycle(300, 1000000000000, handleWhaleQueryStockList, "handleWhaleQueryStockList")
+		operatingCycle := cycleMapPool["handleWhaleQueryStockList"]
+		go startCycle(operatingCycle)
+		initialStockQueryPerformed = true
+	}
+}
+
+func processTSPRefresh() {
+	go handleTSPRefresh()
+}
+
+func processFillHolds() {
+	go handleFillHolds()
+}
+
+func processDowWebscrape() {
+	go handleDowWebscrape()
+}
 
 func handleTimelineConditionalTriggers(params ...interface{}) {
 	currentTime := time.Now()
@@ -293,11 +294,11 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		if queryCycle.BooleanOperate {
 			queryCycle.BooleanOperate = false
 		}
+		resetTempSymbolHold()
+		resetStockWisemenSymbolHold()
 		handleEndOfDayAnalyticsOperations()
 		handleDayReset()
 	}
-
-	//
 
 	//Conditional operate
 	// if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
@@ -388,48 +389,47 @@ func handleTSPRefresh(params ...interface{}) {
 	}
 
 	//Query monitorSymbol
-	monitorList := selectMonitorSymbol()
+	monitorList := selectTempSymbolHold()
 
-	boolStockMonitorMap := make(map[string]bool)
-
-	fmt.Println("hit before stocklist")
-	// for i, v := range topRankList {
-	for i, v := range stockList {
-		for i1, v1 := range monitorList {
-			if v.Symbol == v1 {
-				fmt.Println(v.Symbol)
-				boolStockMonitorMap[v.Symbol] = true
-				break
-			}
-			if i1 == (len(monitorList) - 1) {
-				// fmt.Println("last symbol ", v.Symbol)
-				boolStockMonitorMap[v.Symbol] = false
-			}
-		}
-		i++
-	}
-	// fmt.Println("this are", boolStockMonitorList)
-
-	//Insert symbol into monitor table if it doesn't exist there
-	// for i, v := range boolStockMonitorMap {
-	// 	if v == false {
-	// 		// fmt.Println(topRankList[i].Symbol)
-	// 		fmt
-	// 		insertMonitorSymbol(topRankList[i])
-	// 	}
-	// }
-
-	for k, v := range boolStockMonitorMap {
-		// fmt.Printf("key[%s] value[%s]\n", k, v)
-		if v == false {
-			insertTempSymbolHold(k, false)
+	if len(monitorList) == 0 {
+		for i, v := range topRankList {
+			insertTempSymbolHold(v.Symbol, false)
+			i++
 		}
 	}
+
+	if len(monitorList) != 0 {
+		boolStockMonitorMap := make(map[string]bool)
+
+		// for i, v := range topRankList {
+		for i, v := range topRankList {
+			for i1, v1 := range monitorList {
+				if v.Symbol == v1 {
+					fmt.Println(v.Symbol)
+					boolStockMonitorMap[v.Symbol] = true
+					break
+				}
+				if i1 == (len(monitorList) - 1) {
+					// fmt.Println("last symbol ", v.Symbol)
+					boolStockMonitorMap[v.Symbol] = false
+				}
+			}
+			i++
+		}
+
+		for k, v := range boolStockMonitorMap {
+			// fmt.Printf("key[%s] value[%s]\n", k, v)
+			if v == false {
+				insertTempSymbolHold(k, false)
+			}
+		}
+	}
+
 	//Here the temp hold will be filled and we can filter data to the other algorithm holds.
 	//Do we want to select from temp hold? and then fill other holds?
 	//Yes we want to fill holds retroactively.
 	// for k, v:=
-
+	processFillHolds()
 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 	insertAnalyticsOperations(stockRanking)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
@@ -437,13 +437,27 @@ func handleTSPRefresh(params ...interface{}) {
 
 func handleFillHolds(params ...interface{}) {
 	tempSymbolHoldList := selectTempSymbolHold()
-	fmt.Println(tempSymbolHoldList)
+	// fmt.Println("tempSymbolHoldList")
+	// fmt.Println(tempSymbolHoldList)
+
+	whaleDelimiterMet := checkWhaleDelimiterMet()
+	for i, v := range tempSymbolHoldList {
+		//insert for wisemen
+		insertWisemenSymbolHold(v, false)
+		//check process for whale
+		if whaleDelimiterMet == false {
+			insertWhaleSymbolHold(v, false)
+		}
+		i++
+	}
 }
 
 func handleWisemenQueryStockList(params ...interface{}) {
 	fmt.Println("hit handleWisemenQueryStockList")
 	//Query monitor_symbol
 	symbolList := selectWisemenSymbolHold()
+	fmt.Println("symbolList")
+	fmt.Println(symbolList)
 
 	//Parse format errors in symbols
 	formattedSymbolList := []string{}
@@ -501,6 +515,15 @@ func handleEndOfDayAnalyticsOperations() {
 	day := getDayOfWeek()
 	//insert into table conditional
 	insertEndOfDayAnalyticsOperations(isMarketClosed, day.String())
+}
+
+func resetTempSymbolHold() {
+	dropTempSymbolHold()
+	createTempSymbolHold()
+}
+func resetStockWisemenSymbolHold() {
+	dropWisemenSymbolHold()
+	createWisemenSymbolHold()
 }
 
 func handleDayReset() {

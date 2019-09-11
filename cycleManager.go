@@ -15,8 +15,9 @@ func test(params ...interface{}) {
 	}
 }
 
-func createCycle(intervalSpeed int, amountOfInterval int, functionToCall fn, params ...interface{}) {
+func createCycle(intervalSpeed int, amountOfInterval int, functionToCall fn, name string, params ...interface{}) {
 	var cycleInstance = Cycle{
+		Name:             name,
 		CreationIndex:    creationIndex,
 		BooleanOperate:   true,
 		IntervalSpeed:    intervalSpeed,
@@ -26,7 +27,9 @@ func createCycle(intervalSpeed int, amountOfInterval int, functionToCall fn, par
 	}
 
 	// fmt.Println(cycleInstance.Params)
-	cyclePool = append(cyclePool, cycleInstance)
+	// cycleMapPool
+	// cycleMapPool = append(cyclePool, cycleInstance)
+	cycleMapPool[name] = cycleInstance
 	creationIndex++
 }
 
@@ -36,12 +39,9 @@ func startCycle(cycleInstance *Cycle) {
 	var functionToCall = cycleInstance.FunctionToCall
 	var duration = cycleInstance.AmountOfInterval
 	var intervalSpeed = cycleInstance.IntervalSpeed
-	fmt.Println("amount", duration)
-	fmt.Println("interval speed", intervalSpeed)
 	for i < duration {
 		fmt.Println("i iteration ", i)
 		if cycleInstance.BooleanOperate {
-			// fmt.Println("cycleInstance.CreationIndex: ", cycleInstance.Name)
 			fmt.Println("cycleInstance.BooleanOperate: ", cycleInstance.BooleanOperate)
 			functionToCall(cycleInstance.Params)
 			time.Sleep(time.Duration(intervalSpeed) * time.Second)
