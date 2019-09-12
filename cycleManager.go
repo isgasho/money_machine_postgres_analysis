@@ -26,10 +26,7 @@ func createCycle(intervalSpeed int, amountOfInterval int, functionToCall fn, nam
 		Params:           params,
 	}
 
-	// fmt.Println(cycleInstance.Params)
-	// cycleMapPool
-	// cycleMapPool = append(cyclePool, cycleInstance)
-	cycleMapPool[name] = cycleInstance
+	cycleMapPool[name] = &cycleInstance
 	creationIndex++
 }
 
@@ -40,9 +37,9 @@ func startCycle(cycleInstance *Cycle) {
 	var duration = cycleInstance.AmountOfInterval
 	var intervalSpeed = cycleInstance.IntervalSpeed
 	for i < duration {
-		fmt.Println("i iteration ", i)
+		// fmt.Println("i iteration ", i)
 		if cycleInstance.BooleanOperate {
-			fmt.Println("cycleInstance.BooleanOperate: ", cycleInstance.BooleanOperate)
+			// fmt.Println("cycleInstance.BooleanOperate: ", cycleInstance.BooleanOperate)
 			functionToCall(cycleInstance.Params)
 			time.Sleep(time.Duration(intervalSpeed) * time.Second)
 		}

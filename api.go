@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 var isTimeMonitoringLoop bool
@@ -100,7 +101,15 @@ func main() {
 	// go handleRequests()
 
 	//Begin processTimeline upon condition isMarketClosed == false
-	processTimelineStart()
+	// processTimelineStart()
+	cycleMapPool = map[string]*Cycle{}
+	processWisemenQueryStockSet()
+	time.Sleep(time.Duration(10) * time.Second)
+	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
+	cancelCycle(operatingCycle)
+	time.Sleep(time.Duration(10) * time.Second)
+	// operatingCycle.BooleanOperate = true
+	processWisemenQueryStockSet()
 
 	// processFillHolds()
 	// handleWisemenQueryStockList()

@@ -112,13 +112,18 @@ func processTimelineStart() {
 
 func processWisemenQueryStockSet() {
 	if initialWisemenStockQueryPerformed == true {
-		go startCycle(cycleMapPool["handleWisemenQueryStockList"])
+		fmt.Println("hit initialWisemenStockQueryPerformed == true")
+		operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
+		// fmt.Println("operatingCycle.Name")
+		// fmt.Println(operatingCycle.Name)
+		go startCycle(operatingCycle)
 	}
 	if initialWisemenStockQueryPerformed == false {
+		fmt.Println("hit initialWisemenStockQueryPerformed == false")
 		createCycle(3, 1000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
 		operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
 		go startCycle(operatingCycle)
-		initialStockQueryPerformed = true
+		initialWisemenStockQueryPerformed = true
 	}
 }
 
@@ -130,7 +135,7 @@ func processWhaleQueryStockSet() {
 		createCycle(300, 1000000000000, handleWhaleQueryStockList, "handleWhaleQueryStockList")
 		operatingCycle := cycleMapPool["handleWhaleQueryStockList"]
 		go startCycle(operatingCycle)
-		initialStockQueryPerformed = true
+		initialWhaleStockQueryPerformed = true
 	}
 }
 
@@ -291,9 +296,17 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
 		boolOperate19 = false
-		if queryCycle.BooleanOperate {
-			queryCycle.BooleanOperate = false
+
+		handleWisemenQueryStockListCycle := cycleMapPool["handleWisemenQueryStockList"]
+		if handleWisemenQueryStockListCycle.BooleanOperate {
+			cancelCycle(handleWisemenQueryStockListCycle)
 		}
+
+		handleWhaleQueryStockListCycle := cycleMapPool["handleWhaleQueryStockList"]
+		if handleWhaleQueryStockListCycle.BooleanOperate {
+			cancelCycle(handleWhaleQueryStockListCycle)
+		}
+
 		resetTempSymbolHold()
 		resetStockWisemenSymbolHold()
 		handleEndOfDayAnalyticsOperations()
