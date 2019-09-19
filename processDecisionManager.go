@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 28
-var checkIsMarketOpenHour = 13
+var checkIsMarketOpenMinute = 43
+var checkIsMarketOpenHour = 15
 
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 29
-var conditionOneHour = 13
+var conditionOneMinute = 44
+var conditionOneHour = 15
 
 // var testOneMinute = 42
 // var testOneHour = 11
@@ -396,24 +396,24 @@ func handleTSPRefresh(params ...interface{}) {
 	//pull MonitorSymbol
 	//if symbols do not exist in set add to monitorSymbol
 	for i, v := range stockList {
-		if i < 3 {
-			topRankList = append(topRankList, v)
+		if len(topRankList) < 3 {
+			if strings.Contains(v.Symbol, ".") == false {
+				topRankList = append(topRankList, v)
+			}
 		}
+		i++
 	}
 
 	//Query monitorSymbol
 	monitorList := selectTempSymbolHold()
-
 	if len(monitorList) == 0 {
 		for i, v := range topRankList {
 			insertTempSymbolHold(v.Symbol, false)
 			i++
 		}
 	}
-
 	if len(monitorList) != 0 {
 		boolStockMonitorMap := make(map[string]bool)
-
 		// for i, v := range topRankList {
 		for i, v := range topRankList {
 			for i1, v1 := range monitorList {
@@ -429,7 +429,6 @@ func handleTSPRefresh(params ...interface{}) {
 			}
 			i++
 		}
-
 		for k, v := range boolStockMonitorMap {
 			// fmt.Printf("key[%s] value[%s]\n", k, v)
 			if v == false {
@@ -443,6 +442,8 @@ func handleTSPRefresh(params ...interface{}) {
 	//Yes we want to fill holds retroactively.
 	// for k, v:=
 	processFillHolds()
+	fmt.Println("topRankList")
+	fmt.Println(topRankList)
 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 	insertAnalyticsOperations(stockRanking)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
@@ -450,19 +451,49 @@ func handleTSPRefresh(params ...interface{}) {
 
 func handleFillHolds(params ...interface{}) {
 	tempSymbolHoldList := selectTempSymbolHold()
-	// fmt.Println("tempSymbolHoldList")
-	// fmt.Println(tempSymbolHoldList)
 
 	whaleDelimiterMet := checkWhaleDelimiterMet()
-	for i, v := range tempSymbolHoldList {
-		//insert for wisemen
-		insertWisemenSymbolHold(v, false)
-		//check process for whale
-		if whaleDelimiterMet == false {
-			insertWhaleSymbolHold(v, false)
+	for i, tempSymbol := range tempSymbolHoldList {
+		//condition meet if whale symbol or wisemen symbol already exists.
+
+		isSymbolExistsInWisemen := false
+		isSymbolExistsInWhale := false
+
+		//select from wisemen
+		wisemenSymbolList := selectWisemenSymbolHold()
+		//select from whale
+		whaleSymbolList := selectWisemenSymbolHold()
+
+		//iterrate set isSymbolExistsInWiseMen
+		for i, wisemenSymbol := range wisemenSymbolList {
+			if wisemenSymbol == tempSymbol {
+				isSymbolExistsInWisemen = true
+			}
+			i++
 		}
-		i++
+
+		for i, whaleSymbol := range whaleSymbolList {
+			if whaleSymbol == tempSymbol {
+				isSymbolExistsInWhale = true
+			}
+			i++
+		}
+
+		if isSymbolExistsInWisemen == false {
+			//insert for wisemen
+			insertWisemenSymbolHold(tempSymbol, false)
+		}
+		if isSymbolExistsInWhale == false {
+			//check process for whale
+			if whaleDelimiterMet == false {
+				insertWhaleSymbolHold(tempSymbol, false)
+			}
+			i++
+		}
+
 	}
+	dropTempSymbolHold()
+	createTempSymbolHold()
 }
 
 func handleWisemenQueryStockList(params ...interface{}) {

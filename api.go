@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 var isTimeMonitoringLoop bool
@@ -87,6 +86,34 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
+
+	if requestType == "selectAllStockWisemen" {
+		stockList := selectAllStockWisemen()
+		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+
+		stockListResponse := DatabaseStockListResponse{stockList}
+		js, err := json.Marshal(stockListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
+	if requestType == "selectAllStockWhale" {
+		stockList := selectAllStockWhale()
+		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+
+		stockListResponse := DatabaseStockListResponse{stockList}
+		js, err := json.Marshal(stockListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 	// databaseResponse := DatabaseResponse{"Alex", []string{"snowboarding", "programming"}}
 }
 
@@ -98,18 +125,33 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	// go handleRequests()
+	go handleRequests()
+	// processWisemenQueryStockSet()
 
 	//Begin processTimeline upon condition isMarketClosed == false
 	// processTimelineStart()
-	cycleMapPool = map[string]*Cycle{}
-	processWisemenQueryStockSet()
-	time.Sleep(time.Duration(10) * time.Second)
-	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
-	cancelCycle(operatingCycle)
-	time.Sleep(time.Duration(10) * time.Second)
-	// operatingCycle.BooleanOperate = true
-	processWisemenQueryStockSet()
+	// handleTSPRefresh()
+	// handleFillHolds()
+
+	// strings.Contains("something", "some")
+	// isBoolConditionMet := strings.Contains("ABC.L", ".")
+	// if isBoolConditionMet {
+	// 	fmt.Println("true")
+	// }
+	// if isBoolConditionMet == false {
+	// 	fmt.Println("false")
+	// }
+
+	// cycleMapPool = map[string]*Cycle{}
+	// processWisemenQueryStockSet()
+	// time.Sleep(time.Duration(10) * time.Second)
+	// operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
+	// cancelCycle(operatingCycle)
+	// time.Sleep(time.Duration(10) * time.Second)
+	// // operatingCycle.BooleanOperate = true
+	// processWisemenQueryStockSet()
+
+	// fmt.Println(selectAllStockWisemen())
 
 	// processFillHolds()
 	// handleWisemenQueryStockList()
