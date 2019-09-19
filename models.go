@@ -42,6 +42,10 @@ type DatabaseStockListResponse struct {
 	StockList []Stock
 }
 
+// type DatabaseMetricsResponseWhale struct {
+// 	Metrics w
+// }
+
 type Day struct {
 	ID        string
 	DayOfWeek string
@@ -122,4 +126,13 @@ type Cycle struct {
 type BrokerageQuery struct {
 	request_type string
 	Name         string
+}
+
+type WhaleMetrics struct {
+	CreatedAt                      string
+	DesiredPriceRangeHigh          string
+	DesiredPriceRangeLow           string
+	DesiredPchg                    string
+	DesiredPchgVarianceValue       string
+	DesiredVolatilityVarianceValue string
 }

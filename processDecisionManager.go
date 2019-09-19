@@ -6,14 +6,14 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 43
-var checkIsMarketOpenHour = 15
+var checkIsMarketOpenMinute = 19
+var checkIsMarketOpenHour = 14
 
 // var checkIsMarketOpenFollowUpMinute = 46
 // var checkIsMarketOpenFollowUpHour = 7
 
-var conditionOneMinute = 44
-var conditionOneHour = 15
+var conditionOneMinute = 20
+var conditionOneHour = 14
 
 // var testOneMinute = 42
 // var testOneHour = 11

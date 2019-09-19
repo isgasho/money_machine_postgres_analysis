@@ -498,6 +498,114 @@ func createTempSymbolHold() {
 }
 
 //
+//
+
+func insertMetricsWhale(desired_price_range_high string, desired_price_range_low string, desired_pchg, desired_pchg_variance_value string, desired_volatility_variance_value string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO metrics_whale (desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
+			VALUES ($1,$2,$3,$4,$5)
+			RETURNING created_at
+		`
+	var whaleMetrics WhaleMetrics
+
+	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
+	err1 := row.Scan(&whaleMetrics.CreatedAt)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectMetricsWhale() []WhaleMetrics {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value FROM metrics_whale")
+	if err1 != nil {
+		// log.Fatal(err)
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	metricsList := make([]WhaleMetrics, 0)
+
+	for rows.Next() {
+		var whaleMetrics WhaleMetrics
+		// DesiredPchg                    string
+		if err2 := rows.Scan(&whaleMetrics.CreatedAt, &whaleMetrics.DesiredPriceRangeHigh, &whaleMetrics.DesiredPriceRangeLow, &whaleMetrics.DesiredPchg, &whaleMetrics.DesiredPchgVarianceValue, &whaleMetrics.DesiredVolatilityVarianceValue); err2 != nil {
+			fmt.Println("err2")
+		}
+		metricsList = append(metricsList, whaleMetrics)
+	}
+	return metricsList
+}
+
+func dropMetricsWhale() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table temp_symbol_hold")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createMetricsWhale() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   user_inputed boolean
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//
 func insertWisemenSymbolHold(symbol string, userInput bool) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",

@@ -125,10 +125,14 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	go handleRequests()
+	// go handleRequests()
 	// processWisemenQueryStockSet()
 
 	//Begin processTimeline upon condition isMarketClosed == false
+	// insertMetricsWhale("hey", "hey1", "hey2", "hey3", "hey4")
+
+	response := selectMetricsWhale()
+	fmt.Println(response)
 	// processTimelineStart()
 	// handleTSPRefresh()
 	// handleFillHolds()
