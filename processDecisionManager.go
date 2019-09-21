@@ -9,14 +9,8 @@ import (
 var checkIsMarketOpenMinute = 19
 var checkIsMarketOpenHour = 14
 
-// var checkIsMarketOpenFollowUpMinute = 46
-// var checkIsMarketOpenFollowUpHour = 7
-
 var conditionOneMinute = 20
 var conditionOneHour = 14
-
-// var testOneMinute = 42
-// var testOneHour = 11
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
@@ -97,11 +91,6 @@ var boolOperate19 = true
 var initialStockQueryPerformed = false
 var initialWisemenStockQueryPerformed = false
 var initialWhaleStockQueryPerformed = false
-
-func checkIfMonitoring() {
-	//Get all stocks being monitored
-	//queryParser
-}
 
 func processTimelineStart() {
 	cycleMapPool = map[string]*Cycle{}
@@ -524,9 +513,12 @@ func handleWisemenQueryStockList(params ...interface{}) {
 }
 
 func handleWhaleQueryStockList(params ...interface{}) {
-	fmt.Println("hit handleWhaleQueryStockList")
 	//Query monitor_symbol
 	symbolList := selectWhaleSymbolHold()
+	//There's a disconnect here, from symbolList and stock
+	//Really where do we add the symbol to symbolLis
+	//If symbol in symbolList was added today.
+	//Before enter stock, select all stock and see if symbol is present.
 
 	//Parse format errors in symbols
 	formattedSymbolList := []string{}
@@ -537,15 +529,105 @@ func handleWhaleQueryStockList(params ...interface{}) {
 		formattedSymbolList = append(formattedSymbolList, v)
 		i++
 	}
-	//Form query to Node -> Brokerage
+
+	//Given a symbolList, query brokerage, stock list response.
 	queryResponse := queryMultiStockPull(formattedSymbolList)
 	stockList := parseStockSetQuery(queryResponse)
-
-	//Store Stocks in DB
-	for i, v := range stockList {
-		insertStockWhale(v)
-		i++
+	noCalculationMatchFound := false
+	isContinueCalculation := false
+	//if symbol is presnt in list.
+	//is symbol calculated for day.
+	//if there is a symbol in the new stockList, that has not been calculated for,
+	//meaning there is no match, noCalculationMatchFound,
+	//if noCalculationMatchFound, then it needs to be accounted for and follow process for all stocks entering.
+	listSymbolDayCalculatedWhale := []string{}
+	for indexStock, stock := range stockList {
+		isContinueCalculation = false
+		for indexSymbolDayCalculated, symbolDayCalculated := range listSymbolDayCalculatedWhale {
+			if stock.Symbol == symbolDayCalculated {
+				isContinueCalculation = true
+				break
+			}
+			indexSymbolDayCalculated++
+		}
+		if isContinueCalculation == false {
+			noCalculationMatchFound = true
+			break
+		}
+		indexStock++
 	}
+
+	//
+	if noCalculationMatchFound == false {
+		for i, stock := range stockList {
+			insertStockWhale(stock)
+			i++
+		}
+	}
+	//
+	if noCalculationMatchFound {
+		isPresentInDB := false
+		isDaySame := false
+		//Select stock once
+		stockListQueried := selectAllStockWhale()
+		for indexStock, stock := range stockList {
+			//iterate through each stock to be entered, and see if stockList matches.
+			//If match then add as normal,
+			isPresentInDB = false
+			isDaySame = false
+			for indexStockInDB, stockInDB := range stockListQueried {
+				if stockInDB.Symbol == stock.Symbol {
+					//compare
+					isStocksComparedSameTimeStamps := compareTimeStamps(stock, stockInDB)
+					if isStocksComparedSameTimeStamps {
+						insertStockWhale(stock)
+						isPresentInDB = true
+						isDaySame = true
+						break
+					}
+				}
+				indexStockInDB++
+			}
+			//Is conditional that stock in DB is present. If stock in in DB is not present skip "isDaySame" process.
+			//if no match, then special process, add symbol dynamically to list.
+			if isPresentInDB == false || isDaySame == false {
+				appendedStock := processAppendDayOfWeekToStock(stock)
+				insertStockWhale(appendedStock)
+			}
+			indexStock++
+		}
+	}
+}
+
+func compareTimeStamps(stock1 Stock, stock2 Stock) bool {
+	isTimeStampMatch := true
+	//Split for day
+	// 2019-09-19 17:47:10.944343-06
+	stock1Split1 := strings.Split(stock1.CreatedAt, ":")[0]
+	stock1Split2 := strings.Split(stock1Split1, "-")[1]
+	day1 := strings.Split(stock1Split2, " ")[0]
+
+	stock2Split1 := strings.Split(stock2.CreatedAt, ":")[0]
+	stock2Split2 := strings.Split(stock2Split1, "-")[1]
+	day2 := strings.Split(stock2Split2, " ")[0]
+
+	//compare day,
+	if day1 != day2 {
+		isTimeStampMatch = false
+	}
+	return isTimeStampMatch
+}
+func processAppendDayOfWeekToStock(stock Stock) Stock {
+	//handle on first field available value, append day of week.
+	//get handle on day of week.
+	// dayOfWeek := time.Date.
+	instanceStock := stock
+	currentTime := time.Now()
+	instanceStock.Vl = "99.9"
+	instanceStock.Vl = instanceStock.Vl + " " + currentTime.Weekday().String()
+	fmt.Println(instanceStock.Vl)
+
+	return instanceStock
 }
 
 func handleDowWebscrape(params ...interface{}) {

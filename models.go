@@ -20,7 +20,7 @@ type User struct {
 
 type DatabaseQuery struct {
 	RequestType string
-	Data        string
+	Data        []string
 	Range1      string
 	Range2      string
 }
@@ -40,6 +40,9 @@ type DatabaseDowListResponse struct {
 
 type DatabaseStockListResponse struct {
 	StockList []Stock
+}
+type DatabaseMetricsWhaleResponse struct {
+	MetricsWhale []MetricsWhale
 }
 
 // type DatabaseMetricsResponseWhale struct {
@@ -128,7 +131,7 @@ type BrokerageQuery struct {
 	Name         string
 }
 
-type WhaleMetrics struct {
+type MetricsWhale struct {
 	CreatedAt                      string
 	DesiredPriceRangeHigh          string
 	DesiredPriceRangeLow           string

@@ -497,9 +497,7 @@ func createTempSymbolHold() {
 	fmt.Println(count)
 }
 
-//
-//
-
+//Whale metrics
 func insertMetricsWhale(desired_price_range_high string, desired_price_range_low string, desired_pchg, desired_pchg_variance_value string, desired_volatility_variance_value string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
@@ -515,16 +513,16 @@ func insertMetricsWhale(desired_price_range_high string, desired_price_range_low
 			VALUES ($1,$2,$3,$4,$5)
 			RETURNING created_at
 		`
-	var whaleMetrics WhaleMetrics
+	var metricsWhale MetricsWhale
 
 	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
-	err1 := row.Scan(&whaleMetrics.CreatedAt)
+	err1 := row.Scan(&metricsWhale.CreatedAt)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
 }
 
-func selectMetricsWhale() []WhaleMetrics {
+func selectMetricsWhale() []MetricsWhale {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -541,15 +539,15 @@ func selectMetricsWhale() []WhaleMetrics {
 		fmt.Println(err1)
 	}
 	defer rows.Close()
-	metricsList := make([]WhaleMetrics, 0)
+	metricsList := make([]MetricsWhale, 0)
 
 	for rows.Next() {
-		var whaleMetrics WhaleMetrics
+		var metricsWhale MetricsWhale
 		// DesiredPchg                    string
-		if err2 := rows.Scan(&whaleMetrics.CreatedAt, &whaleMetrics.DesiredPriceRangeHigh, &whaleMetrics.DesiredPriceRangeLow, &whaleMetrics.DesiredPchg, &whaleMetrics.DesiredPchgVarianceValue, &whaleMetrics.DesiredVolatilityVarianceValue); err2 != nil {
+		if err2 := rows.Scan(&metricsWhale.CreatedAt, &metricsWhale.DesiredPriceRangeHigh, &metricsWhale.DesiredPriceRangeLow, &metricsWhale.DesiredPchg, &metricsWhale.DesiredPchgVarianceValue, &metricsWhale.DesiredVolatilityVarianceValue); err2 != nil {
 			fmt.Println("err2")
 		}
-		metricsList = append(metricsList, whaleMetrics)
+		metricsList = append(metricsList, metricsWhale)
 	}
 	return metricsList
 }
@@ -565,7 +563,7 @@ func dropMetricsWhale() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("drop table temp_symbol_hold")
+	res, err1 := db.Exec("drop table metrics_whale")
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}
@@ -587,12 +585,124 @@ func createMetricsWhale() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold
+	res, err1 := db.Exec(`CREATE TABLE metrics_whale
 	( 
-	   id SERIAL PRIMARY KEY,
-	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   symbol VARCHAR,
-	   user_inputed boolean
+		id SERIAL PRIMARY KEY,
+		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+		desired_price_range_high VARCHAR,
+		desired_price_range_low VARCHAR,
+		desired_pchg VARCHAR,
+		desired_pchg_variance_value VARCHAR,
+		desired_volatility_variance_value VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//Wisemen metrics
+func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, desired_pchg, desired_pchg_variance_value string, desired_volatility_variance_value string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
+			VALUES ($1,$2,$3,$4,$5)
+			RETURNING created_at
+		`
+	var metricsWhale MetricsWhale
+
+	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
+	err1 := row.Scan(&metricsWhale.CreatedAt)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectMetricsWisemen() []MetricsWhale {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value FROM metrics_whale")
+	if err1 != nil {
+		// log.Fatal(err)
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	metricsList := make([]MetricsWhale, 0)
+
+	for rows.Next() {
+		var metricsWhale MetricsWhale
+		// DesiredPchg                    string
+		if err2 := rows.Scan(&metricsWhale.CreatedAt, &metricsWhale.DesiredPriceRangeHigh, &metricsWhale.DesiredPriceRangeLow, &metricsWhale.DesiredPchg, &metricsWhale.DesiredPchgVarianceValue, &metricsWhale.DesiredVolatilityVarianceValue); err2 != nil {
+			fmt.Println("err2")
+		}
+		metricsList = append(metricsList, metricsWhale)
+	}
+	return metricsList
+}
+
+func dropMetricsWisemen() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table metrics_whale")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createMetricsWisemen() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE metrics_whale
+	( 
+		id SERIAL PRIMARY KEY,
+		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+		desired_price_range_high VARCHAR,
+		desired_price_range_low VARCHAR,
+		desired_pchg VARCHAR,
+		desired_pchg_variance_value VARCHAR,
+		desired_volatility_variance_value VARCHAR
 	);`)
 
 	if err1 != nil {

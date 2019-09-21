@@ -73,24 +73,22 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 	//Select all stock where symbol == data within range
-	if requestType == "2" {
-		stockList := selectAllStockOfSymbol(data)
-		stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+	// if requestType == "2" {
+	// 	stockList := selectAllStockOfSymbol(data)
+	// 	stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
 
-		stockListResponse := DatabaseStockListResponse{stockMatchList}
-		js, err := json.Marshal(stockListResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// 	stockListResponse := DatabaseStockListResponse{stockMatchList}
+	// 	js, err := json.Marshal(stockListResponse)
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 
 	if requestType == "selectAllStockWisemen" {
 		stockList := selectAllStockWisemen()
-		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
-
 		stockListResponse := DatabaseStockListResponse{stockList}
 		js, err := json.Marshal(stockListResponse)
 		if err != nil {
@@ -101,12 +99,113 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 
+	//Whale operations
 	if requestType == "selectAllStockWhale" {
 		stockList := selectAllStockWhale()
 		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
 
 		stockListResponse := DatabaseStockListResponse{stockList}
 		js, err := json.Marshal(stockListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
+	//Metrics whale
+	if requestType == "insertMetricsWhale" {
+		// data := databaseQuery.Data
+		dataList := databaseQuery.Data
+		insertMetricsWhale(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "selectMetricsWhale" {
+		metricsWhale := selectMetricsWhale()
+		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+
+		metricsWhaleResponse := DatabaseMetricsWhaleResponse{MetricsWhale: metricsWhale}
+		js, err := json.Marshal(metricsWhaleResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "dropMetricsWhale" {
+		dropMetricsWhale()
+		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+		// stockListResponse := DatabaseStockListResponse{stockList}
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "createMetricsWhale" {
+		createMetricsWhale()
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
+	//Metrics wisemen
+	if requestType == "insertMetricsWisemen" {
+		// data := databaseQuery.Data
+		dataList := databaseQuery.Data
+		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "selectMetricsWisemen" {
+		metricsWhale := selectMetricsWisemen()
+		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+
+		metricsWhaleResponse := DatabaseMetricsWhaleResponse{MetricsWhale: metricsWhale}
+		js, err := json.Marshal(metricsWhaleResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "dropMetricsWisemen" {
+		dropMetricsWisemen()
+		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+		// stockListResponse := DatabaseStockListResponse{stockList}
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "createMetricsWisemen" {
+		createMetricsWisemen()
+		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -126,13 +225,21 @@ func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
 	// go handleRequests()
+	processAppendDayOfWeekToStock(Stock{})
+
 	// processWisemenQueryStockSet()
+
+	//initial insert whale metrics.
 
 	//Begin processTimeline upon condition isMarketClosed == false
 	// insertMetricsWhale("hey", "hey1", "hey2", "hey3", "hey4")
 
-	response := selectMetricsWhale()
-	fmt.Println(response)
+	// response := selectMetricsWhale()
+	// fmt.Println(response)
+
+	// dropMetricsWhale()
+	// createMetricsWhale()
+
 	// processTimelineStart()
 	// handleTSPRefresh()
 	// handleFillHolds()
