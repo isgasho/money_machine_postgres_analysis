@@ -224,8 +224,8 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	// go handleRequests()
-	processAppendDayOfWeekToStock(Stock{})
+	go handleRequests()
+	// processAppendDayOfWeekToStock(Stock{})
 
 	// processWisemenQueryStockSet()
 
@@ -241,6 +241,7 @@ func main() {
 	// createMetricsWhale()
 
 	// processTimelineStart()
+
 	// handleTSPRefresh()
 	// handleFillHolds()
 

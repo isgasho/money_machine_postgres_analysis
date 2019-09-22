@@ -621,12 +621,10 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 	//handle on first field available value, append day of week.
 	//get handle on day of week.
 	// dayOfWeek := time.Date.
+
 	instanceStock := stock
 	currentTime := time.Now()
-	instanceStock.Vl = "99.9"
-	instanceStock.Vl = instanceStock.Vl + " " + currentTime.Weekday().String()
-	fmt.Println(instanceStock.Vl)
-
+	instanceStock.CreatedAt = instanceStock.CreatedAt + " ?" + currentTime.Weekday().String()
 	return instanceStock
 }
 
