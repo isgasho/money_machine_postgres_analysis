@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 46
-var checkIsMarketOpenHour = 12
+var checkIsMarketOpenMinute = 01
+var checkIsMarketOpenHour = 16
 
-var conditionOneMinute = 47
-var conditionOneHour = 12
+var conditionOneMinute = 02
+var conditionOneHour = 16
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
@@ -526,102 +526,38 @@ func handleWhaleQueryStockList(params ...interface{}) {
 		formattedSymbolList = append(formattedSymbolList, v)
 		i++
 	}
-
 	//Given a symbolList, query brokerage, stock list response.
 	queryResponse := queryMultiStockPull(formattedSymbolList)
 	stockListBrokerage := parseStockSetQuery(queryResponse)
 
-	// noCalculationMatchFound := false
-	// isContinueCalculation := false
-	// listSymbolDayCalculatedWhale := formattedSymbolList
-	// stockListDB := selectAllStockWhale()
-	// // check if symbol is in DB
-	// for indexStockDB, stockDB := range stockListDB {
-	// 	noCalculationMatchFound = false
-	// 	for indexSymbol, symbol := range listSymbolDayCalculatedWhale {
-	// 		if stockDB.Symbol == symbol {
-	// 			//If match, if symbol is present...
-	// 			// isContinueCalculation = true
-	// 			noCalculationMatchFound = true
-	// 			break
-	// 		}
-	// 		indexSymbol++
-	// 	}
-	// 	// if isContinueCalculation == false {
-	// 	// 	noCalculationMatchFound = true
-	// 	// 	break
-	// 	// }
-	// 	indexStockDB++
-	// }
-	// //if symbol is not in DB
-	// if noCalculationMatchFound == false {
-	// 	for i, stock := range stockListBrokerage {
-	// 		insertStockWhale(stock)
-	// 		i++
-	// 	}
-	// }
-	// //if symbol is in DB
-	// if noCalculationMatchFound {
 	//so monitorSymbol given
 	//for each symbol query whale
 	listOfDatabaseStockListResponse := []DatabaseStockListResponse{}
 	for index, symbol := range formattedSymbolList {
 		stockList := selectStockWhale(symbol)
+		if len(stockList) == 0 {
+			continue
+		}
 		databaseStockListResponse := DatabaseStockListResponse{StockList: stockList}
 		listOfDatabaseStockListResponse = append(listOfDatabaseStockListResponse, databaseStockListResponse)
 		index++
 	}
-	//
-	//
-	//select individually from whale
-	// stockListDB := selectAllStockWhale()
-
-	//given list of listOfDatabaseStockListResponse
-	//get last index of stocklist
-
-	// isDaySame := false
 	isPresentInDB := false
 	isDaySame := false
 	for indexStockBrokerage, stockBrokerage := range stockListBrokerage {
-		//iterate through each stock to be entered, and see if stockList matches.
-		//If match then add as normal,
 		isPresentInDB = false
 		isDaySame = false
-		//right now it's search whole stockListDB if symbol match
-		//since it's going to query symbol list, we can check if symbol in symbol list matches.
-
-		//This is implying that there is a stock inside DB
-		//List stocks from DB
 
 		for indexDatabaseStockListResponse, databaseStockListResponse := range listOfDatabaseStockListResponse {
-			// for indexStockDB, stockDB := range databaseStockListResponse.StockList {
-			//for each
-			//need to select all of symbol,
-			//then get latest of that symbol.
-			lastIndexedStock := databaseStockListResponse.StockList[(len(databaseStockListResponse.StockList) - 1)]
 
+			fmt.Println(databaseStockListResponse.StockList)
+			lastIndexedStock := databaseStockListResponse.StockList[(len(databaseStockListResponse.StockList) - 1)]
 			if lastIndexedStock.Symbol == stockBrokerage.Symbol {
 				isPresentInDB = true
 			}
-
-			// fmt.Println("indexStockDB")
-			// fmt.Println(indexStockDB)
-			// fmt.Println("stockBrokerage.Symbol")
-			// fmt.Println(stockBrokerage.Symbol)
-			// //StockBrokerage doesn't have a created at, upon pull need to add one....
-			// //as part of stock pull process, need to append the date to each stock.
-			// fmt.Println("stockBrokerage.CreatedAt")
-			// fmt.Println(stockBrokerage.CreatedAt)
-
-			// fmt.Println("stockDB.CreatedAt")
-			// fmt.Println(stockDB.CreatedAt)
-
-			// isPresentInDB = true
-			// lastIndexedStock := databaseStockListResponse.StockList[(len(databaseStockListResponse.StockList) - 1)]
-			//comparing days, if same day add as normal,
-
 			if isPresentInDB {
 				isStocksComparedSameTimeStamps := compareTimeStamps(stockBrokerage, lastIndexedStock)
+				//if present and day is the same
 				if isStocksComparedSameTimeStamps {
 					insertStockWhale(stockBrokerage)
 					isDaySame = true
@@ -633,6 +569,7 @@ func handleWhaleQueryStockList(params ...interface{}) {
 		//if symbol in DB, but different days
 		if isDaySame == false {
 			appendedStock := processAppendDayOfWeekToStock(stockBrokerage)
+			//When stock is inserted it does not take into account the day.
 			insertStockWhale(appendedStock)
 		}
 		indexStockBrokerage++
@@ -640,10 +577,12 @@ func handleWhaleQueryStockList(params ...interface{}) {
 }
 func processDetectStockWhaleWhereDayIsAtIndex(stockList []Stock) {
 	for index, stock := range stockList {
-		isContained := strings.Contains(stock.CreatedAt, "?")
-		if isContained {
-			fmt.Println(stock.CreatedAt)
-		}
+
+		fmt.Println(stock.CreatedAt)
+		// isContained := strings.Contains(stock.CreatedAt, "?")
+		// if isContained {
+		// 	fmt.Println(stock.CreatedAt)
+		// }
 		index++
 	}
 }
@@ -683,7 +622,8 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 	//with weekday
 	instanceStock := stock
 	currentTime := time.Now()
-	instanceStock.CreatedAt = instanceStock.CreatedAt + " ?" + currentTime.Weekday().String()
+	instanceStock.Vl = instanceStock.Vl + " ?" + currentTime.Weekday().String()
+	fmt.Println(instanceStock.Vl)
 	return instanceStock
 }
 

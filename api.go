@@ -242,17 +242,37 @@ func main() {
 
 	// processTimelineStart()
 
-	// handleTSPRefresh()
-	// processDowWebscrape()
-	// processWisemenQueryStockSet()
-	// processWhaleQueryStockSet()
+	handleTSPRefresh()
+	processDowWebscrape()
+	processWisemenQueryStockSet()
+	processWhaleQueryStockSet()
 	// fmt.Println(createStockTimeStamp())
 
 	// handleWhaleQueryStockList()
+	// deleteAllStockOfSymbolInWhale("CMG")
+
+	//delete all of symbol from whale.
+
+	//Test if //if isPresentInDB {
+	//if days are different
+
+	//
+
+	// Discover where the process is failing and repair it.
 
 	results := selectStockWhale("CMG")
+	// fmt.Println(results[0].Vl)
 	// fmt.Println(results)
-	processDetectStockWhaleWhereDayIsAtIndex(results)
+	for i, v := range results {
+		fmt.Println(v.Vl)
+		i++
+	}
+
+	//How to add if it's a different day?
+	//
+
+	//
+	// processDetectStockWhaleWhereDayIsAtIndex(results)
 
 	// handleTSPRefresh()
 	// handleFillHolds()
