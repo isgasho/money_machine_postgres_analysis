@@ -2,7 +2,9 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
+	"time"
 
 	_ "github.com/lib/pq"
 )
@@ -133,9 +135,13 @@ func parseStockSetQuery(queryString string) []Stock {
 		adv90Unparsed := strings.Split(v, "<adv_90>")[1]
 		adv90 := strings.Split(adv90Unparsed, "</adv_90>")[0]
 
+		//calculated createdAt
+		createdAt := createStockTimeStamp()
+
 		var stock = Stock{
 			Monitoring:   false,
 			Symbol:       symbol,
+			CreatedAt:    createdAt,
 			Bid:          bid,
 			Ask:          ask,
 			Last:         last,
@@ -162,6 +168,19 @@ func parseStockSetQuery(queryString string) []Stock {
 		stockList = append(stockList, stock)
 	}
 	return stockList
+}
+func createStockTimeStamp() string {
+	// currentTime := time.Now()
+	year, month, day := time.Now().Date()
+	fmt.Println(year)
+	monthInt := int(month)
+	monthString := strconv.Itoa(monthInt)
+	dayString := strconv.Itoa(day)
+	// fmt.Println(day)
+	// timeStamp := currentTime.Date()
+	timeStamp := monthString + " " + dayString + " " //:= string(int(month)) + string(day)
+	// stringAppend :=
+	return timeStamp
 }
 
 func parseAskTimeQuery(queryString string) string {

@@ -224,7 +224,7 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	go handleRequests()
+	// go handleRequests()
 	// processAppendDayOfWeekToStock(Stock{})
 
 	// processWisemenQueryStockSet()
@@ -241,6 +241,18 @@ func main() {
 	// createMetricsWhale()
 
 	// processTimelineStart()
+
+	// handleTSPRefresh()
+	// processDowWebscrape()
+	// processWisemenQueryStockSet()
+	// processWhaleQueryStockSet()
+	// fmt.Println(createStockTimeStamp())
+
+	// handleWhaleQueryStockList()
+
+	results := selectStockWhale("CMG")
+	// fmt.Println(results)
+	processDetectStockWhaleWhereDayIsAtIndex(results)
 
 	// handleTSPRefresh()
 	// handleFillHolds()

@@ -6,11 +6,11 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 19
-var checkIsMarketOpenHour = 14
+var checkIsMarketOpenMinute = 46
+var checkIsMarketOpenHour = 12
 
-var conditionOneMinute = 20
-var conditionOneHour = 14
+var conditionOneMinute = 47
+var conditionOneHour = 12
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
@@ -166,7 +166,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionOneMinute && currentTime.Hour() == conditionOneHour && boolOperate1 {
 		fmt.Println("hit1 init operations")
 		boolOperate1 = false
-		processTSPRefresh()
+		// processTSPRefresh()
+		handleTSPRefresh()
 		processDowWebscrape()
 		processWisemenQueryStockSet()
 		processWhaleQueryStockSet()
@@ -430,9 +431,10 @@ func handleTSPRefresh(params ...interface{}) {
 	//Do we want to select from temp hold? and then fill other holds?
 	//Yes we want to fill holds retroactively.
 	// for k, v:=
+
 	processFillHolds()
-	fmt.Println("topRankList")
-	fmt.Println(topRankList)
+	// fmt.Println("topRankList")
+	// fmt.Println(topRankList)
 	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 	insertAnalyticsOperations(stockRanking)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
@@ -515,11 +517,6 @@ func handleWisemenQueryStockList(params ...interface{}) {
 func handleWhaleQueryStockList(params ...interface{}) {
 	//Query monitor_symbol
 	symbolList := selectWhaleSymbolHold()
-	//There's a disconnect here, from symbolList and stock
-	//Really where do we add the symbol to symbolLis
-	//If symbol in symbolList was added today.
-	//Before enter stock, select all stock and see if symbol is present.
-
 	//Parse format errors in symbols
 	formattedSymbolList := []string{}
 	for i, v := range symbolList {
@@ -532,96 +529,158 @@ func handleWhaleQueryStockList(params ...interface{}) {
 
 	//Given a symbolList, query brokerage, stock list response.
 	queryResponse := queryMultiStockPull(formattedSymbolList)
-	stockList := parseStockSetQuery(queryResponse)
-	noCalculationMatchFound := false
-	isContinueCalculation := false
-	//if symbol is presnt in list.
-	//is symbol calculated for day.
-	//if there is a symbol in the new stockList, that has not been calculated for,
-	//meaning there is no match, noCalculationMatchFound,
-	//if noCalculationMatchFound, then it needs to be accounted for and follow process for all stocks entering.
-	listSymbolDayCalculatedWhale := []string{}
-	for indexStock, stock := range stockList {
-		isContinueCalculation = false
-		for indexSymbolDayCalculated, symbolDayCalculated := range listSymbolDayCalculatedWhale {
-			if stock.Symbol == symbolDayCalculated {
-				isContinueCalculation = true
-				break
-			}
-			indexSymbolDayCalculated++
-		}
-		if isContinueCalculation == false {
-			noCalculationMatchFound = true
-			break
-		}
-		indexStock++
-	}
+	stockListBrokerage := parseStockSetQuery(queryResponse)
 
-	//
-	if noCalculationMatchFound == false {
-		for i, stock := range stockList {
-			insertStockWhale(stock)
-			i++
-		}
+	// noCalculationMatchFound := false
+	// isContinueCalculation := false
+	// listSymbolDayCalculatedWhale := formattedSymbolList
+	// stockListDB := selectAllStockWhale()
+	// // check if symbol is in DB
+	// for indexStockDB, stockDB := range stockListDB {
+	// 	noCalculationMatchFound = false
+	// 	for indexSymbol, symbol := range listSymbolDayCalculatedWhale {
+	// 		if stockDB.Symbol == symbol {
+	// 			//If match, if symbol is present...
+	// 			// isContinueCalculation = true
+	// 			noCalculationMatchFound = true
+	// 			break
+	// 		}
+	// 		indexSymbol++
+	// 	}
+	// 	// if isContinueCalculation == false {
+	// 	// 	noCalculationMatchFound = true
+	// 	// 	break
+	// 	// }
+	// 	indexStockDB++
+	// }
+	// //if symbol is not in DB
+	// if noCalculationMatchFound == false {
+	// 	for i, stock := range stockListBrokerage {
+	// 		insertStockWhale(stock)
+	// 		i++
+	// 	}
+	// }
+	// //if symbol is in DB
+	// if noCalculationMatchFound {
+	//so monitorSymbol given
+	//for each symbol query whale
+	listOfDatabaseStockListResponse := []DatabaseStockListResponse{}
+	for index, symbol := range formattedSymbolList {
+		stockList := selectStockWhale(symbol)
+		databaseStockListResponse := DatabaseStockListResponse{StockList: stockList}
+		listOfDatabaseStockListResponse = append(listOfDatabaseStockListResponse, databaseStockListResponse)
+		index++
 	}
 	//
-	if noCalculationMatchFound {
-		isPresentInDB := false
-		isDaySame := false
-		//Select stock once
-		stockListQueried := selectAllStockWhale()
-		for indexStock, stock := range stockList {
-			//iterate through each stock to be entered, and see if stockList matches.
-			//If match then add as normal,
-			isPresentInDB = false
-			isDaySame = false
-			for indexStockInDB, stockInDB := range stockListQueried {
-				if stockInDB.Symbol == stock.Symbol {
-					//compare
-					isStocksComparedSameTimeStamps := compareTimeStamps(stock, stockInDB)
-					if isStocksComparedSameTimeStamps {
-						insertStockWhale(stock)
-						isPresentInDB = true
-						isDaySame = true
-						break
-					}
+	//
+	//select individually from whale
+	// stockListDB := selectAllStockWhale()
+
+	//given list of listOfDatabaseStockListResponse
+	//get last index of stocklist
+
+	// isDaySame := false
+	isPresentInDB := false
+	isDaySame := false
+	for indexStockBrokerage, stockBrokerage := range stockListBrokerage {
+		//iterate through each stock to be entered, and see if stockList matches.
+		//If match then add as normal,
+		isPresentInDB = false
+		isDaySame = false
+		//right now it's search whole stockListDB if symbol match
+		//since it's going to query symbol list, we can check if symbol in symbol list matches.
+
+		//This is implying that there is a stock inside DB
+		//List stocks from DB
+
+		for indexDatabaseStockListResponse, databaseStockListResponse := range listOfDatabaseStockListResponse {
+			// for indexStockDB, stockDB := range databaseStockListResponse.StockList {
+			//for each
+			//need to select all of symbol,
+			//then get latest of that symbol.
+			lastIndexedStock := databaseStockListResponse.StockList[(len(databaseStockListResponse.StockList) - 1)]
+
+			if lastIndexedStock.Symbol == stockBrokerage.Symbol {
+				isPresentInDB = true
+			}
+
+			// fmt.Println("indexStockDB")
+			// fmt.Println(indexStockDB)
+			// fmt.Println("stockBrokerage.Symbol")
+			// fmt.Println(stockBrokerage.Symbol)
+			// //StockBrokerage doesn't have a created at, upon pull need to add one....
+			// //as part of stock pull process, need to append the date to each stock.
+			// fmt.Println("stockBrokerage.CreatedAt")
+			// fmt.Println(stockBrokerage.CreatedAt)
+
+			// fmt.Println("stockDB.CreatedAt")
+			// fmt.Println(stockDB.CreatedAt)
+
+			// isPresentInDB = true
+			// lastIndexedStock := databaseStockListResponse.StockList[(len(databaseStockListResponse.StockList) - 1)]
+			//comparing days, if same day add as normal,
+
+			if isPresentInDB {
+				isStocksComparedSameTimeStamps := compareTimeStamps(stockBrokerage, lastIndexedStock)
+				if isStocksComparedSameTimeStamps {
+					insertStockWhale(stockBrokerage)
+					isDaySame = true
+					break
 				}
-				indexStockInDB++
 			}
-			//Is conditional that stock in DB is present. If stock in in DB is not present skip "isDaySame" process.
-			//if no match, then special process, add symbol dynamically to list.
-			if isPresentInDB == false || isDaySame == false {
-				appendedStock := processAppendDayOfWeekToStock(stock)
-				insertStockWhale(appendedStock)
-			}
-			indexStock++
+			indexDatabaseStockListResponse++
 		}
+		//if symbol in DB, but different days
+		if isDaySame == false {
+			appendedStock := processAppendDayOfWeekToStock(stockBrokerage)
+			insertStockWhale(appendedStock)
+		}
+		indexStockBrokerage++
+	}
+}
+func processDetectStockWhaleWhereDayIsAtIndex(stockList []Stock) {
+	for index, stock := range stockList {
+		isContained := strings.Contains(stock.CreatedAt, "?")
+		if isContained {
+			fmt.Println(stock.CreatedAt)
+		}
+		index++
 	}
 }
 
-func compareTimeStamps(stock1 Stock, stock2 Stock) bool {
+func compareTimeStamps(stockBrokerage Stock, stockDB Stock) bool {
 	isTimeStampMatch := true
 	//Split for day
 	// 2019-09-19 17:47:10.944343-06
-	stock1Split1 := strings.Split(stock1.CreatedAt, ":")[0]
-	stock1Split2 := strings.Split(stock1Split1, "-")[1]
-	day1 := strings.Split(stock1Split2, " ")[0]
+	fmt.Println("stock1.CreatedAt")
+	fmt.Println(stockBrokerage.CreatedAt)
+	fmt.Println("stock2.CreatedAt")
+	fmt.Println(stockDB.CreatedAt)
 
-	stock2Split1 := strings.Split(stock2.CreatedAt, ":")[0]
-	stock2Split2 := strings.Split(stock2Split1, "-")[1]
-	day2 := strings.Split(stock2Split2, " ")[0]
+	stock1Split1 := strings.Split(stockBrokerage.CreatedAt, " ")[1]
+	// stock1Split2 := strings.Split(stock1Split1, "-")[1]
+	day1 := stock1Split1 //strings.Split(stock1Split1, " ")[1]
 
+	fmt.Println("day1")
+	fmt.Println(day1)
+
+	stock2Split1 := strings.Split(stockDB.CreatedAt, ":")[0]
+	stock2Split2 := strings.Split(stock2Split1, "-")[2]
+	stock2Split3 := strings.Split(stock2Split2, "T")[0]
+	day2 := strings.Split(stock2Split3, " ")[0]
+
+	fmt.Println("day2")
+	fmt.Println(day2)
 	//compare day,
 	if day1 != day2 {
 		isTimeStampMatch = false
 	}
 	return isTimeStampMatch
 }
-func processAppendDayOfWeekToStock(stock Stock) Stock {
-	//handle on first field available value, append day of week.
-	//get handle on day of week.
-	// dayOfWeek := time.Date.
 
+func processAppendDayOfWeekToStock(stock Stock) Stock {
+	//if adding stock, and different day identified, add stock and append first stock entry
+	//with weekday
 	instanceStock := stock
 	currentTime := time.Now()
 	instanceStock.CreatedAt = instanceStock.CreatedAt + " ?" + currentTime.Weekday().String()
