@@ -1053,3 +1053,106 @@ func insertEndOfDayAnalyticsOperations(marketClosed bool, day string) {
 		fmt.Println("Create Error 2")
 	}
 }
+
+func insertEvalResultsWhale(evalResult EvalResultsWhale) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO eval_results_whale (symbol, is_breach_worthy, is_pattern_met)
+		VALUES ($1, $2, $3)
+		RETURNING id
+		`
+	var evalResultsWhale EvalResultsWhale
+	row := db.QueryRow(sqlStatement, evalResult.Symbol, evalResult.IsBreachWorthy, evalResult.IsPatternMet)
+	err1 := row.Scan(&evalResultsWhale.ID)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectEvalResultsWhale() []string {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT symbol FROM eval_results_whale")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	symbolList := make([]string, 0)
+
+	for rows.Next() {
+		var symbol string
+		if err2 := rows.Scan(&symbol); err2 != nil {
+			fmt.Println("err2")
+		}
+		symbolList = append(symbolList, symbol)
+	}
+	return symbolList
+}
+
+func dropEvalResultsWhale() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table eval_results_whale")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createEvalResultsWhale() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE eval_results_whale
+	( 
+		id SERIAL PRIMARY KEY,
+		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+		symbol VARCHAR,
+		is_breach_worthy VARCHAR,
+		is_pattern_met VARCHAR
+	 );`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}

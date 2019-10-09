@@ -139,3 +139,9 @@ type MetricsWhale struct {
 	DesiredPchgVarianceValue       string
 	DesiredVolatilityVarianceValue string
 }
+type EvalResultsWhale struct {
+	ID             int
+	Symbol         string
+	IsBreachWorthy string
+	IsPatternMet   string
+}

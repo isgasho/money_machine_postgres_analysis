@@ -623,7 +623,7 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 	instanceStock := stock
 	currentTime := time.Now()
 	instanceStock.Vl = instanceStock.Vl + " ?" + currentTime.Weekday().String()
-	fmt.Println(instanceStock.Vl)
+	// fmt.Println(instanceStock.Vl)
 	return instanceStock
 }
 

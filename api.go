@@ -46,6 +46,48 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	fmt.Println(data)
 	// fmt.Println(rangeForData)
 
+	if requestType == "postEvalResultsWhale" {
+		dropEvalResultsWhale()
+		createEvalResultsWhale()
+
+		fmt.Println("hit")
+		fmt.Println(len(data))
+		indexSamplePull := 0
+		evalToAppend := EvalResultsWhale{}
+		evalList := []EvalResultsWhale{}
+		for i, v := range data {
+			if indexSamplePull == 0 {
+				evalToAppend.Symbol = v
+			}
+			if indexSamplePull == 1 {
+				evalToAppend.IsPatternMet = v
+			}
+			if indexSamplePull == 2 {
+				evalToAppend.IsBreachWorthy = v
+				evalList = append(evalList, evalToAppend)
+				evalToAppend = EvalResultsWhale{}
+				indexSamplePull = 0
+				continue
+			}
+			indexSamplePull++
+			i++
+		}
+		// fmt.Println(evalList)
+
+		for indexEvalResult, evalResult := range evalList {
+			insertEvalResultsWhale(evalResult)
+			indexEvalResult++
+		}
+		// storeResponse := DatabaseStockListResponse{}
+		// js, err := json.Marshal(storeResponse)
+		// if err != nil {
+		// 	http.Error(w, err.Error(), http.StatusInternalServerError)
+		// 	return
+		// }
+		w.Header().Set("Content-Type", "application/json")
+		// w.Write(js)
+	}
+
 	//Select all monitor symbol
 	if requestType == "0" {
 		monitorSymbolList := selectTempSymbolHold()
@@ -224,7 +266,7 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	// go handleRequests()
+	go handleRequests()
 	// processAppendDayOfWeekToStock(Stock{})
 
 	// processWisemenQueryStockSet()
@@ -242,10 +284,11 @@ func main() {
 
 	// processTimelineStart()
 
-	handleTSPRefresh()
-	processDowWebscrape()
-	processWisemenQueryStockSet()
-	processWhaleQueryStockSet()
+	// handleTSPRefresh()
+	// processDowWebscrape()
+	// processWisemenQueryStockSet()
+	// processWhaleQueryStockSet()
+
 	// fmt.Println(createStockTimeStamp())
 
 	// handleWhaleQueryStockList()
@@ -260,13 +303,13 @@ func main() {
 
 	// Discover where the process is failing and repair it.
 
-	results := selectStockWhale("CMG")
-	// fmt.Println(results[0].Vl)
-	// fmt.Println(results)
-	for i, v := range results {
-		fmt.Println(v.Vl)
-		i++
-	}
+	// results := selectStockWhale("CMG")
+	// // fmt.Println(results[0].Vl)
+	// // fmt.Println(results)
+	// for i, v := range results {
+	// 	fmt.Println(v.Vl)
+	// 	i++
+	// }
 
 	//How to add if it's a different day?
 	//
