@@ -688,7 +688,7 @@ func insertMetricsWisemen(desired_price_range_high string, desired_price_range_l
 	}
 }
 
-func selectMetricsWisemen() []MetricsWhale {
+func selectMetricsWisemen() []MetricsWisemen {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -699,21 +699,21 @@ func selectMetricsWisemen() []MetricsWhale {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value FROM metrics_whale")
+	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value FROM metrics_wisemen")
 	if err1 != nil {
 		// log.Fatal(err)
 		fmt.Println(err1)
 	}
 	defer rows.Close()
-	metricsList := make([]MetricsWhale, 0)
+	metricsList := make([]MetricsWisemen, 0)
 
 	for rows.Next() {
-		var metricsWhale MetricsWhale
+		var metricsWisemen MetricsWisemen
 		// DesiredPchg                    string
-		if err2 := rows.Scan(&metricsWhale.CreatedAt, &metricsWhale.DesiredPriceRangeHigh, &metricsWhale.DesiredPriceRangeLow, &metricsWhale.DesiredPchg, &metricsWhale.DesiredPchgVarianceValue, &metricsWhale.DesiredVolatilityVarianceValue); err2 != nil {
+		if err2 := rows.Scan(&metricsWisemen.CreatedAt, &metricsWisemen.DesiredPriceRangeHigh, &metricsWisemen.DesiredPriceRangeLow, &metricsWisemen.DesiredPchg, &metricsWisemen.DesiredPchgVarianceValue, &metricsWisemen.DesiredVolatilityVarianceValue); err2 != nil {
 			fmt.Println("err2")
 		}
-		metricsList = append(metricsList, metricsWhale)
+		metricsList = append(metricsList, metricsWisemen)
 	}
 	return metricsList
 }
@@ -977,7 +977,7 @@ func deleteWhaleSymbolHold(symbolToDel string) {
 }
 
 //
-func insertAnalyticsOperations(stockRanking string) {
+func insertAnalyticsOperations(topStockList []Stock) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -986,6 +986,12 @@ func insertAnalyticsOperations(stockRanking string) {
 		fmt.Println("Create Error 1")
 	}
 	defer db.Close()
+
+	stockRanking := ""
+	for indexStock, stock := range topStockList {
+		stockRanking += stock.Symbol + ", "
+		indexStock++
+	}
 
 	sqlStatement := `
 		INSERT INTO analytics_operations (stock_ranking)

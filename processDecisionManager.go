@@ -383,17 +383,25 @@ func handleTSPRefresh(params ...interface{}) {
 	stockList := parseTopStockQuery(queryResponse)
 	topRankList := []Stock{}
 
-	//pull MonitorSymbol
+	//Store of symbols will affect both wisemen and whale.
+	//Temp,
 	//if symbols do not exist in set add to monitorSymbol
-	for i, v := range stockList {
+	for indexStock, stock := range stockList {
 		if len(topRankList) < 3 {
-			if strings.Contains(v.Symbol, ".") == false {
-				topRankList = append(topRankList, v)
+			if strings.Contains(stock.Symbol, ".") == false {
+				//compare price, proceed to add until met...
+				//pull wisemen metrics, price delimiter,
+				metricsWisemen := selectMetricsWisemen()[0]
+				if stock.Last >= metricsWisemen.DesiredPriceRangeLow && stock.Last <= metricsWisemen.DesiredPriceRangeHigh {
+					topRankList = append(topRankList, stock)
+				}
 			}
+
 		}
-		i++
+		indexStock++
 	}
 
+	//Store for monitorList, handle temp hold and
 	//Query monitorSymbol
 	monitorList := selectTempSymbolHold()
 	if len(monitorList) == 0 {
@@ -426,17 +434,11 @@ func handleTSPRefresh(params ...interface{}) {
 			}
 		}
 	}
-
-	//Here the temp hold will be filled and we can filter data to the other algorithm holds.
-	//Do we want to select from temp hold? and then fill other holds?
-	//Yes we want to fill holds retroactively.
-	// for k, v:=
-
 	processFillHolds()
-	// fmt.Println("topRankList")
-	// fmt.Println(topRankList)
-	stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
-	insertAnalyticsOperations(stockRanking)
+	// stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
+
+	// for i,v:= range topRankList
+	insertAnalyticsOperations(topRankList)
 	//Query follow-crossover should be handled by concurrent monitor cycle.
 }
 

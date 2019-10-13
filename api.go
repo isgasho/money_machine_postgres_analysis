@@ -221,11 +221,11 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 	if requestType == "selectMetricsWisemen" {
-		metricsWhale := selectMetricsWisemen()
+		metricsWisemen := selectMetricsWisemen()
 		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
 
-		metricsWhaleResponse := DatabaseMetricsWhaleResponse{MetricsWhale: metricsWhale}
-		js, err := json.Marshal(metricsWhaleResponse)
+		metricsWisemenResponse := DatabaseMetricsWisemenResponse{MetricsWisemen: metricsWisemen}
+		js, err := json.Marshal(metricsWisemenResponse)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -255,6 +255,36 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
+	//
+	if requestType == "postMetricsWisemen" {
+		dataList := databaseQuery.Data
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	// if requestType == "selectMetricsWisemen" {
+	// 	dataList := databaseQuery.Data
+	// 	fmt.Println("dataList")
+	// 	fmt.Println(dataList)
+	// 	selectMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+
+	// 	js, err := json.Marshal("success")
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
+
 	// databaseResponse := DatabaseResponse{"Alex", []string{"snowboarding", "programming"}}
 }
 

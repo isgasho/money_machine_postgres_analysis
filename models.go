@@ -44,10 +44,9 @@ type DatabaseStockListResponse struct {
 type DatabaseMetricsWhaleResponse struct {
 	MetricsWhale []MetricsWhale
 }
-
-// type DatabaseMetricsResponseWhale struct {
-// 	Metrics w
-// }
+type DatabaseMetricsWisemenResponse struct {
+	MetricsWisemen []MetricsWisemen
+}
 
 type Day struct {
 	ID        string
@@ -132,6 +131,14 @@ type BrokerageQuery struct {
 }
 
 type MetricsWhale struct {
+	CreatedAt                      string
+	DesiredPriceRangeHigh          string
+	DesiredPriceRangeLow           string
+	DesiredPchg                    string
+	DesiredPchgVarianceValue       string
+	DesiredVolatilityVarianceValue string
+}
+type MetricsWisemen struct {
 	CreatedAt                      string
 	DesiredPriceRangeHigh          string
 	DesiredPriceRangeLow           string
