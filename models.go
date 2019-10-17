@@ -48,6 +48,10 @@ type DatabaseMetricsWisemenResponse struct {
 	MetricsWisemen []MetricsWisemen
 }
 
+type DatabaseOrderInformationWisemenResponse struct {
+	OrderInformationWisemen []OrderInformationWisemen
+}
+
 type Day struct {
 	ID        string
 	DayOfWeek string
@@ -101,6 +105,16 @@ type Stock struct {
 	Adv90        string
 }
 
+type TradeBoughtEvaluation struct {
+	IsBought bool
+	Holdings Holdings
+}
+type Holdings struct {
+	Symbol string
+	Price  string
+	Qty    string
+}
+
 type TradeInfo struct {
 	ID                string
 	DayID             int
@@ -146,6 +160,12 @@ type MetricsWisemen struct {
 	DesiredPchgVarianceValue       string
 	DesiredVolatilityVarianceValue string
 }
+type OrderInformationWisemen struct {
+	CreatedAt string
+	IsBought  string
+	Symbol    string
+}
+
 type EvalResultsWhale struct {
 	ID             int
 	Symbol         string

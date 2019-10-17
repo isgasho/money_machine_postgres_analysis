@@ -270,6 +270,37 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
+	//Trade execution
+	if requestType == "isBuyWisemen" {
+		dataList := databaseQuery.Data
+		fmt.Println("isBuyWisemen")
+		fmt.Println(dataList)
+		// insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+	if requestType == "selectOrderInformationWisemen" {
+		// dataList := databaseQuery.Data
+		fmt.Println("selectOrderInformationWisemen")
+		// fmt.Println(dataList)
+		dataList := selectOrderInformationWisemen()
+
+		databaseOrderInformationWisemenResponse := DatabaseOrderInformationWisemenResponse{OrderInformationWisemen: dataList}
+		js, err := json.Marshal(databaseOrderInformationWisemenResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
 	// if requestType == "selectMetricsWisemen" {
 	// 	dataList := databaseQuery.Data
 	// 	fmt.Println("dataList")
@@ -296,7 +327,11 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	go handleRequests()
+	// go handleRequests()
+
+	// process check on cycle if balance
+	processCheckIsTradeBought()
+
 	// processAppendDayOfWeekToStock(Stock{})
 
 	// processWisemenQueryStockSet()

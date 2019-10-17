@@ -1162,3 +1162,113 @@ func createEvalResultsWhale() {
 	}
 	fmt.Println(count)
 }
+
+func insertOrderInformationWisemen() {
+	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+	// 	"dbname=%s sslmode=disable",
+	// 	host, port, user, dbname)
+	// db, err := sql.Open("postgres", psqlInfo)
+	// if err != nil {
+	// 	fmt.Println("Create Error 1")
+	// }
+	// defer db.Close()
+
+	// sqlStatement := `
+	// 	INSERT INTO eval_results_whale (symbol, is_breach_worthy, is_pattern_met)
+	// 	VALUES ($1, $2, $3)
+	// 	RETURNING id
+	// 	`
+	// var evalResultsWhale EvalResultsWhale
+	// row := db.QueryRow(sqlStatement, evalResult.Symbol, evalResult.IsBreachWorthy, evalResult.IsPatternMet)
+	// err1 := row.Scan(&evalResultsWhale.ID)
+	// if err1 != nil {
+	// 	fmt.Println("Create Error 2")
+	// }
+}
+
+func selectOrderInformationWisemen() []OrderInformationWisemen {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+	// type OrderInformationWisemen struct {
+	// 	CreatedAt string
+	// 	IsBought  string
+	// 	Symbol    string
+	// }
+	rows, err1 := db.Query("SELECT symbol, is_bought FROM order_information_wisemen")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	orderInformationWisemenList := make([]OrderInformationWisemen, 0)
+
+	for rows.Next() {
+		var orderInformationWisemen OrderInformationWisemen
+		if err2 := rows.Scan(&orderInformationWisemen.Symbol, orderInformationWisemen.IsBought); err2 != nil {
+			fmt.Println("err2")
+		}
+		orderInformationWisemenList = append(orderInformationWisemenList, orderInformationWisemen)
+	}
+	return orderInformationWisemenList
+}
+
+func insertTradeBoughtEvaluation(tradeBoughtEvaluation TradeBoughtEvaluation) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO trade_bought_evaluation (symbol, is_bought)
+		VALUES ($1, $2)
+		RETURNING id
+		`
+	var id int
+	row := db.QueryRow(sqlStatement, tradeBoughtEvaluation.Holdings.Symbol, tradeBoughtEvaluation.IsBought)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectTradeBoughtEvaluation() []OrderInformationWisemen {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+	// type OrderInformationWisemen struct {
+	// 	CreatedAt string
+	// 	IsBought  string
+	// 	Symbol    string
+	// }
+	rows, err1 := db.Query("SELECT symbol, is_bought FROM order_information_wisemen")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	orderInformationWisemenList := make([]OrderInformationWisemen, 0)
+
+	for rows.Next() {
+		var orderInformationWisemen OrderInformationWisemen
+		if err2 := rows.Scan(&orderInformationWisemen.Symbol, orderInformationWisemen.IsBought); err2 != nil {
+			fmt.Println("err2")
+		}
+		orderInformationWisemenList = append(orderInformationWisemenList, orderInformationWisemen)
+	}
+	return orderInformationWisemenList
+}

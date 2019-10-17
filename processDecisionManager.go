@@ -139,6 +139,15 @@ func processFillHolds() {
 func processDowWebscrape() {
 	go handleDowWebscrape()
 }
+func processCheckIsTradeBought() {
+	// go handleCheckIsTradeBought()
+	//THe idea is to check every 5 seconds, and if a trade evaluation is positive,
+	//or if the time delimiter for checking is met, then cancle this cycle and record results in DB.
+	createCycle(10, 3, handleCheckIsTradeBought, "handleCheckIsTradeBought")
+	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
+	go startCycle(operatingCycle)
+	initialWhaleStockQueryPerformed = true
+}
 
 func handleTimelineConditionalTriggers(params ...interface{}) {
 	currentTime := time.Now()
@@ -365,6 +374,32 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	// 	handleDayReset()
 	// }
 
+}
+func handleCheckIsTradeBought(params ...interface{}) {
+	//Declare tradeBoughtEvaluation
+	tradeBoughtEvaluation := TradeBoughtEvaluation{}
+
+	//Query
+	response := queryCheckIsTradeBought()
+	fmt.Println(response)
+	//Evaluate
+	if strings.Contains(response, "<sym>") {
+		//Parse holdings, append to tradeBoughtEvaluation
+		// fmt.Println("hit true")
+		holdings := parseBalanceQuery(response)
+		tradeBoughtEvaluation.IsBought = true
+		tradeBoughtEvaluation.Holdings = holdings
+	}
+
+	//if positive evlauation store tradeBoughtEvaluation
+	if tradeBoughtEvaluation.IsBought {
+		//Store DB result
+		insertTradeBoughtEvaluation(tradeBoughtEvaluation)
+		operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
+		cancelCycle(operatingCycle)
+	}
+
+	// TradeBoughtEvaluation
 }
 
 func checkWhaleDelimiterMet() bool {

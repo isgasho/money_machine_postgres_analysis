@@ -1606,3 +1606,14 @@ func queryIsBrokerageResponding() string {
 	response := post(url, json)
 	return response
 }
+
+func queryCheckIsTradeBought() string {
+	json := `
+	{
+		"request_type": "holdings"
+	}
+	`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}

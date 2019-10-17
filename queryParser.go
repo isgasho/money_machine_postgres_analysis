@@ -40,6 +40,24 @@ func parseQuery(queryString string) Stock {
 	return stock
 }
 
+func parseBalanceQuery(queryString string) Holdings {
+	splitDataQuery1 := strings.Split(queryString, "<sym>")[1]
+	symbol := strings.Split(splitDataQuery1, "</sym>")[0]
+
+	splitDataQuery1 = strings.Split(queryString, "<price>")[1]
+	price := strings.Split(splitDataQuery1, "</price>")[0]
+
+	splitDataQuery1 = strings.Split(queryString, "<qty>")[1]
+	qty := strings.Split(splitDataQuery1, "</qty>")[0]
+
+	holdings := Holdings{
+		Symbol: symbol,
+		Price:  price,
+		Qty:    qty,
+	}
+	return holdings
+}
+
 func parseStockSetQuery(queryString string) []Stock {
 	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
 	splitDataQuery2 := strings.Split(splitDataQuery1, "</quotetype>")[1]
