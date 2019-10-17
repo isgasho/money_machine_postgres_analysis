@@ -469,7 +469,8 @@ func handleTSPRefresh(params ...interface{}) {
 			}
 		}
 	}
-	processFillHolds()
+	// processFillHolds()
+	handleFillHolds()
 	// stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
 
 	// for i,v:= range topRankList
