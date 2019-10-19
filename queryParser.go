@@ -468,6 +468,16 @@ func parseDowWebscrape(queryString string) (string, string, string) {
 	return currentDowValue, pointsChanged, percentageChange
 }
 
+func parseBalance(queryString string) string {
+	// <accountvalue>5026.06</accountvalue>
+	splitDataQuery1 := strings.Split(queryString, "<accountvalue>")[2]
+	balance := strings.Split(splitDataQuery1, "</accountvalue>")[0]
+	// fmt.Println(balance)
+	// balance := strings.Split(splitDataQuery2, "</quotes>")[0]
+	// balance := ""
+	return balance
+}
+
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>
 // <quotes>
 //   <quotetype>Real Time -  market data real time, National Best Bid and Offer</quotetype>

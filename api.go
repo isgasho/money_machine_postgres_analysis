@@ -330,7 +330,20 @@ func main() {
 	// go handleRequests()
 
 	// process check on cycle if balance
-	processCheckIsTradeBought()
+	// processCheckIsTradeBought()
+
+	// queryCheckBalance()
+	// queryTradeBuyLimit()
+
+	// func calculateAmountOfStockToBuy(pricePointOfStock float32, balance float32) {
+
+	// amountOfBuy := calculateAmountOfStockToBuy(3.34, 5025.94)
+	// fmt.Println(amountOfBuy)
+
+	handleTradeWisemen()
+
+	// response := queryTradeCheckBalance()
+	// fmt.Println(response)
 
 	// processAppendDayOfWeekToStock(Stock{})
 

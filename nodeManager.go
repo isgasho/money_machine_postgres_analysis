@@ -1607,10 +1607,54 @@ func queryIsBrokerageResponding() string {
 	return response
 }
 
+//Trade queries
 func queryCheckIsTradeBought() string {
 	json := `
 	{
 		"request_type": "holdings"
+	}
+	`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+func queryTradeBuyLimit(symbol string, limitPrice string, qty string) string {
+	json := `{
+		"request_type": "trade_buy_limit",
+		"data": {
+		`
+	json = json + "\"symbol\":" + "\"" + symbol + "\","
+	json = json + "\"limit\":" + "\"" + limitPrice + "\","
+	json = json + "\"qty\":" + "\"" + qty + "\""
+	json = json + `}}`
+
+	// fmt.Println(json)
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
+	json := `{
+		"request_type": "trade_buy_limit",
+		"data": {
+		`
+	json = json + "\"symbol\":" + "\"" + symbol + "\","
+	json = json + "\"limit\":" + "\"" + limitPrice + "\","
+	json = json + "\"qty\":" + "\"" + qty + "\""
+	json = json + `}}`
+
+	// fmt.Println(json)
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+func queryTradeCheckBalance() string {
+	json := `
+	{
+		"request_type": "checkBalance"
 	}
 	`
 	url := "http://localhost:3000/api/brokerage"

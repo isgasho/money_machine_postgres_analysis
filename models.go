@@ -172,3 +172,13 @@ type EvalResultsWhale struct {
 	IsBreachWorthy string
 	IsPatternMet   string
 }
+
+type DayTrackingRecord struct {
+	CreatedAt              string
+	Symbol                 string
+	DayOfWeekCreated       string
+	DayOfWeekDayIteration  string
+	LastDayOfWeekDayUpdate string
+	AmountOfTrades         string
+	IsWeekPassed           string
+}

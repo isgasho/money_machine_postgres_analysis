@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -69,4 +71,45 @@ func getDayOfWeek() time.Weekday {
 	fmt.Println(int(weekday)) // "2"
 
 	return weekday
+}
+
+func handleDayRotation() {
+	listDayTrackingRecord := selectDayTrackingRecord()
+	if len(listDayTrackingRecord) != 0 {
+		dayTrackingRecord := listDayTrackingRecord[0]
+
+		if strings.Contains(dayTrackingRecord.IsWeekPassed, "true") {
+
+		}
+
+		if strings.Contains(dayTrackingRecord.IsWeekPassed, "false") {
+			currentDayOfWeek := getDayOfWeek().String()
+			intCurrentDayOfWeek, err := strconv.ParseInt(currentDayOfWeek, 10, 64)
+			if err != nil {
+				fmt.Println(err)
+			}
+			intLastDayOfWeekDayUpdate, err := strconv.ParseInt(dayTrackingRecord.LastDayOfWeekDayUpdate, 10, 64)
+			if err != nil {
+				fmt.Println(err)
+			}
+			if intCurrentDayOfWeek == intLastDayOfWeekDayUpdate {
+				instanceDayTrackingRecord := dayTrackingRecord
+				instanceDayTrackingRecord.IsWeekPassed = "true"
+
+				dropDayTrackingRecord()
+				createDayTrackingRecord()
+
+				insertDayTrackingRecord(instanceDayTrackingRecord)
+			}
+		}
+	}
+	//from first trade the count begins...
+	//get oldest entry, if delimiter greater than a week reset.
+}
+
+func Abs(x int64) int64 {
+	if x < 0 {
+		return -x
+	}
+	return x
 }

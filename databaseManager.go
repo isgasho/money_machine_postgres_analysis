@@ -1272,3 +1272,108 @@ func selectTradeBoughtEvaluation() []OrderInformationWisemen {
 	}
 	return orderInformationWisemenList
 }
+
+func insertDayTrackingRecord(dayTrackingRecord DayTrackingRecord) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO day_tracking_record (symbol, day_of_week_created, day_of_week_day_iteration, last_day_of_week_day_update, amount_of_trades, is_week_passed)
+		VALUES ($1, $2, $3, $4, $5, $6)
+		RETURNING id
+		`
+	var id int
+	row := db.QueryRow(sqlStatement, dayTrackingRecord.Symbol, dayTrackingRecord.DayOfWeekCreated, dayTrackingRecord.DayOfWeekDayIteration, dayTrackingRecord.LastDayOfWeekDayUpdate, dayTrackingRecord.AmountOfTrades, dayTrackingRecord.IsWeekPassed)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectDayTrackingRecord() []DayTrackingRecord {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT created_at, symbol, day_of_week_created, day_of_week_day_iteration, last_day_of_week_day_update, amount_of_trades, is_week_passed FROM day_tracking_record")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	dayTrackingRecordList := make([]DayTrackingRecord, 0)
+
+	for rows.Next() {
+		var dayTrackingRecord DayTrackingRecord
+		if err2 := rows.Scan(&dayTrackingRecord.CreatedAt, &dayTrackingRecord.Symbol, &dayTrackingRecord.DayOfWeekCreated, &dayTrackingRecord.DayOfWeekDayIteration, &dayTrackingRecord.LastDayOfWeekDayUpdate, &dayTrackingRecord.AmountOfTrades, &dayTrackingRecord.IsWeekPassed); err2 != nil {
+			fmt.Println("err2")
+		}
+		dayTrackingRecordList = append(dayTrackingRecordList, dayTrackingRecord)
+	}
+	return dayTrackingRecordList
+}
+
+func dropDayTrackingRecord() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table day_tracking_record")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createDayTrackingRecord() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE same_day_trade_tracking_record
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   day_of_week_created VARCHAR,
+	   day_of_week_day_iteration VARCHAR,
+	   last_day_of_week_day_update VARCHAR,
+	   amount_of_trades VARCHAR,
+	   is_week_passed VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
