@@ -301,6 +301,22 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 
+	if requestType == "tradeBuyWisemen" {
+		dataList := databaseQuery.Data
+		fmt.Println("tradeBuyWisemen")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		//process trade.
+		handleTradeWisemen(dataList[0], dataList[1])
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
 	// if requestType == "selectMetricsWisemen" {
 	// 	dataList := databaseQuery.Data
 	// 	fmt.Println("dataList")
@@ -327,7 +343,8 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	// go handleRequests()
+	go handleRequests()
+	// getAllOrders()
 
 	// process check on cycle if balance
 	// processCheckIsTradeBought()
@@ -340,7 +357,7 @@ func main() {
 	// amountOfBuy := calculateAmountOfStockToBuy(3.34, 5025.94)
 	// fmt.Println(amountOfBuy)
 
-	handleTradeWisemen()
+	// handleTradeWisemen()
 
 	// response := queryTradeCheckBalance()
 	// fmt.Println(response)

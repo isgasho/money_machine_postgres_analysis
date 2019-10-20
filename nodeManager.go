@@ -1619,9 +1619,37 @@ func queryCheckIsTradeBought() string {
 	return response
 }
 
+func queryAllOrders() string {
+	json := `{
+		"request_type": "orders",
+		"data": {
+		` + `}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryTradeBuyLimit(symbol string, limitPrice string, qty string) string {
 	json := `{
 		"request_type": "trade_buy_limit",
+		"data": {
+		`
+	json = json + "\"symbol\":" + "\"" + symbol + "\","
+	json = json + "\"limit\":" + "\"" + limitPrice + "\","
+	json = json + "\"qty\":" + "\"" + qty + "\""
+	json = json + `}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	// fmt.Println(json)
+	response := post(url, json)
+	// respone := ""
+	return response
+}
+
+func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
+	json := `{
+		"request_type": "trade_sell_limit",
 		"data": {
 		`
 	json = json + "\"symbol\":" + "\"" + symbol + "\","
@@ -1635,9 +1663,9 @@ func queryTradeBuyLimit(symbol string, limitPrice string, qty string) string {
 	return response
 }
 
-func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
+func queryCancelTrade(symbol string, limitPrice string, qty string) string {
 	json := `{
-		"request_type": "trade_buy_limit",
+		"request_type": "cancel_order",
 		"data": {
 		`
 	json = json + "\"symbol\":" + "\"" + symbol + "\","

@@ -94,7 +94,7 @@ var initialWhaleStockQueryPerformed = false
 
 func processTimelineStart() {
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(5, 10000, handleTimelineConditionalTriggers, "handleTimelineConditionalTriggers")
+	createCycle(5, 10000000000000, handleTimelineConditionalTriggers, "handleTimelineConditionalTriggers")
 	operatingCycle := cycleMapPool["handleTimelineConditionalTriggers"]
 	go startCycle(operatingCycle)
 }
@@ -103,8 +103,6 @@ func processWisemenQueryStockSet() {
 	if initialWisemenStockQueryPerformed == true {
 		fmt.Println("hit initialWisemenStockQueryPerformed == true")
 		operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
-		// fmt.Println("operatingCycle.Name")
-		// fmt.Println(operatingCycle.Name)
 		go startCycle(operatingCycle)
 	}
 	if initialWisemenStockQueryPerformed == false {
@@ -127,6 +125,12 @@ func processWhaleQueryStockSet() {
 		initialWhaleStockQueryPerformed = true
 	}
 }
+
+// func processCheckIsBuyPeformed() {
+// 	createCycle(3, 10000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
+// 	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
+// 	go startCycle(operatingCycle)
+// }
 
 func processTSPRefresh() {
 	go handleTSPRefresh()
@@ -156,14 +160,11 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 	fmt.Println(currentTime.Date())
 
-	//
-	//Timeline events
-	//
-
 	//Conditional operate
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
 		checKIsBrokerageResponding()
-
+		//Wisemen algorithm same day calculation
+		handleDayRotation()
 		if isMarketClosed {
 			setTimelineOperationsFalse()
 		}

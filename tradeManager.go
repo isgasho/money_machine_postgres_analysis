@@ -2,49 +2,45 @@ package main
 
 import (
 	"fmt"
+	"math"
 	"strconv"
 )
 
-func handleTradeWisemen() {
+func handleTradeWisemen(symbol string, limitPrice string) {
+	fmt.Println("limitPrice")
+	fmt.Println(limitPrice)
+	desiredLimitPrice := 0.0
+	if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
+		desiredLimitPrice = s
+	}
 
-	//given desired delimiter
-	//Desired limit price point should be pulled from Db or passed.
-	//Depends on process basis.
-	//analytics based, so should be...
-	//stored through anlaytics...
-	symbol := "PEACE"
-	desiredLimitPrice := 3.35
-
+	fmt.Println("desiredLimitPrice")
+	fmt.Println(desiredLimitPrice)
 	//get balance
 	response := queryTradeCheckBalance()
 	balance := parseBalance(response)
-	// fmt.Println(balance)
+
 	floatBalance := 0.0
 	if s, err := strconv.ParseFloat(balance, 64); err == nil {
-		// fmt.Println(s)
 		floatBalance = s
 	}
+
+	fmt.Println("floatBalance")
+	fmt.Println(floatBalance)
 	//
 	//calculate qty to buy
-	floatPrice := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
-	fmt.Println(floatPrice)
+	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
+	// fmt.Println(floatPrice)
 
-	stringBalance := fmt.Sprintf("%f", floatBalance)
-	stringPrice := fmt.Sprintf("%f", floatPrice)
+	qty = math.Round(qty)
 
-	//create buy query
-	// queryTradeBuyLimit
-	queryTradeBuyLimit(symbol, stringPrice, stringBalance)
-	// createBuyQuery()
-	//on response calculate success or failure.
+	// stringBalance := fmt.Sprintf("%f", floatBalance)
+	stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
+	stringQty := fmt.Sprintf("%f", qty)
 
-	//system splint for watching for sell
+	queryTradeBuyLimit(symbol, stringPrice, stringQty)
 }
 
-// func createBuyQuery(){
-// 	json:=
-// 	return
-// }
 func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) float64 {
 	// pricePointOfStock being target limit to buy
 	//Calculate amount of shares to buy at given balance and bias
@@ -63,6 +59,24 @@ func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) flo
 	return amountToBuy
 }
 
+func getAllOrders() map[string]string {
+	//[["symbol",orderID]]
+	queryResponse := queryAllOrders()
+	// fmt.Println(orderList)
+	orderMap := parseOrders(queryResponse)
+	return orderMap
+}
+
+// func getOrder(symbol string) {
+// 	//Handle if more than one order
+// 	// pull orders
+// 	queryOrders(){}
+// 	//parse
+// }
+func cancelOrder(symbol string) {
+	//cancel order by id
+}
+
 func calculateIsTradeBoughtSuccessful(symbol string) {
 	isSuccessful := detectIsTradeBoughtSuccessful(symbol)
 	if isSuccessful {
@@ -73,14 +87,6 @@ func calculateIsTradeBoughtSuccessful(symbol string) {
 
 func updateDayTrackingRecordSystem(symbol string) {
 	dayOfWeek := getDayOfWeek()
-	// type DayTrackingRecord struct {
-	// 	CreatedAt              string
-	// 	Symbol                 string
-	// 	DayOfWeekCreated       string
-	// 	DayOfWeekDayIteration  string
-	// 	LastDayOfWeekDayUpdate string
-	// 	AmountOfTrades         string
-	// }
 	//create record
 	dayTrackingRecord := DayTrackingRecord{Symbol: symbol, DayOfWeekCreated: dayOfWeek.String(), DayOfWeekDayIteration: "0", LastDayOfWeekDayUpdate: getDayOfWeek().String(), AmountOfTrades: "0", IsWeekPassed: "false"}
 	insertDayTrackingRecord(dayTrackingRecord)

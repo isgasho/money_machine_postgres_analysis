@@ -60,16 +60,9 @@ func parseDate() {
 }
 
 func getDayOfWeek() time.Weekday {
-	// currentTime := time.Now()
-	// day := fmt.Sprintf("%b", currentTime.Day())
-	// day := currentTime.Weekday()
-
-	// weekday := time.Now().Weekday()
-	// fmt.Println("hit day " + string(day)
 	weekday := time.Now().Weekday()
 	fmt.Println(weekday)      // "Tuesday"
 	fmt.Println(int(weekday)) // "2"
-
 	return weekday
 }
 
@@ -77,11 +70,10 @@ func handleDayRotation() {
 	listDayTrackingRecord := selectDayTrackingRecord()
 	if len(listDayTrackingRecord) != 0 {
 		dayTrackingRecord := listDayTrackingRecord[0]
-
 		if strings.Contains(dayTrackingRecord.IsWeekPassed, "true") {
-
+			dropDayTrackingRecord()
+			createDayTrackingRecord()
 		}
-
 		if strings.Contains(dayTrackingRecord.IsWeekPassed, "false") {
 			currentDayOfWeek := getDayOfWeek().String()
 			intCurrentDayOfWeek, err := strconv.ParseInt(currentDayOfWeek, 10, 64)
@@ -95,16 +87,25 @@ func handleDayRotation() {
 			if intCurrentDayOfWeek == intLastDayOfWeekDayUpdate {
 				instanceDayTrackingRecord := dayTrackingRecord
 				instanceDayTrackingRecord.IsWeekPassed = "true"
-
 				dropDayTrackingRecord()
 				createDayTrackingRecord()
-
 				insertDayTrackingRecord(instanceDayTrackingRecord)
 			}
 		}
 	}
-	//from first trade the count begins...
-	//get oldest entry, if delimiter greater than a week reset.
+}
+func processInsertDayTrackingRecord(symbol string) {
+	listDayTrackingRecord := selectDayTrackingRecord()
+	//if list is empty create entry
+	if len(listDayTrackingRecord) == 0 {
+
+	}
+	//if list is not empty update day record
+	if len(listDayTrackingRecord) != 0 {
+		dropDayTrackingRecord()
+		createDayTrackingRecord()
+		updateDayTrackingRecordSystem(symbol)
+	}
 }
 
 func Abs(x int64) int64 {

@@ -478,6 +478,22 @@ func parseBalance(queryString string) string {
 	return balance
 }
 
+func parseOrders(query string) map[string]string {
+	orderMap := make(map[string]string)
+
+	fmt.Println(query)
+	// splitDataQuery1 := strings.Split(query, "<accountvalue>")[2]
+	// balance := strings.Split(splitDataQuery1, "</accountvalue>")[0]
+	//parse each order,
+	// for each store in map
+
+	// for i,v:= range map{
+	// }
+
+	// orderMap[name] = &cycleInstance
+	return orderMap
+}
+
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>
 // <quotes>
 //   <quotetype>Real Time -  market data real time, National Best Bid and Offer</quotetype>
