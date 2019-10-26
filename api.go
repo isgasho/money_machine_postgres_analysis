@@ -210,7 +210,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	if requestType == "insertMetricsWisemen" {
 		// data := databaseQuery.Data
 		dataList := databaseQuery.Data
-		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6], dataList[7])
 
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -256,20 +256,20 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 	//
-	if requestType == "postMetricsWisemen" {
-		dataList := databaseQuery.Data
-		fmt.Println("dataList")
-		fmt.Println(dataList)
-		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+	// if requestType == "postMetricsWisemen" {
+	// 	dataList := databaseQuery.Data
+	// 	fmt.Println("dataList")
+	// 	fmt.Println(dataList)
+	// 	insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
 
-		js, err := json.Marshal("success")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// 	js, err := json.Marshal("success")
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 	//Trade execution
 	if requestType == "isBuyWisemen" {
 		dataList := databaseQuery.Data
@@ -307,7 +307,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("dataList")
 		fmt.Println(dataList)
 		//process trade.
-		handleTradeWisemen(dataList[0], dataList[1])
+		// handleTradeWisemen(dataList[0], dataList[1])
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -315,6 +315,10 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
+
+		//Delay before monitor cycle
+		// time.Sleep(time.Duration(10) * time.Second)
+		intiateMonitorTradeWisemon()
 	}
 
 	// if requestType == "selectMetricsWisemen" {
@@ -343,9 +347,22 @@ func handleRequests() {
 func main() {
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	go handleRequests()
-	// getAllOrders()
+	// go handleRequests()
 
+	// intiateMonitorTradeWisemon()
+
+	processCheckIsTradeBought()
+
+	// dropMetricsWisemen()
+	// createMetricsWisemen()
+
+	// getAllOrders()
+	// dropTradeEnteredInformation()
+	// createTradeEnteredInformation()
+
+	// deleteTradeEnteredInformation("test")
+	// dropTradeEnteredInformation()
+	// createTradeEnteredInformation()
 	// process check on cycle if balance
 	// processCheckIsTradeBought()
 

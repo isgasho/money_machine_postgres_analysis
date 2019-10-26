@@ -1608,7 +1608,7 @@ func queryIsBrokerageResponding() string {
 }
 
 //Trade queries
-func queryCheckIsTradeBought() string {
+func queryHoldings() string {
 	json := `
 	{
 		"request_type": "holdings"
@@ -1619,7 +1619,7 @@ func queryCheckIsTradeBought() string {
 	return response
 }
 
-func queryAllOrders() string {
+func queryOrders() string {
 	json := `{
 		"request_type": "orders",
 		"data": {
@@ -1641,9 +1641,7 @@ func queryTradeBuyLimit(symbol string, limitPrice string, qty string) string {
 	json = json + `}}`
 
 	url := "http://localhost:3000/api/brokerage"
-	// fmt.Println(json)
 	response := post(url, json)
-	// respone := ""
 	return response
 }
 

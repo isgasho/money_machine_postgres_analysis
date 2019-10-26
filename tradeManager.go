@@ -38,6 +38,17 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
 	stringQty := fmt.Sprintf("%f", qty)
 
+	//store trade entered information
+	tradeEnteredInformation := TradeEnteredInformation{
+		Symbol:      symbol,
+		Price:       stringPrice,
+		OrderStatus: "pending",
+		Qty:         stringQty,
+		QtyBought:   "0",
+	}
+	insertTradeEnteredInformation(tradeEnteredInformation)
+
+	//Submit buy limit to brokerage
 	queryTradeBuyLimit(symbol, stringPrice, stringQty)
 }
 
@@ -59,12 +70,11 @@ func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) flo
 	return amountToBuy
 }
 
-func getAllOrders() map[string]string {
+func getAllOrders() ContainerOrders {
 	//[["symbol",orderID]]
-	queryResponse := queryAllOrders()
-	// fmt.Println(orderList)
-	orderMap := parseOrders(queryResponse)
-	return orderMap
+	queryResponse := queryOrders()
+	containerOrders := parseOrders(queryResponse)
+	return containerOrders
 }
 
 // func getOrder(symbol string) {

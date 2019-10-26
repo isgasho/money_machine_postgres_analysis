@@ -478,20 +478,53 @@ func parseBalance(queryString string) string {
 	return balance
 }
 
-func parseOrders(query string) map[string]string {
-	orderMap := make(map[string]string)
+func parseOrders(query string) ContainerOrders {
+	splitDataQuery := strings.Split(query, "</FIXML>]]>")
+	//remove last index which is a server message
+	splitDataQuery = splitDataQuery[:len(splitDataQuery)-1]
+	containerOrders := ContainerOrders{}
+	for i, v := range splitDataQuery {
+		symParsed := strings.Split(v, "Sym=")
+		symParsed1 := strings.Split(symParsed[1], "\"/>")
+		symParsed2 := strings.Split(symParsed1[0], "\"")
+		symParsed3 := strings.Replace(symParsed2[1], "\\", "", -1)
+		orderCreated := Order{Symbol: symParsed3}
 
-	fmt.Println(query)
-	// splitDataQuery1 := strings.Split(query, "<accountvalue>")[2]
-	// balance := strings.Split(splitDataQuery1, "</accountvalue>")[0]
-	//parse each order,
-	// for each store in map
+		//parse SVI ex) SVI-6084382688
+		sviParsed := strings.Split(v, "SVI-")
+		fmt.Println(sviParsed[1])
 
-	// for i,v:= range map{
+		//if order does not contain Canceled by user or RejRsn then limit is pending successfully
+		if strings.Contains(v, "Canceled by user") {
+			orderCreated.OrderStatus = "Canceled"
+			containerOrders.ListOrders = append(containerOrders.ListOrders, orderCreated)
+			continue
+		}
+		if strings.Contains(v, "RejRsn") {
+			orderCreated.OrderStatus = "RejRsn"
+			containerOrders.ListOrders = append(containerOrders.ListOrders, orderCreated)
+			continue
+		}
+		orderCreated.OrderStatus = "Successful"
+		containerOrders.ListOrders = append(containerOrders.ListOrders, orderCreated)
+		i++
+	}
+
+	// for i, v := range containerOrders.ListOrders {
+	// 	fmt.Println()
+	// 	fmt.Println(v)
+	// 	i++
 	// }
+	return containerOrders
+}
 
-	// orderMap[name] = &cycleInstance
-	return orderMap
+func parseHoldings(query string) {
+	splitDataQuery1 := strings.Split(query, "<accountholdings>")[1]
+	splitDataQuery2 := strings.Split(splitDataQuery1, "</accountholdings>")
+	// fmt.Println("splitDataQuery1")
+	// fmt.Println(splitDataQuery1[1])
+	fmt.Println(splitDataQuery2[0])
+	// balance := strings.Split(splitDataQuery1, "</accountholdings>")[0]
 }
 
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>

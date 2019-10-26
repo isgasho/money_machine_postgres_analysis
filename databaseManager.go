@@ -664,7 +664,7 @@ func createMetricsWhale() {
 }
 
 //Wisemen metrics
-func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, desired_pchg, desired_pchg_variance_value string, desired_volatility_variance_value string) {
+func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, desired_pchg, desired_pchg_variance_value string, desired_volatility_variance_value string, trade_buy_monitor_delay_seconds string, trade_buy_monitor_delay_query_seconds string, trade_buy_monitor_delay_iteration_count string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -675,14 +675,14 @@ func insertMetricsWisemen(desired_price_range_high string, desired_price_range_l
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
-			VALUES ($1,$2,$3,$4,$5)
+		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
 			RETURNING created_at
 		`
-	var metricsWhale MetricsWhale
+	var metricsWisemen MetricsWisemen
 
-	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value)
-	err1 := row.Scan(&metricsWhale.CreatedAt)
+	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
+	err1 := row.Scan(&metricsWisemen.CreatedAt)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
@@ -699,7 +699,7 @@ func selectMetricsWisemen() []MetricsWisemen {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value FROM metrics_wisemen")
+	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count FROM metrics_wisemen")
 	if err1 != nil {
 		// log.Fatal(err)
 		fmt.Println(err1)
@@ -709,8 +709,7 @@ func selectMetricsWisemen() []MetricsWisemen {
 
 	for rows.Next() {
 		var metricsWisemen MetricsWisemen
-		// DesiredPchg                    string
-		if err2 := rows.Scan(&metricsWisemen.CreatedAt, &metricsWisemen.DesiredPriceRangeHigh, &metricsWisemen.DesiredPriceRangeLow, &metricsWisemen.DesiredPchg, &metricsWisemen.DesiredPchgVarianceValue, &metricsWisemen.DesiredVolatilityVarianceValue); err2 != nil {
+		if err2 := rows.Scan(&metricsWisemen.CreatedAt, &metricsWisemen.DesiredPriceRangeHigh, &metricsWisemen.DesiredPriceRangeLow, &metricsWisemen.DesiredPchg, &metricsWisemen.DesiredPchgVarianceValue, &metricsWisemen.DesiredVolatilityVarianceValue, &metricsWisemen.TradeBuyMonitorDelaySeconds, &metricsWisemen.TradeBuyMonitorDelayQuerySeconds, &metricsWisemen.TradeBuyMonitorDelayIterationCount); err2 != nil {
 			fmt.Println("err2")
 		}
 		metricsList = append(metricsList, metricsWisemen)
@@ -729,7 +728,7 @@ func dropMetricsWisemen() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("drop table metrics_whale")
+	res, err1 := db.Exec("drop table metrics_wisemen")
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}
@@ -751,15 +750,18 @@ func createMetricsWisemen() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec(`CREATE TABLE metrics_whale
+	res, err1 := db.Exec(`CREATE TABLE metrics_wisemen
 	( 
-		id SERIAL PRIMARY KEY,
-		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-		desired_price_range_high VARCHAR,
-		desired_price_range_low VARCHAR,
-		desired_pchg VARCHAR,
-		desired_pchg_variance_value VARCHAR,
-		desired_volatility_variance_value VARCHAR
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   desired_price_range_high VARCHAR,
+	   desired_price_range_low VARCHAR,
+	   desired_pchg VARCHAR,
+	   desired_pchg_variance_value VARCHAR,
+	   desired_volatility_variance_value VARCHAR,
+	   trade_buy_monitor_delay_seconds VARCHAR,
+	   trade_buy_monitor_delay_query_seconds VARCHAR,
+	   trade_buy_monitor_delay_iteration_count VARCHAR
 	);`)
 
 	if err1 != nil {
@@ -1376,4 +1378,322 @@ func createDayTrackingRecord() {
 		fmt.Println("Delete Error 3")
 	}
 	fmt.Println(count)
+}
+
+//trade_entered_information
+func insertTradeEnteredInformation(tradeEnteredInformation TradeEnteredInformation) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	// CREATE TABLE trade_entered_information
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    price VARCHAR,
+	//    order_status VARCHAR
+	// );
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO trade_entered_information (symbol, price, order_status, qty, qty_bought)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+		`
+	var id int
+	row := db.QueryRow(sqlStatement, tradeEnteredInformation.Symbol, tradeEnteredInformation.Price, tradeEnteredInformation.OrderStatus, tradeEnteredInformation.Qty, tradeEnteredInformation.QtyBought)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectTradeEnteredInformation() []TradeEnteredInformation {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// 	CREATE TABLE trade_entered_information
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    price VARCHAR,
+	//    qty VARCHAR,
+	//    qty_bought VARCHAR,
+	//    order_status VARCHAR
+	// );
+
+	rows, err1 := db.Query("SELECT created_at, symbol, price, order_status, qty, qty_bought FROM trade_entered_information")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	tradeEnteredInformationList := make([]TradeEnteredInformation, 0)
+
+	for rows.Next() {
+		var tradeEnteredInformation TradeEnteredInformation
+		if err2 := rows.Scan(&tradeEnteredInformation.CreatedAt, &tradeEnteredInformation.Symbol, &tradeEnteredInformation.Price, &tradeEnteredInformation.OrderStatus, &tradeEnteredInformation.Qty, &tradeEnteredInformation.QtyBought); err2 != nil {
+			fmt.Println("err2")
+		}
+		tradeEnteredInformationList = append(tradeEnteredInformationList, tradeEnteredInformation)
+	}
+	return tradeEnteredInformationList
+}
+
+func dropTradeEnteredInformation() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table trade_entered_information")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createTradeEnteredInformation() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE trade_entered_information
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   price VARCHAR,
+	   order_status VARCHAR,
+	   qty VARCHAR,
+	   qty_bought VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func deleteTradeEnteredInformation(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM trade_entered_information WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//
+//trade_conditional_metrics
+func inserTradeConditionalMetrics(tradeConditionalMetrics TradeConditionalMetrics) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	// 	CREATE TABLE trade_conditional_metrics
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    time_start VARCHAR,
+	//    time_end VARCHAR,
+	//    price_dropout VARCHAR
+	// );
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO trade_conditional_metrics (symbol, time_start, time_end, price_dropout)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+		`
+	var id int
+	row := db.QueryRow(sqlStatement, tradeConditionalMetrics.Symbol, tradeConditionalMetrics.TimeStart, tradeConditionalMetrics.TimeEnd, tradeConditionalMetrics.PriceDropout)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectTradeConditionalMetrics() []TradeConditionalMetrics {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// 	CREATE TABLE trade_conditional_metrics
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    time_start VARCHAR,
+	//    time_end VARCHAR,
+	//    price_dropout VARCHAR
+	// );
+
+	rows, err1 := db.Query("SELECT created_at, symbol, time_start, time_end, price_dropout FROM trade_conditional_metrics")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	tradeConditionalMetricsList := make([]TradeConditionalMetrics, 0)
+
+	for rows.Next() {
+		var tradeConditionalMetrics TradeConditionalMetrics
+		if err2 := rows.Scan(&tradeConditionalMetrics.CreatedAt, &tradeConditionalMetrics.Symbol, &tradeConditionalMetrics.TimeStart, &tradeConditionalMetrics.TimeEnd, &tradeConditionalMetrics.PriceDropout); err2 != nil {
+			fmt.Println("err2")
+		}
+		tradeConditionalMetricsList = append(tradeConditionalMetricsList, tradeConditionalMetrics)
+	}
+	return tradeConditionalMetricsList
+}
+
+func dropTradeConditionalMetrics() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table trade_conditional_metrics")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createTradeConditionalMetrics() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE trade_conditional_metrics
+	(
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   time_start VARCHAR,
+	   time_end VARCHAR,
+	   price_dropout VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func deleteTradeConditionalMetrics(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM trade_conditional_metrics WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//
+func queryIsTradeCompleted() BuyStatusWisemen {
+	//Query if holdings of symbol...
+	// Query
+	// Holdings
+	// query
+
+	// type BuyStatusWisemen struct {
+	// 	CreatedAt        string
+	// 	Symbol           string
+	// 	IsHoldings       bool
+	// 	AmountOfHoldings string
+	// }
+
+	//query holdings
+	// pullHoldings()
+	response := queryHoldings()
+	parseHoldings(response)
+	// fmt.Println("response")
+	// fmt.Println(response)
+	//parse holdings
+	// for symbol
+	buyStatusWisemen := BuyStatusWisemen{}
+	return buyStatusWisemen
 }

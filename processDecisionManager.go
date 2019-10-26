@@ -126,6 +126,30 @@ func processWhaleQueryStockSet() {
 	}
 }
 
+func intiateMonitorTradeWisemon() {
+	// metrics := selectMetricsWisemen()
+	// Select metrics make use of it, continue.
+	// fmt.Println(metrics)
+	//Delay before monitor cycle
+	// time.Sleep(time.Duration(10) * time.Second)
+	// fmt.Println("hit awesome")
+	//single query is holding of symbol
+
+	//if not delay, do iterate until true
+	// for
+	indexCheck := 1
+	for indexCheck < 100000 {
+		queryIsTradeCompleted()
+
+		time.Sleep(time.Duration(3) * time.Second)
+		indexCheck++
+	}
+
+	//evaluation if order is closed
+
+	//
+}
+
 // func processCheckIsBuyPeformed() {
 // 	createCycle(3, 10000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
 // 	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
@@ -378,27 +402,27 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 }
 func handleCheckIsTradeBought(params ...interface{}) {
 	//Declare tradeBoughtEvaluation
-	tradeBoughtEvaluation := TradeBoughtEvaluation{}
+	// tradeBoughtEvaluation := TradeBoughtEvaluation{}
 
 	//Query
-	response := queryCheckIsTradeBought()
+	response := queryIsTradeCompleted()
 	fmt.Println(response)
 	//Evaluate
-	if strings.Contains(response, "<sym>") {
-		//Parse holdings, append to tradeBoughtEvaluation
-		// fmt.Println("hit true")
-		holdings := parseBalanceQuery(response)
-		tradeBoughtEvaluation.IsBought = true
-		tradeBoughtEvaluation.Holdings = holdings
-	}
+	// if strings.Contains(response, "<sym>") {
+	// 	//Parse holdings, append to tradeBoughtEvaluation
+	// 	// fmt.Println("hit true")
+	// 	holdings := parseBalanceQuery(response)
+	// 	tradeBoughtEvaluation.IsBought = true
+	// 	tradeBoughtEvaluation.Holdings = holdings
+	// }
 
-	//if positive evlauation store tradeBoughtEvaluation
-	if tradeBoughtEvaluation.IsBought {
-		//Store DB result
-		insertTradeBoughtEvaluation(tradeBoughtEvaluation)
-		operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
-		cancelCycle(operatingCycle)
-	}
+	// //if positive evlauation store tradeBoughtEvaluation
+	// if tradeBoughtEvaluation.IsBought {
+	// 	//Store DB result
+	// 	insertTradeBoughtEvaluation(tradeBoughtEvaluation)
+	// 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
+	// 	cancelCycle(operatingCycle)
+	// }
 
 	// TradeBoughtEvaluation
 }

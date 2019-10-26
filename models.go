@@ -153,13 +153,17 @@ type MetricsWhale struct {
 	DesiredVolatilityVarianceValue string
 }
 type MetricsWisemen struct {
-	CreatedAt                      string
-	DesiredPriceRangeHigh          string
-	DesiredPriceRangeLow           string
-	DesiredPchg                    string
-	DesiredPchgVarianceValue       string
-	DesiredVolatilityVarianceValue string
+	CreatedAt                          string
+	DesiredPriceRangeHigh              string
+	DesiredPriceRangeLow               string
+	DesiredPchg                        string
+	DesiredPchgVarianceValue           string
+	DesiredVolatilityVarianceValue     string
+	TradeBuyMonitorDelaySeconds        string
+	TradeBuyMonitorDelayQuerySeconds   string
+	TradeBuyMonitorDelayIterationCount string
 }
+
 type OrderInformationWisemen struct {
 	CreatedAt string
 	IsBought  string
@@ -181,4 +185,37 @@ type DayTrackingRecord struct {
 	LastDayOfWeekDayUpdate string
 	AmountOfTrades         string
 	IsWeekPassed           string
+}
+
+type ContainerOrders struct {
+	ListOrders []Order
+}
+type Order struct {
+	Symbol      string
+	SVI         string
+	OrderStatus string
+}
+
+type TradeEnteredInformation struct {
+	CreatedAt   string
+	Symbol      string
+	Price       string
+	OrderStatus string
+	Qty         string
+	QtyBought   string
+}
+
+type TradeConditionalMetrics struct {
+	CreatedAt    string
+	Symbol       string
+	TimeStart    string
+	TimeEnd      string
+	PriceDropout string
+}
+
+type BuyStatusWisemen struct {
+	CreatedAt        string
+	Symbol           string
+	IsHoldings       bool
+	AmountOfHoldings string
 }
