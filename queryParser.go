@@ -40,23 +40,23 @@ func parseQuery(queryString string) Stock {
 	return stock
 }
 
-func parseBalanceQuery(queryString string) Holdings {
-	splitDataQuery1 := strings.Split(queryString, "<sym>")[1]
-	symbol := strings.Split(splitDataQuery1, "</sym>")[0]
+// func parseBalanceQuery(queryString string) Holdings {
+// 	splitDataQuery1 := strings.Split(queryString, "<sym>")[1]
+// 	symbol := strings.Split(splitDataQuery1, "</sym>")[0]
 
-	splitDataQuery1 = strings.Split(queryString, "<price>")[1]
-	price := strings.Split(splitDataQuery1, "</price>")[0]
+// 	splitDataQuery1 = strings.Split(queryString, "<price>")[1]
+// 	price := strings.Split(splitDataQuery1, "</price>")[0]
 
-	splitDataQuery1 = strings.Split(queryString, "<qty>")[1]
-	qty := strings.Split(splitDataQuery1, "</qty>")[0]
+// 	splitDataQuery1 = strings.Split(queryString, "<qty>")[1]
+// 	qty := strings.Split(splitDataQuery1, "</qty>")[0]
 
-	holdings := Holdings{
-		Symbol: symbol,
-		Price:  price,
-		Qty:    qty,
-	}
-	return holdings
-}
+// 	holdings := Holdings{
+// 		Symbol: symbol,
+// 		Price:  price,
+// 		Qty:    qty,
+// 	}
+// 	return holdings
+// }
 
 func parseStockSetQuery(queryString string) []Stock {
 	splitDataQuery1 := strings.Split(queryString, "<quotes>")[1]
@@ -431,27 +431,92 @@ func parseTopStockQuery(queryString string) []Stock {
 	return stockList
 }
 
+const numbers = "1234567890"
+
+func containsNumbers(s string) bool {
+	for _, char := range s {
+		if strings.Contains(numbers, strings.ToLower(string(char))) {
+			return true
+		}
+	}
+	return false
+}
+
+const punctuation = ".,"
+
+func containsPunctuation(s string) bool {
+	for _, char := range s {
+		if strings.Contains(punctuation, strings.ToLower(string(char))) {
+			return true
+		}
+	}
+	return false
+}
+
+// func checkIsNumber(){
+
+// }
+
+func containsMinimumSeriesNumbers(s string) bool {
+	listNumberRange := []string{}
+	seriesIndexMinimum := 0
+
+	for _, char := range s {
+		// if strings.Contains(punctuation, strings.ToLower(string(char))) {
+		// 	return true
+		// }
+		// if containsNumbers{
+
+		// }
+
+		if strings.Contains(numbers, strings.ToLower(string(char))) {
+
+		}
+	}
+	return false
+
+}
+
 func parseDowWebscrape(queryString string) (string, string, string) {
-	currentDowValueQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
-	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "PM EDT")[0]
-	currentDowValueQuery3 := strings.Split(currentDowValueQuery2, "</span>")[1]
-	currentDowValueQuery4 := strings.Split(currentDowValueQuery3, ">")
-	currentDowValueQuery5 := strings.TrimSpace(currentDowValueQuery4[(len(currentDowValueQuery4) - 1)])
-	currentDowValue := currentDowValueQuery5
-	// currentDowValue := "p"
 
-	pointsChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
-	pointsChangedQuery2 := strings.Split(pointsChangedQuery1, "PM EDT")[0]
-	pointsChangedQuery3 := strings.Split(pointsChangedQuery2, "</span>")[4]
-	pointsChangedQuery4 := strings.Split(pointsChangedQuery3, ">")
-	pointsChangedQuery5 := strings.TrimSpace(pointsChangedQuery4[(len(pointsChangedQuery4) - 1)])
-	pointsChanged := pointsChangedQuery5
+	// isBool := containsNumbers("heyy26,958.06")
+	isBool := containsPunctuation("heyy2695806")
+	fmt.Println(isBool)
+	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
+	// listSpanClasses := strings.Split(queryString, "<span class=")
 
-	percentageChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
-	percentageChangedQuery2 := strings.Split(percentageChangedQuery1, "PM EDT")[0]
-	percentageChangedQuery3 := strings.Split(percentageChangedQuery2, " by ")[1]
-	percentageChangedQuery4 := strings.Split(percentageChangedQuery3, "%")[0]
-	percentageChange := percentageChangedQuery4
+	// countClasses := 0
+	// for i, v := range listSpanClasses {
+	// 	if strings.Contains(v, ",") {
+	// 		if strings.Contains(v, ".") {
+	// 			countClasses++
+	// 		}
+	// 	}
+	// 	i++
+	// }
+	// fmt.Println("countClasses")
+	// fmt.Println(countClasses)
+
+	// currentDowValueQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
+	// currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "PM EDT")[0]
+	// currentDowValueQuery3 := strings.Split(currentDowValueQuery2, "</span>")[1]
+	// currentDowValueQuery4 := strings.Split(currentDowValueQuery3, ">")
+	// currentDowValueQuery5 := strings.TrimSpace(currentDowValueQuery4[(len(currentDowValueQuery4) - 1)])
+	// currentDowValue := currentDowValueQuery5
+	// // currentDowValue := "p"
+
+	// pointsChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
+	// pointsChangedQuery2 := strings.Split(pointsChangedQuery1, "PM EDT")[0]
+	// pointsChangedQuery3 := strings.Split(pointsChangedQuery2, "</span>")[4]
+	// pointsChangedQuery4 := strings.Split(pointsChangedQuery3, ">")
+	// pointsChangedQuery5 := strings.TrimSpace(pointsChangedQuery4[(len(pointsChangedQuery4) - 1)])
+	// pointsChanged := pointsChangedQuery5
+
+	// percentageChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
+	// percentageChangedQuery2 := strings.Split(percentageChangedQuery1, "PM EDT")[0]
+	// percentageChangedQuery3 := strings.Split(percentageChangedQuery2, " by ")[1]
+	// percentageChangedQuery4 := strings.Split(percentageChangedQuery3, "%")[0]
+	// percentageChange := percentageChangedQuery4
 
 	// f, err := os.Create("output.html")
 	// check(err)
@@ -465,6 +530,9 @@ func parseDowWebscrape(queryString string) (string, string, string) {
 	// s1 := strings.Replace(percentageChange, "(", "", -1)
 	// s2 := strings.Replace(s1, ")", "", -1)
 	// percentageChange = strings.Replace(s2, "%", "", -1)
+	currentDowValue := ""
+	pointsChanged := ""
+	percentageChange := ""
 	return currentDowValue, pointsChanged, percentageChange
 }
 
@@ -518,13 +586,44 @@ func parseOrders(query string) ContainerOrders {
 	return containerOrders
 }
 
-func parseHoldings(query string) {
+func parseHoldings(query string) []Holding {
 	splitDataQuery1 := strings.Split(query, "<accountholdings>")[1]
 	splitDataQuery2 := strings.Split(splitDataQuery1, "</accountholdings>")
 	// fmt.Println("splitDataQuery1")
 	// fmt.Println(splitDataQuery1[1])
-	fmt.Println(splitDataQuery2[0])
-	// balance := strings.Split(splitDataQuery1, "</accountholdings>")[0]
+	// fmt.Println(splitDataQuery2[0])
+	// fmt.Println(len(splitDataQuery2))
+	if len(splitDataQuery2) > 0 {
+		splitDataQuery2 = splitDataQuery2[:len(splitDataQuery2)-1]
+	}
+	// fmt.Println(len(splitDataQuery2))
+
+	listHoldings := []Holding{}
+	for i, v := range splitDataQuery2 {
+		symbolString1 := strings.Split(splitDataQuery2[0], "<sym>")
+		symbolString2 := strings.Split(symbolString1[1], "</sym>")
+		// fmt.Println(symbolString2[0])
+		symbol := symbolString2[0]
+
+		purchasePriceString1 := strings.Split(splitDataQuery2[0], "<purchaseprice>")
+		purchasePriceString2 := strings.Split(purchasePriceString1[1], "</purchaseprice>")
+		// fmt.Println(purchasePriceString2[0])
+		purchasePrice := purchasePriceString2[0]
+
+		qtyString1 := strings.Split(splitDataQuery2[0], "<qty>")
+		qtyString2 := strings.Split(qtyString1[1], "</qty>")
+		// fmt.Println(purchasePriceString2[0])
+		qty := qtyString2[0]
+		// fmt.Println(qty)
+
+		holding := Holding{Symbol: symbol, PurchasePrice: purchasePrice, Qty: qty}
+		listHoldings = append(listHoldings, holding)
+
+		fmt.Println(v)
+
+		i++
+	}
+	return listHoldings
 }
 
 // <?xml version="1.0" encoding="UTF-8"?><response id="126565f9-ee57-4117-aff4-dcbf19f4d673"><elapsedtime>0</elapsedtime>

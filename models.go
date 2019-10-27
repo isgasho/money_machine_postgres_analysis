@@ -106,13 +106,32 @@ type Stock struct {
 }
 
 type TradeBoughtEvaluation struct {
-	IsBought bool
-	Holdings Holdings
+	IsBought    bool
+	HoldingList []Holding
 }
-type Holdings struct {
-	Symbol string
-	Price  string
-	Qty    string
+type Holding struct {
+	Symbol        string
+	PurchasePrice string
+	Qty           string
+}
+
+// CREATE TABLE holding_wisemen
+// (
+//    id SERIAL PRIMARY KEY,
+//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+//    symbol VARCHAR,
+//    price VARCHAR,
+//    qty VARCHAR,
+//    qty_bought VARCHAR,
+//    order_status VARCHAR
+// );
+type HoldingWisemen struct {
+	CreatedAt   string
+	Symbol      string
+	Price       string
+	Qty         string
+	QtyBought   string
+	OrderStatus string
 }
 
 type TradeInfo struct {
@@ -214,8 +233,8 @@ type TradeConditionalMetrics struct {
 }
 
 type BuyStatusWisemen struct {
-	CreatedAt        string
-	Symbol           string
-	IsHoldings       bool
-	AmountOfHoldings string
+	CreatedAt  string
+	Symbol     string
+	IsHoldings bool
+	QtyBought  string
 }

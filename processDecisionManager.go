@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strings"
 	"time"
 )
@@ -126,29 +127,29 @@ func processWhaleQueryStockSet() {
 	}
 }
 
-func intiateMonitorTradeWisemon() {
-	// metrics := selectMetricsWisemen()
-	// Select metrics make use of it, continue.
-	// fmt.Println(metrics)
-	//Delay before monitor cycle
-	// time.Sleep(time.Duration(10) * time.Second)
-	// fmt.Println("hit awesome")
-	//single query is holding of symbol
+// func intiateMonitorTradeWisemon() {
+// 	// metrics := selectMetricsWisemen()
+// 	// Select metrics make use of it, continue.
+// 	// fmt.Println(metrics)
+// 	//Delay before monitor cycle
+// 	// time.Sleep(time.Duration(10) * time.Second)
+// 	// fmt.Println("hit awesome")
+// 	//single query is holding of symbol
 
-	//if not delay, do iterate until true
-	// for
-	indexCheck := 1
-	for indexCheck < 100000 {
-		queryIsTradeCompleted()
+// 	//if not delay, do iterate until true
+// 	// for
+// 	indexCheck := 1
+// 	for indexCheck < 100000 {
+// 		queryIsTradeCompleted()
 
-		time.Sleep(time.Duration(3) * time.Second)
-		indexCheck++
-	}
+// 		time.Sleep(time.Duration(3) * time.Second)
+// 		indexCheck++
+// 	}
 
-	//evaluation if order is closed
+// 	//evaluation if order is closed
 
-	//
-}
+// 	//
+// }
 
 // func processCheckIsBuyPeformed() {
 // 	createCycle(3, 10000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
@@ -167,11 +168,11 @@ func processFillHolds() {
 func processDowWebscrape() {
 	go handleDowWebscrape()
 }
-func processCheckIsTradeBought() {
+func processCheckIsTradeBought(symbol string) {
 	// go handleCheckIsTradeBought()
 	//THe idea is to check every 5 seconds, and if a trade evaluation is positive,
 	//or if the time delimiter for checking is met, then cancle this cycle and record results in DB.
-	createCycle(10, 3, handleCheckIsTradeBought, "handleCheckIsTradeBought")
+	createCycle(10, 3, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
 	go startCycle(operatingCycle)
 	initialWhaleStockQueryPerformed = true
@@ -404,9 +405,48 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	//Declare tradeBoughtEvaluation
 	// tradeBoughtEvaluation := TradeBoughtEvaluation{}
 
+	listVal := reflect.ValueOf(params[0])
+	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
+	listSymbols := listSymbolsInterface.([]string)
+	symbol := listSymbols[0]
+	// fmt.Println(listSymbols[0])
+
 	//Query
-	response := queryIsTradeCompleted()
-	fmt.Println(response)
+	//TradeBoughtEvaluation
+	tradeBoughtEvaluation := queryIsTradeCompleted(symbol)
+
+	//
+	if tradeBoughtEvaluation.IsBought {
+		holdingWisemen := HoldingWisemen{}
+		for i, v := range tradeBoughtEvaluation.HoldingList {
+			if v.Symbol == symbol {
+				// type HoldingWisemen struct {
+				// 	Symbol      string
+				// 	Price       string
+				// 	Qty         string
+				// 	QtyBought   string
+				// 	OrderStatus string
+				// }
+				holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.PurchasePrice, Qty: "0", QtyBought: v.Qty, OrderStatus: "pending eval"}
+			}
+			i++
+		}
+		insertHoldingWisemen(holdingWisemen)
+	}
+
+	//insert information.
+
+	//query order, if order still open pause until resolution.
+	//Cycle but, will need buy simulation for this part.buy limit met, and then evaluation of order.
+
+	// fmt.Println(isHoldingContained)
+	// tradeBoughtEvaluation
+
+	//store order
+
+	//once bought
+	//store order information
+
 	//Evaluate
 	// if strings.Contains(response, "<sym>") {
 	// 	//Parse holdings, append to tradeBoughtEvaluation
@@ -692,9 +732,12 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 
 func handleDowWebscrape(params ...interface{}) {
 	response := queryWebscrape()
-	fmt.Println(response)
+	fmt.Println("hit awesome")
 	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
-	insertDow(currentDowValue, pointsChanged, percentageChange)
+	fmt.Println(currentDowValue)
+	fmt.Println(pointsChanged)
+	fmt.Println(percentageChange)
+	// insertDow(currentDowValue, pointsChanged, percentageChange)
 }
 
 func handleEndOfDayAnalyticsOperations() {

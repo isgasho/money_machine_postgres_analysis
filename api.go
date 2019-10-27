@@ -318,7 +318,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 
 		//Delay before monitor cycle
 		// time.Sleep(time.Duration(10) * time.Second)
-		intiateMonitorTradeWisemon()
+		// intiateMonitorTradeWisemon()
 	}
 
 	// if requestType == "selectMetricsWisemen" {
@@ -350,8 +350,10 @@ func main() {
 	// go handleRequests()
 
 	// intiateMonitorTradeWisemon()
-
-	processCheckIsTradeBought()
+	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
+	// queryWebscrape()
+	processDowWebscrape()
+	// processCheckIsTradeBought("VICI")
 
 	// dropMetricsWisemen()
 	// createMetricsWisemen()

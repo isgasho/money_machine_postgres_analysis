@@ -1220,28 +1220,28 @@ func selectOrderInformationWisemen() []OrderInformationWisemen {
 	return orderInformationWisemenList
 }
 
-func insertTradeBoughtEvaluation(tradeBoughtEvaluation TradeBoughtEvaluation) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
+// func insertTradeBoughtEvaluation(tradeBoughtEvaluation TradeBoughtEvaluation) {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Create Error 1")
+// 	}
+// 	defer db.Close()
 
-	sqlStatement := `
-		INSERT INTO trade_bought_evaluation (symbol, is_bought)
-		VALUES ($1, $2)
-		RETURNING id
-		`
-	var id int
-	row := db.QueryRow(sqlStatement, tradeBoughtEvaluation.Holdings.Symbol, tradeBoughtEvaluation.IsBought)
-	err1 := row.Scan(&id)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-}
+// 	sqlStatement := `
+// 		INSERT INTO trade_bought_evaluation (symbol, is_bought)
+// 		VALUES ($1, $2)
+// 		RETURNING id
+// 		`
+// 	var id int
+// 	row := db.QueryRow(sqlStatement, tradeBoughtEvaluation.HoldingList.Symbol, tradeBoughtEvaluation.IsBought)
+// 	err1 := row.Scan(&id)
+// 	if err1 != nil {
+// 		fmt.Println("Create Error 2")
+// 	}
+// }
 
 func selectTradeBoughtEvaluation() []OrderInformationWisemen {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -1673,27 +1673,174 @@ func deleteTradeConditionalMetrics(symbolToDel string) {
 }
 
 //
-func queryIsTradeCompleted() BuyStatusWisemen {
-	//Query if holdings of symbol...
-	// Query
-	// Holdings
-	// query
-
-	// type BuyStatusWisemen struct {
-	// 	CreatedAt        string
-	// 	Symbol           string
-	// 	IsHoldings       bool
-	// 	AmountOfHoldings string
-	// }
-
-	//query holdings
-	// pullHoldings()
+func queryIsTradeCompleted(symbol string) TradeBoughtEvaluation {
+	tradeBoughtEvaluation := TradeBoughtEvaluation{}
 	response := queryHoldings()
-	parseHoldings(response)
-	// fmt.Println("response")
-	// fmt.Println(response)
-	//parse holdings
-	// for symbol
-	buyStatusWisemen := BuyStatusWisemen{}
-	return buyStatusWisemen
+	holdingList := parseHoldings(response)
+	isHoldingSymbol := false
+	for i, v := range holdingList {
+		if v.Symbol == symbol {
+			isHoldingSymbol = true
+		}
+		i++
+	}
+	tradeBoughtEvaluation.HoldingList = holdingList
+	tradeBoughtEvaluation.IsBought = isHoldingSymbol
+	return tradeBoughtEvaluation
+}
+
+//
+//holdingsWisemen
+func insertHoldingWisemen(holdingWisemen HoldingWisemen) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	// 	CREATE TABLE holding_wisemen
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    price VARCHAR,
+	//    qty VARCHAR,
+	//    qty_bought VARCHAR,
+	//    order_status VARCHAR
+	// );
+
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO holding_wisemen (symbol, price, qty, qty_bought, order_status)
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id
+		`
+	var id int
+	// fmt.Println("holdingWisemen")
+	// fmt.Println(holdingWisemen.Symbol)
+	// fmt.Println(holdingWisemen.Price)
+	// fmt.Println(holdingWisemen.QtyBought)
+	// fmt.Println(holdingWisemen.OrderStatus)
+
+	row := db.QueryRow(sqlStatement, holdingWisemen.Symbol, holdingWisemen.Price, holdingWisemen.Qty, holdingWisemen.QtyBought, holdingWisemen.OrderStatus)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectHoldingWisemen() []HoldingWisemen {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// 	CREATE TABLE holding_wisemen
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    price VARCHAR,
+	//    qty VARCHAR,
+	//    qty_bought VARCHAR,
+	//    order_status VARCHAR
+	// );
+
+	rows, err1 := db.Query("SELECT created_at, symbol, price, qty_bought, order_status FROM holding_wisemen")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	holdingWisemenList := make([]HoldingWisemen, 0)
+
+	for rows.Next() {
+		var holdingWisemen HoldingWisemen
+		if err2 := rows.Scan(&holdingWisemen.CreatedAt, &holdingWisemen.Symbol, &holdingWisemen.Price, &holdingWisemen.QtyBought, &holdingWisemen.OrderStatus); err2 != nil {
+			fmt.Println("err2")
+		}
+		holdingWisemenList = append(holdingWisemenList, holdingWisemen)
+	}
+	return holdingWisemenList
+}
+
+func deleteHoldingWisemen(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM holding_wisemen WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func dropHoldingWisemen() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table holding_wisemen")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createHoldingWisemen() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE holding_wisemen
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   price VARCHAR,
+	   qty VARCHAR,
+	   qty_bought VARCHAR, 
+	   order_status VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
 }
