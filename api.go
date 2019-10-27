@@ -353,6 +353,7 @@ func main() {
 	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
 	// queryWebscrape()
 	processDowWebscrape()
+	// parseDowWebscrape("")
 	// processCheckIsTradeBought("VICI")
 
 	// dropMetricsWisemen()

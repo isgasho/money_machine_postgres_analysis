@@ -238,3 +238,10 @@ type BuyStatusWisemen struct {
 	IsHoldings bool
 	QtyBought  string
 }
+
+type ContainerNumberRange struct {
+	ListNumberRange []WebscrapeNumberRange
+}
+type WebscrapeNumberRange struct {
+	NumberRange []string
+}

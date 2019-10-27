@@ -431,7 +431,7 @@ func parseTopStockQuery(queryString string) []Stock {
 	return stockList
 }
 
-const numbers = "1234567890"
+const numbers = "1234567890.,"
 
 func containsNumbers(s string) bool {
 	for _, char := range s {
@@ -453,47 +453,103 @@ func containsPunctuation(s string) bool {
 	return false
 }
 
-// func checkIsNumber(){
-
-// }
-
 func containsMinimumSeriesNumbers(s string) bool {
-	listNumberRange := []string{}
-	seriesIndexMinimum := 0
-
-	for _, char := range s {
-		// if strings.Contains(punctuation, strings.ToLower(string(char))) {
-		// 	return true
+	containerNumberRange := ContainerNumberRange{}
+	webscrapeNumberRange := WebscrapeNumberRange{}
+	for i, char := range s {
+		// type ContainerNumberRange struct {
+		// 	ListNumberRange []WebscrapeNumberRange
 		// }
-		// if containsNumbers{
-
+		// type WebscrapeNumberRange struct {
+		// 	NumberRange []string
 		// }
-
-		if strings.Contains(numbers, strings.ToLower(string(char))) {
-
+		if i == 0 {
+			webscrapeNumberRange := WebscrapeNumberRange{}
+			containerNumberRange.ListNumberRange = append(containerNumberRange.ListNumberRange, webscrapeNumberRange)
+		}
+		if len(containerNumberRange.ListNumberRange[len(containerNumberRange.ListNumberRange)-1].NumberRange) == 0 {
+			if strings.Contains(numbers, strings.ToLower(string(char))) {
+				// get latest WebscrapeNumberRange append to NumberRange
+				containerNumberRange.ListNumberRange[len(containerNumberRange.ListNumberRange)-1].NumberRange = append(containerNumberRange.ListNumberRange[len(containerNumberRange.ListNumberRange)-1].NumberRange, string(char))
+				continue
+			}
+		}
+		if len(containerNumberRange.ListNumberRange[len(containerNumberRange.ListNumberRange)-1].NumberRange) > 0 {
+			if strings.Contains(numbers, strings.ToLower(string(char))) {
+				containerNumberRange.ListNumberRange[len(containerNumberRange.ListNumberRange)-1].NumberRange = append(containerNumberRange.ListNumberRange[len(containerNumberRange.ListNumberRange)-1].NumberRange, string(char))
+				continue
+			}
+			if !strings.Contains(numbers, strings.ToLower(string(char))) {
+				webscrapeNumberRange = WebscrapeNumberRange{}
+				containerNumberRange.ListNumberRange = append(containerNumberRange.ListNumberRange, webscrapeNumberRange)
+			}
 		}
 	}
-	return false
+	for i, v := range containerNumberRange.ListNumberRange {
+		if len(v.NumberRange) > 8 {
+			fmt.Println(v.NumberRange)
+			// fmt.Println(s)
+			return true
+		}
+		i++
+	}
 
+	return false
 }
 
 func parseDowWebscrape(queryString string) (string, string, string) {
 
 	// isBool := containsNumbers("heyy26,958.06")
-	isBool := containsPunctuation("heyy2695806")
-	fmt.Println(isBool)
-	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
-	// listSpanClasses := strings.Split(queryString, "<span class=")
+	// isBool := containsPunctuation("heyy2695806")
+	// fmt.Println(isBool)
 
-	// countClasses := 0
+	//test
+	// listString := []string{"abce", "1234", "1234,5", "26,958.06", "26,95abc8.06"}
+	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
+	listSpanClasses := strings.Split(queryString, "<span class=")
+
+	// // countClasses := 0
 	// for i, v := range listSpanClasses {
-	// 	if strings.Contains(v, ",") {
-	// 		if strings.Contains(v, ".") {
-	// 			countClasses++
-	// 		}
+	// 	// if strings.Contains(v, ",") {
+	// 	// 	if strings.Contains(v, ".") {
+	// 	// 		countClasses++
+	// 	// 	}
+	// 	// }
+
+	index := 0
+
+	listIndexPossibleMatches := []int{}
+
+	for i, v := range listSpanClasses {
+		isBool := containsMinimumSeriesNumbers(v)
+		if isBool {
+			// if index == 5 {
+			// 	fmt.Println(v)
+			// }
+			listIndexPossibleMatches = append(listIndexPossibleMatches, i)
+			index++
+			// fmt.Println(v)
+			// fmt.Println(i)
+		}
+		// i++
+	}
+	//place viable pieces into container
+	listPossibleMatches := []string{}
+	//get piece, count by ><span cuts, until piece with "Up by 0.57%" is located
+	// "Up by 0.57%"
+	//split by ><span
+
+	//query
+	// find at indexes and count till found
+
+	// listPossibleMatches ==
+	// 26,958.06
+	// 	if isBool {
+	// 		fmt.Println(v)
 	// 	}
 	// 	i++
 	// }
+
 	// fmt.Println("countClasses")
 	// fmt.Println(countClasses)
 
