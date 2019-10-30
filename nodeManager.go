@@ -1630,6 +1630,17 @@ func queryOrders() string {
 	return response
 }
 
+func queryBalance() string {
+	json := `{
+		"request_type": "balanceInformation",
+		"data": {
+		` + `}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryTradeBuyLimit(symbol string, limitPrice string, qty string) string {
 	json := `{
 		"request_type": "trade_buy_limit",
@@ -1677,13 +1688,18 @@ func queryCancelTrade(symbol string, limitPrice string, qty string) string {
 	return response
 }
 
-func queryTradeCheckBalance() string {
-	json := `
-	{
-		"request_type": "checkBalance"
-	}
-	`
-	url := "http://localhost:3000/api/brokerage"
-	response := post(url, json)
-	return response
+// func queryBalance() string {
+// 	json := `
+// 	{
+// 		"request_type": "balanceInformation"
+// 	}
+// 	`
+// 	url := "http://localhost:3000"
+// 	response := post(url, json)
+// 	return response
+// }
+
+func postNeoSellOrder() string {
+
+	return ""
 }

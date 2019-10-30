@@ -307,6 +307,25 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("dataList")
 		fmt.Println(dataList)
 		//process trade.
+		handleTradeWisemen(dataList[0], dataList[1])
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+		//Delay before monitor cycle
+		// time.Sleep(time.Duration(10) * time.Second)
+		// intiateMonitorTradeWisemon()
+	}
+
+	if requestType == "postPriceSellDelimiterMetrics" {
+		dataList := databaseQuery.Data
+		fmt.Println("postPriceSellDelimiterMetrics")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		//process trade.
 		// handleTradeWisemen(dataList[0], dataList[1])
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -315,11 +334,9 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
-
-		//Delay before monitor cycle
-		// time.Sleep(time.Duration(10) * time.Second)
-		// intiateMonitorTradeWisemon()
 	}
+
+	//
 
 	// if requestType == "selectMetricsWisemen" {
 	// 	dataList := databaseQuery.Data
@@ -345,14 +362,23 @@ func handleRequests() {
 }
 
 func main() {
+	go handleRequests()
+	// response := queryBalance()
+	// fmt.Println(response)
+
+	// response := queryOrders()
+	// fmt.Println(response)
+	processCheckIsTradeBought("VICI")
+	// queryOrder := queryOrders()
+	// fmt.Println(queryOrder)
 	//Open server API connections
 	//Begin Select data retrieval for particular processes.
-	// go handleRequests()
+	//
 
 	// intiateMonitorTradeWisemon()
 	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
 	// queryWebscrape()
-	processDowWebscrape()
+	// processDowWebscrape()
 	// parseDowWebscrape("")
 	// processCheckIsTradeBought("VICI")
 

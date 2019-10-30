@@ -485,10 +485,11 @@ func containsMinimumSeriesNumbers(s string) bool {
 			}
 		}
 	}
+	// listValidStrings := []string{}
 	for i, v := range containerNumberRange.ListNumberRange {
-		if len(v.NumberRange) > 8 {
+		if len(v.NumberRange) == 9 {
 			fmt.Println(v.NumberRange)
-			// fmt.Println(s)
+			// listValidStrings = append(listValidStrings, v.NumberRange)
 			return true
 		}
 		i++
@@ -497,99 +498,109 @@ func containsMinimumSeriesNumbers(s string) bool {
 	return false
 }
 
-func parseDowWebscrape(queryString string) (string, string, string) {
+func calculateIsMatchingDelimiterWebscrape(delimiterStringList []string, testingString string) bool {
+	//calculate match delimiter
+	if strings.Contains(testingString, delimiterStringList[0]) {
+		fmt.Println(testingString)
+		return true
+	}
+	if strings.Contains(testingString, delimiterStringList[1]) {
+		fmt.Println(testingString)
+		return true
+	}
+	return false
+}
 
-	// isBool := containsNumbers("heyy26,958.06")
-	// isBool := containsPunctuation("heyy2695806")
-	// fmt.Println(isBool)
+func calculateIndexMatchClosestToDelimiter(listSpanClasses []string, listIndexPossibleMatches []int) string {
+	delimiterStringList := []string{"\"Up by ", "\"Down by "}
+	// containerForDistance := []int{}
 
-	//test
-	// listString := []string{"abce", "1234", "1234,5", "26,958.06", "26,95abc8.06"}
-	// <span class="IsqQVc NprOob iXPM7ggEYSKk-zJFzKq8ukm8">26,958.06</span>
-	listSpanClasses := strings.Split(queryString, "<span class=")
+	// fmt.println()
+	fmt.Println("listIndexPossibleMatches")
+	fmt.Println(listIndexPossibleMatches)
+	listWisemenMatchClosestToDelimiter := []WisemenMatchClosestToDelimiter{}
+	for indexIndexPossibleMatch, indexPossibleMatch := range listIndexPossibleMatches {
+		//starting from span class
+		//iterate until delimiter met. Count distance traveled.
+		distanceInt := 0
+		// fmt.Println("new indexPossibleMatch")
+		// if indexIndexPossibleMatch > 4 {
+		for indexSpanClass, spanClass := range listSpanClasses {
+			if indexSpanClass >= indexPossibleMatch {
+				// fmt.Println("working spanClass")
+				// fmt.Println(spanClass)
+				if calculateIsMatchingDelimiterWebscrape(delimiterStringList, spanClass) {
+					// fmt.Println("spanClass")
+					// fmt.Println(spanClass)
+					// fmt.Println("distanceInt")
+					// fmt.Println(distanceInt)
 
-	// // countClasses := 0
-	// for i, v := range listSpanClasses {
-	// 	// if strings.Contains(v, ",") {
-	// 	// 	if strings.Contains(v, ".") {
-	// 	// 		countClasses++
-	// 	// 	}
-	// 	// }
+					//for wisemenMatchClosestToDelimiter
+					listWisemenMatchClosestToDelimiter = append(listWisemenMatchClosestToDelimiter, WisemenMatchClosestToDelimiter{SplitStringValue: indexPossibleMatch, DistanceFromDelimiter: distanceInt})
 
-	index := 0
+					// containerForDistance = append(containerForDistance, distanceInt)
+					break
+				}
+				distanceInt++
+			}
+		}
+		// }
+
+		fmt.Println("indexIndexPossibleMatch")
+		fmt.Println(indexIndexPossibleMatch)
+	}
+
+	lowestIndex := 0
+	fmt.Println("v.DistanceFromDelimiter")
+	for i, v := range listWisemenMatchClosestToDelimiter {
+		if i == 0 {
+			continue
+		}
+		if v.DistanceFromDelimiter < listWisemenMatchClosestToDelimiter[lowestIndex].DistanceFromDelimiter {
+			lowestIndex = i
+		}
+
+		// fmt.Println(v.DistanceFromDelimiter)
+		// fmt.Println(v.SplitStringValue)
+		// i++
+
+		// if i == 6 {
+		// 	fmt.Println(v.SplitStringValue)
+		// }
+		i++
+	}
+	fmt.Println("lowestIndex")
+	fmt.Println(listWisemenMatchClosestToDelimiter[lowestIndex].DistanceFromDelimiter)
+	fmt.Println(listSpanClasses[listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue])
+	// fmt.Println("listWisemenMatchClosestToDelimiter")
+	// fmt.Println(len(listWisemenMatchClosestToDelimiter))
+
+	// fmt.prin
+	return listSpanClasses[listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue] //listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue
+}
+
+func parseDowWebscrape(queryString string) string {
+	listSpanClasses := strings.Split(queryString, "<span")
 
 	listIndexPossibleMatches := []int{}
 
 	for i, v := range listSpanClasses {
 		isBool := containsMinimumSeriesNumbers(v)
 		if isBool {
-			// if index == 5 {
-			// 	fmt.Println(v)
-			// }
 			listIndexPossibleMatches = append(listIndexPossibleMatches, i)
-			index++
-			// fmt.Println(v)
-			// fmt.Println(i)
 		}
-		// i++
 	}
-	//place viable pieces into container
-	listPossibleMatches := []string{}
-	//get piece, count by ><span cuts, until piece with "Up by 0.57%" is located
-	// "Up by 0.57%"
-	//split by ><span
+	stringClosestMatch := calculateIndexMatchClosestToDelimiter(listSpanClasses, listIndexPossibleMatches)
 
-	//query
-	// find at indexes and count till found
+	fmt.Println("stringClosestMatch")
+	fmt.Println(stringClosestMatch)
 
-	// listPossibleMatches ==
-	// 26,958.06
-	// 	if isBool {
-	// 		fmt.Println(v)
-	// 	}
-	// 	i++
-	// }
+	currentDowValueQuery1 := strings.Split(stringClosestMatch, "</span>")[0]
+	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "\">")[1]
+	fmt.Println(currentDowValueQuery2)
+	currentDowValue := currentDowValueQuery2
 
-	// fmt.Println("countClasses")
-	// fmt.Println(countClasses)
-
-	// currentDowValueQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
-	// currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "PM EDT")[0]
-	// currentDowValueQuery3 := strings.Split(currentDowValueQuery2, "</span>")[1]
-	// currentDowValueQuery4 := strings.Split(currentDowValueQuery3, ">")
-	// currentDowValueQuery5 := strings.TrimSpace(currentDowValueQuery4[(len(currentDowValueQuery4) - 1)])
-	// currentDowValue := currentDowValueQuery5
-	// // currentDowValue := "p"
-
-	// pointsChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
-	// pointsChangedQuery2 := strings.Split(pointsChangedQuery1, "PM EDT")[0]
-	// pointsChangedQuery3 := strings.Split(pointsChangedQuery2, "</span>")[4]
-	// pointsChangedQuery4 := strings.Split(pointsChangedQuery3, ">")
-	// pointsChangedQuery5 := strings.TrimSpace(pointsChangedQuery4[(len(pointsChangedQuery4) - 1)])
-	// pointsChanged := pointsChangedQuery5
-
-	// percentageChangedQuery1 := strings.Split(queryString, "INDEXDJX: .DJI")[1]
-	// percentageChangedQuery2 := strings.Split(percentageChangedQuery1, "PM EDT")[0]
-	// percentageChangedQuery3 := strings.Split(percentageChangedQuery2, " by ")[1]
-	// percentageChangedQuery4 := strings.Split(percentageChangedQuery3, "%")[0]
-	// percentageChange := percentageChangedQuery4
-
-	// f, err := os.Create("output.html")
-	// check(err)
-	// n3, err1 := f.WriteString(currentDowValue + pointsChanged + percentageChange)
-	// check(err1)
-	// fmt.Printf("wrote %d bytes\n", n3)
-	// f.Sync()
-
-	// percentageChange := strings.TrimSpace(strings.Split(pointsChangedQuery3, "\\n")[1])
-	// percentageChange := "b"
-	// s1 := strings.Replace(percentageChange, "(", "", -1)
-	// s2 := strings.Replace(s1, ")", "", -1)
-	// percentageChange = strings.Replace(s2, "%", "", -1)
-	currentDowValue := ""
-	pointsChanged := ""
-	percentageChange := ""
-	return currentDowValue, pointsChanged, percentageChange
+	return currentDowValue
 }
 
 func parseBalance(queryString string) string {

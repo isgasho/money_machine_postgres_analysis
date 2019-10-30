@@ -72,7 +72,7 @@ func selectNews() {
 func deleteNews() {
 }
 
-func insertDow(currentDowValue string, pointsChanged string, percentageChange string) {
+func insertDow(currentDowValue string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -83,12 +83,12 @@ func insertDow(currentDowValue string, pointsChanged string, percentageChange st
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO dow (current_dow_value, points_changed, percentage_change)
-		VALUES ($1, $2, $3)
+		INSERT INTO dow (current_dow_value)
+		VALUES ($1)
 		RETURNING id
 		`
 	var dow Dow
-	row := db.QueryRow(sqlStatement, currentDowValue, pointsChanged, percentageChange)
+	row := db.QueryRow(sqlStatement, currentDowValue)
 	err1 := row.Scan(&dow.ID)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -1843,4 +1843,75 @@ func createHoldingWisemen() {
 		fmt.Println("Delete Error 3")
 	}
 	fmt.Println(count)
+}
+
+// func postNeoBuyOrderResponse(holdingWisemen HoldingWisemen) string {
+
+// 	// type HoldingWisemen struct {
+// 	// 	CreatedAt   string
+// 	// 	Symbol      string
+// 	// 	Price       string
+// 	// 	Qty         string
+// 	// 	QtyBought   string
+// 	// 	OrderStatus string
+// 	// }
+
+// 	// json := `{
+// 	// 	"requestType": "postNeoBuyOrderResponse",
+// 	// 	"data": [
+// 	// 	`
+
+// 	// // for indexEvalResult, evalResult := range evalResults {
+// 	// json += "\"" + holdingWisemen.Symbol + "\","
+// 	// //bool to string. strconv.FormatBool(v)
+// 	// json += "\"" + holdingWisemen.Price + "\","
+// 	// json += "\"" + holdingWisemen.QtyBought + "\","
+
+// 	// json += "\"" + holdingWisemen.OrderStatus + "\""
+// 	// json = json + `]}`
+
+// 	json := `{
+// 		"request_type": "postNeoBuyOrderResponse",
+// 		"data": {
+// 		`
+// 	json = json + "\"symbol\":" + "\"" + holdingWisemen.Symbol + "\","
+// 	json = json + "\"limit\":" + "\"" + holdingWisemen.Price + "\","
+// 	json = json + "\"qty\":" + "\"" + holdingWisemen.OrderStatus + "\""
+// 	json = json + `}}`
+
+// 	url := "http://localhost:11000/databaseQuery"
+// 	response := post(url, json)
+
+// 	// fmt.Println("json")
+// 	// fmt.Println(json)
+
+// 	// response := ""
+// 	return response
+// }
+
+// type HoldingWisemen struct {
+// 	CreatedAt   string
+// 	Symbol      string
+// 	Price       string
+// 	Qty         string
+// 	QtyBought   string
+// 	OrderStatus string
+// }
+
+func postNeoBuyOrderResponse(holdingWisemen HoldingWisemen) string {
+	symbol := holdingWisemen.Symbol
+	buyPrice := holdingWisemen.Price
+	qty := holdingWisemen.QtyBought
+	json := `{
+		"requestType": "postNeoBuyOrderResponse",
+		"data": [
+			`
+	json += "\"" + symbol + "\","
+	json += "\"" + buyPrice + "\","
+	json += "\"" + qty + "\""
+	json = json + `]}`
+
+	url := "http://localhost:11000/databaseQuery"
+	response := post(url, json)
+	return response
 }

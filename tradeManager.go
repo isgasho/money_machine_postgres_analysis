@@ -17,7 +17,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println("desiredLimitPrice")
 	fmt.Println(desiredLimitPrice)
 	//get balance
-	response := queryTradeCheckBalance()
+	response := queryBalance()
 	balance := parseBalance(response)
 
 	floatBalance := 0.0
@@ -87,6 +87,31 @@ func cancelOrder(symbol string) {
 	//cancel order by id
 }
 
+func calculateHoldingStatus(holdingWisemen HoldingWisemen) string {
+	defaultHoldingStatus := "undetermined"
+	isPartialUnfinished := true
+	isCompletedFull := true
+	//calculate
+	//Need original order sent in and compare to bought.
+	//Get order
+	// orderContainer := getAllOrders()
+	//Need order submitted, compare to holding wisemen
+	// orderContainer.ListOrders
+	//Get order for
+	// for i, v := range orderContainer.ListOrders {
+
+	// }
+
+	//Get the order compare...
+	//return status
+	if isPartialUnfinished {
+		return "isPartialUnfinished"
+	}
+	if isCompletedFull {
+		return "isCompletedFull"
+	}
+	return defaultHoldingStatus
+}
 func calculateIsTradeBoughtSuccessful(symbol string) {
 	isSuccessful := detectIsTradeBoughtSuccessful(symbol)
 	if isSuccessful {

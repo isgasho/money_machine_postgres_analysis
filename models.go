@@ -134,6 +134,10 @@ type HoldingWisemen struct {
 	OrderStatus string
 }
 
+// type HoldingStatusWisemen struct {
+// 	Status string
+// }
+
 type TradeInfo struct {
 	ID                string
 	DayID             int
@@ -213,6 +217,7 @@ type Order struct {
 	Symbol      string
 	SVI         string
 	OrderStatus string
+	Qty         string
 }
 
 type TradeEnteredInformation struct {
@@ -244,4 +249,9 @@ type ContainerNumberRange struct {
 }
 type WebscrapeNumberRange struct {
 	NumberRange []string
+	StringValue string
+}
+type WisemenMatchClosestToDelimiter struct {
+	SplitStringValue      int
+	DistanceFromDelimiter int
 }

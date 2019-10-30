@@ -7,11 +7,11 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 01
-var checkIsMarketOpenHour = 16
+var checkIsMarketOpenMinute = 24
+var checkIsMarketOpenHour = 11
 
-var conditionOneMinute = 02
-var conditionOneHour = 16
+var conditionOneMinute = 25
+var conditionOneHour = 11
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
@@ -64,8 +64,8 @@ var conditionSeventeenHour = 15
 var conditionEighteenMinute = 0
 var conditionEighteenHour = 16
 
-var conditionNineteenMinute = 1
-var conditionNineteenHour = 16
+var conditionNineteenMinute = 26
+var conditionNineteenHour = 11
 
 var checkIsMarketOpenBool = true
 var checkIsMarketOpenFollowUpBool = true
@@ -189,7 +189,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
 		checKIsBrokerageResponding()
 		//Wisemen algorithm same day calculation
-		handleDayRotation()
+		// handleDayRotation()
 		if isMarketClosed {
 			setTimelineOperationsFalse()
 		}
@@ -332,10 +332,13 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 			cancelCycle(handleWhaleQueryStockListCycle)
 		}
 
-		resetTempSymbolHold()
-		resetStockWisemenSymbolHold()
-		handleEndOfDayAnalyticsOperations()
-		handleDayReset()
+		//At some point in this hour reset the pools, and reset the timeline.
+		resetCyclePools()
+
+		// resetTempSymbolHold()
+		// resetStockWisemenSymbolHold()
+		// handleEndOfDayAnalyticsOperations()
+		// handleDayReset()
 	}
 
 	//Conditional operate
@@ -401,6 +404,15 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	// }
 
 }
+
+func resetCyclePools() {
+	for i, v := range cycleMapPool {
+		cancelCycle(v)
+		fmt.Println(i)
+	}
+	cycleMapPool = make(map[string]*Cycle)
+	processTimelineStart()
+}
 func handleCheckIsTradeBought(params ...interface{}) {
 	//Declare tradeBoughtEvaluation
 	// tradeBoughtEvaluation := TradeBoughtEvaluation{}
@@ -416,8 +428,8 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	tradeBoughtEvaluation := queryIsTradeCompleted(symbol)
 
 	//
+	holdingWisemen := HoldingWisemen{}
 	if tradeBoughtEvaluation.IsBought {
-		holdingWisemen := HoldingWisemen{}
 		for i, v := range tradeBoughtEvaluation.HoldingList {
 			if v.Symbol == symbol {
 				// type HoldingWisemen struct {
@@ -433,6 +445,9 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		}
 		insertHoldingWisemen(holdingWisemen)
 	}
+
+	//post to neo, holding information and qty.
+	postNeoBuyOrderResponse(holdingWisemen)
 
 	//insert information.
 
@@ -733,11 +748,11 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 func handleDowWebscrape(params ...interface{}) {
 	response := queryWebscrape()
 	fmt.Println("hit awesome")
-	currentDowValue, pointsChanged, percentageChange := parseDowWebscrape(response)
-	fmt.Println(currentDowValue)
-	fmt.Println(pointsChanged)
-	fmt.Println(percentageChange)
-	// insertDow(currentDowValue, pointsChanged, percentageChange)
+	currentDowValue := parseDowWebscrape(response)
+	// fmt.Println(currentDowValue)
+	// fmt.Println(pointsChanged)
+	// fmt.Println(percentageChange)
+	insertDow(currentDowValue)
 }
 
 func handleEndOfDayAnalyticsOperations() {
