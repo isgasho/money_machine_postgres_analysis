@@ -625,9 +625,25 @@ func parseOrders(query string) ContainerOrders {
 		symParsed3 := strings.Replace(symParsed2[1], "\\", "", -1)
 		orderCreated := Order{Symbol: symParsed3}
 
+		//parse qty
+		qtyParsed := strings.Split(v, "Qty=")
+		qtyParsed1 := strings.Split(qtyParsed[1], "\"/>")
+		qtyParsed2 := strings.Split(qtyParsed1[0], "\"")
+		qtyParsed3 := strings.Replace(qtyParsed2[1], "\\", "", -1)
+		orderCreated.Qty = qtyParsed3
+		// fmt.Println("Qty")
+		// fmt.Println(qtyParsed3)
+		// fmt.Println(qtyParsed)
 		//parse SVI ex) SVI-6084382688
-		sviParsed := strings.Split(v, "SVI-")
-		fmt.Println(sviParsed[1])
+		// sviParsed := strings.Split(v, "SVI-")
+
+		sviParsed := strings.Split(v, "OrdID=")
+		sviParsed1 := strings.Split(sviParsed[1], "\"/>")
+		sviParsed2 := strings.Split(sviParsed1[0], "\"")
+		sviParsed3 := strings.Replace(sviParsed2[1], "\\", "", -1)
+		orderCreated.SVI = sviParsed3
+		// // orderCreated.SVI = sviParsed
+		// fmt.Println(sviParsed[1])
 
 		//if order does not contain Canceled by user or RejRsn then limit is pending successfully
 		if strings.Contains(v, "Canceled by user") {
@@ -651,6 +667,50 @@ func parseOrders(query string) ContainerOrders {
 	// 	i++
 	// }
 	return containerOrders
+}
+
+func parseAllHolding(query string) ContainerHolding {
+	//repair multi holding
+	containerHolding := ContainerHolding{}
+	splitDataQuery1 := strings.Split(query, "<accountholdings>")[1]
+	splitDataQuery2 := strings.Split(splitDataQuery1, "</accountholdings>")
+	if len(splitDataQuery2) > 0 {
+		splitDataQuery2 = splitDataQuery2[:len(splitDataQuery2)-1]
+	}
+	splitHolding := strings.Split(query, "</holding>")
+
+	splitHolding = splitHolding[:len(splitHolding)-1]
+	fmt.Println(len(splitHolding))
+	// splitDataQuery2 := strings.Split(splitDataQuery1, "</accountholdings>")
+	// </holding>\r\n
+	// type HoldingWisemen struct {
+	// 	CreatedAt   string
+	// 	Symbol      string
+	// 	Price       string
+	// 	Qty         string
+	// 	QtyBought   string
+	// 	OrderStatus string
+	// }
+	for i, v := range splitHolding {
+		fmt.Println()
+		fmt.Println(v)
+		symbolString1 := strings.Split(v, "<sym>")[1]
+		symbolString2 := strings.Split(symbolString1, "</sym>")
+		symbol := symbolString2[0]
+
+		purchasePriceString1 := strings.Split(v, "<purchaseprice>")[1]
+		purchasePriceString2 := strings.Split(purchasePriceString1, "</purchaseprice>")
+		purchasePrice := purchasePriceString2[0]
+
+		qtyString1 := strings.Split(v, "<qty>")[1]
+		qtyString2 := strings.Split(qtyString1, "</qty>")
+		qty := qtyString2[0]
+
+		holding := HoldingWisemen{Symbol: symbol, Price: purchasePrice, QtyBought: qty}
+		containerHolding.ListHolding = append(containerHolding.ListHolding, holding)
+		i++
+	}
+	return containerHolding
 }
 
 func parseHoldings(query string) []Holding {

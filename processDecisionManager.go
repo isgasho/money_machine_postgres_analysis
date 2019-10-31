@@ -128,27 +128,27 @@ func processWhaleQueryStockSet() {
 }
 
 // func intiateMonitorTradeWisemon() {
-// 	// metrics := selectMetricsWisemen()
-// 	// Select metrics make use of it, continue.
-// 	// fmt.Println(metrics)
-// 	//Delay before monitor cycle
-// 	// time.Sleep(time.Duration(10) * time.Second)
-// 	// fmt.Println("hit awesome")
-// 	//single query is holding of symbol
+// metrics := selectMetricsWisemen()
+// Select metrics make use of it, continue.
+// fmt.Println(metrics)
+//Delay before monitor cycle
+// time.Sleep(time.Duration(10) * time.Second)
+// fmt.Println("hit awesome")
+//single query is holding of symbol
 
-// 	//if not delay, do iterate until true
-// 	// for
-// 	indexCheck := 1
-// 	for indexCheck < 100000 {
-// 		queryIsTradeCompleted()
+//if not delay, do iterate until true
+// for
+// indexCheck := 1
+// for indexCheck < 100000 {
+// 	queryIsTradeCompleted()
 
-// 		time.Sleep(time.Duration(3) * time.Second)
-// 		indexCheck++
-// 	}
+// 	time.Sleep(time.Duration(3) * time.Second)
+// 	indexCheck++
+// }
+// holdingStatus := calculateHoldingStatus()
 
-// 	//evaluation if order is closed
+//evaluation if order is closed
 
-// 	//
 // }
 
 // func processCheckIsBuyPeformed() {
@@ -172,7 +172,7 @@ func processCheckIsTradeBought(symbol string) {
 	// go handleCheckIsTradeBought()
 	//THe idea is to check every 5 seconds, and if a trade evaluation is positive,
 	//or if the time delimiter for checking is met, then cancle this cycle and record results in DB.
-	createCycle(10, 3, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
+	createCycle(10, 2, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
 	go startCycle(operatingCycle)
 	initialWhaleStockQueryPerformed = true
@@ -446,8 +446,55 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		insertHoldingWisemen(holdingWisemen)
 	}
 
+	holdingWisemen = calculateHoldingStatus(holdingWisemen)
+
+	if holdingWisemen.OrderStatus == "order not placed" {
+		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+		postNeoBuyOrderResponse(holdingWisemen)
+	}
+
+	//Handle conditions for holding incomplete
+	if holdingWisemen.OrderStatus == "completedFull" {
+		fmt.Println("completedFull hit")
+		//End cycle for monitoring
+		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+		postNeoBuyOrderResponse(holdingWisemen)
+	}
+	if holdingWisemen.OrderStatus == "partial" {
+		fmt.Println("partial hit")
+		fmt.Println("cyclepool")
+		fmt.Println(len(cycleMapPool))
+		//in the impartial case it will iterate a global check variable,
+		//upon global variable reaching a delimter count, which represents monitor cycle time intervals.
+		//upon delmiter met, cancel and post to neo with holding "partial" status.
+		if getIntervalTradeMonitorDelimiter() == 4 {
+			// set status
+			// holdingWisemen.OrderStatus = "partial"
+			//post to Neo
+			cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+			fmt.Println("cyclepool")
+			fmt.Println(len(cycleMapPool))
+			postNeoBuyOrderResponse(holdingWisemen)
+		}
+		iterateIntervalTradeMonitorDelimiter()
+	}
+
+	// if holdingWisemen.OrderStatus == "undetermined" {
+	// 	//set a conditional during cycle
+	// 	// initiateStallTradeMonitorProcedure()
+
+	// 	//in the impartial case it will iterate a global check variable,
+	// 	//upon global variable reaching a delimter count, which represents monitor cycle time intervals.
+	// 	//upon delmiter met, cancel and post to neo with holding "partial" status.
+	// 	// if getIntervalTradeMonitorDelimiter() == 4 {
+	// 	// 	//post to Neo
+	// 	// 	postNeoBuyOrderResponse(holdingWisemen)
+	// 	// }
+	// 	// iterateIntervalTradeMonitorDelimiter()
+	// }
+
 	//post to neo, holding information and qty.
-	postNeoBuyOrderResponse(holdingWisemen)
+	// postNeoBuyOrderResponse(holdingWisemen)
 
 	//insert information.
 
@@ -480,6 +527,13 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	// }
 
 	// TradeBoughtEvaluation
+}
+
+func getIntervalTradeMonitorDelimiter() int {
+	return intervalTradeMonitorDelimiter
+}
+func iterateIntervalTradeMonitorDelimiter() {
+	intervalTradeMonitorDelimiter++
 }
 
 func checkWhaleDelimiterMet() bool {
@@ -599,7 +653,6 @@ func handleFillHolds(params ...interface{}) {
 			}
 			i++
 		}
-
 	}
 	dropTempSymbolHold()
 	createTempSymbolHold()

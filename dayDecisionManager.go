@@ -59,6 +59,16 @@ func parseDate() {
 	fmt.Println(mt, day)
 }
 
+func getCurrentHour() int {
+	hour := time.Now().Hour()
+	return hour
+}
+
+func getCurrentMinute() int {
+	minute := time.Now().Minute()
+	return minute
+}
+
 func getDayOfWeek() time.Weekday {
 	weekday := time.Now().Weekday()
 	fmt.Println(weekday)      // "Tuesday"

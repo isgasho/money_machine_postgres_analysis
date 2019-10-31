@@ -1675,7 +1675,7 @@ func deleteTradeConditionalMetrics(symbolToDel string) {
 //
 func queryIsTradeCompleted(symbol string) TradeBoughtEvaluation {
 	tradeBoughtEvaluation := TradeBoughtEvaluation{}
-	response := queryHoldings()
+	response := queryHolding()
 	holdingList := parseHoldings(response)
 	isHoldingSymbol := false
 	for i, v := range holdingList {
@@ -1902,16 +1902,110 @@ func postNeoBuyOrderResponse(holdingWisemen HoldingWisemen) string {
 	symbol := holdingWisemen.Symbol
 	buyPrice := holdingWisemen.Price
 	qty := holdingWisemen.QtyBought
+	status := holdingWisemen.OrderStatus
 	json := `{
 		"requestType": "postNeoBuyOrderResponse",
 		"data": [
 			`
 	json += "\"" + symbol + "\","
 	json += "\"" + buyPrice + "\","
-	json += "\"" + qty + "\""
+	json += "\"" + qty + "\","
+	json += "\"" + status + "\""
 	json = json + `]}`
 
 	url := "http://localhost:11000/databaseQuery"
 	response := post(url, json)
 	return response
+}
+
+//
+
+//
+//AlgorithmEvaluationForDay
+func insertAlgorithmEvaluationForDay(algorithmEvaluationForDay AlgorithmEvaluationForDay) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	// 	CREATE TABLE algorithm_evaluation_for_day
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    name VARCHAR,
+	//   symbol VARCHAR,
+	//    time_start VARCHAR,
+	//    time_end VARCHAR,
+	//    is_completed VARCHAR,
+	//    is_profitable VARCHAR,
+	//    balance_before VARCHAR,
+	//    balance_after VARCHAR
+	// );
+	// , $5, $6, $7, $8)
+	// , is_profitable, balance_before, balance_after)v
+	//is_profitable
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO algorithm_evaluation_for_day (name, symbol, time_start, time_end, is_completed, is_profitable, balance_before, balance_after)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		RETURNING id
+		`
+	var id int
+	row := db.QueryRow(sqlStatement, algorithmEvaluationForDay.Name, algorithmEvaluationForDay.Symbol, algorithmEvaluationForDay.TimeStart, algorithmEvaluationForDay.TimeEnd, algorithmEvaluationForDay.IsCompleted, algorithmEvaluationForDay.IsProfitable, algorithmEvaluationForDay.BalanceBefore, algorithmEvaluationForDay.BalanceAfter)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectAlgorithmEvaluationForDay(symbol string) []AlgorithmEvaluationForDay {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+	// rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_wisemen")
+	rows, err1 := db.Query("SELECT created_at, name, symbol, time_start, time_end, is_completed, is_profitable, balance_before, balance_after FROM algorithm_evaluation_for_day") // WHERE symbol=$1", symbol)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	algorithmEvaluationForDayList := []AlgorithmEvaluationForDay{} //make([]AlgorithmEvaluationForDay, 0)
+
+	for rows.Next() {
+		var algorithmEvaluationForDay AlgorithmEvaluationForDay
+		if err2 := rows.Scan(&algorithmEvaluationForDay.CreatedAt, &algorithmEvaluationForDay.Name, &algorithmEvaluationForDay.Symbol, &algorithmEvaluationForDay.TimeStart, &algorithmEvaluationForDay.TimeEnd, &algorithmEvaluationForDay.IsCompleted, &algorithmEvaluationForDay.IsProfitable, &algorithmEvaluationForDay.BalanceBefore, &algorithmEvaluationForDay.BalanceAfter); err2 != nil {
+			fmt.Println("err2")
+		}
+		algorithmEvaluationForDayList = append(algorithmEvaluationForDayList, algorithmEvaluationForDay)
+	}
+	return algorithmEvaluationForDayList
+}
+
+func deleteAlgorithmEvaluationForDay(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM algorithm_evaluation_for_day WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
 }

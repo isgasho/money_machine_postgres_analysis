@@ -2,8 +2,8 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"strconv"
+	"strings"
 )
 
 func handleTradeWisemen(symbol string, limitPrice string) {
@@ -30,13 +30,17 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	//
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
-	// fmt.Println(floatPrice)
+	fmt.Println("before rounding down")
+	fmt.Println(qty)
 
-	qty = math.Round(qty)
+	qtyInt := roundDown(qty)
+	fmt.Println("After rounding down")
+	fmt.Println(qtyInt)
 
 	// stringBalance := fmt.Sprintf("%f", floatBalance)
 	stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
-	stringQty := fmt.Sprintf("%f", qty)
+	// stringQty := fmt.Sprintf("%f", qtyInt)
+	stringQty := strconv.Itoa(qtyInt)
 
 	//store trade entered information
 	tradeEnteredInformation := TradeEnteredInformation{
@@ -49,9 +53,93 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	insertTradeEnteredInformation(tradeEnteredInformation)
 
 	//Submit buy limit to brokerage
-	queryTradeBuyLimit(symbol, stringPrice, stringQty)
+	fmt.Println("symbol")
+	fmt.Println(symbol)
+	fmt.Println("stringQty")
+	fmt.Println(stringQty)
+	fmt.Println("stringPrice")
+	fmt.Println(stringPrice)
+	queryTradeBuyLimit(symbol, stringPrice, "1")
 }
 
+func handleSellWisemen(symbol string, limitPrice string, quantity string) {
+	// Need handle on quantity, symbol, price to sell.
+	//Overarch handle sell system metrics read data flow and set.
+
+	//Read order bought information.
+	//Is order bought information entered yet?
+	//or call holding... for a dynamic flow... yes.
+	//Future support for advanced recording system.
+
+	//Pull holdings
+
+	//Read metrics and set system
+
+	//Data flow for one stock and analysis
+
+	//handleSellWisemen set
+
+	//
+	// queryTradeSellLimit(symbol, stringPrice, quantity)
+
+	// fmt.Println("limitPrice")
+	// fmt.Println(limitPrice)
+	// desiredLimitPrice := 0.0
+	// if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
+	// 	desiredLimitPrice = s
+	// }
+
+	// fmt.Println("desiredLimitPrice")
+	// fmt.Println(desiredLimitPrice)
+	// //get balance
+	// response := queryBalance()
+	// balance := parseBalance(response)
+
+	// floatBalance := 0.0
+	// if s, err := strconv.ParseFloat(balance, 64); err == nil {
+	// 	floatBalance = s
+	// }
+
+	// fmt.Println("floatBalance")
+	// fmt.Println(floatBalance)
+	// //
+	// //calculate qty to buy
+	// qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
+	// fmt.Println("before rounding down")
+	// fmt.Println(qty)
+
+	// qtyInt := roundDown(qty)
+	// fmt.Println("After rounding down")
+	// fmt.Println(qtyInt)
+
+	// stringBalance := fmt.Sprintf("%f", floatBalance)
+	// stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
+	// // stringQty := fmt.Sprintf("%f", qtyInt)
+	// stringQty := strconv.Itoa(qtyInt)
+
+	//store trade entered information
+	// tradeEnteredInformation := TradeEnteredInformation{
+	// 	Symbol:      symbol,
+	// 	Price:       stringPrice,
+	// 	OrderStatus: "pending",
+	// 	Qty:         stringQty,
+	// 	QtyBought:   "0",
+	// }
+	// insertTradeEnteredInformation(tradeEnteredInformation)
+
+	//Submit buy limit to brokerage
+	// fmt.Println("symbol")
+	// fmt.Println(symbol)
+	// fmt.Println("stringQty")
+	// fmt.Println(stringQty)
+	// fmt.Println("stringPrice")
+	// fmt.Println(stringPrice)
+
+}
+
+// intiateSellSystemProtocol(){
+
+// }
 func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) float64 {
 	// pricePointOfStock being target limit to buy
 	//Calculate amount of shares to buy at given balance and bias
@@ -61,11 +149,12 @@ func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) flo
 	// biasPrice := 0
 	//10% 5000 500
 	//1% 5000 50
-	buffer := balance * .01
+	buffer := balance * .015
 	bufferedBalance := balance - buffer
+	fmt.Println(bufferedBalance)
 	//Want to leave enough account balance to buffer for variance in buying.
 	amountToBuy := bufferedBalance / pricePointOfStock
-	amountToBuy = amountToBuy - buffer
+	// amountToBuy = amountToBuy - buffer
 
 	return amountToBuy
 }
@@ -75,6 +164,11 @@ func getAllOrders() ContainerOrders {
 	queryResponse := queryOrders()
 	containerOrders := parseOrders(queryResponse)
 	return containerOrders
+}
+func getAllHolding() ContainerHolding {
+	queryResponse := queryHolding()
+	containerHolding := parseAllHolding(queryResponse)
+	return containerHolding
 }
 
 // func getOrder(symbol string) {
@@ -87,30 +181,53 @@ func cancelOrder(symbol string) {
 	//cancel order by id
 }
 
-func calculateHoldingStatus(holdingWisemen HoldingWisemen) string {
-	defaultHoldingStatus := "undetermined"
-	isPartialUnfinished := true
-	isCompletedFull := true
+func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
+	// defaultHoldingStatus := "undetermined"
+	holdingWisemen.OrderStatus = "undetermined"
+	isPartialUnfinished := false
+	isCompletedFull := false
 	//calculate
-	//Need original order sent in and compare to bought.
 	//Get order
-	// orderContainer := getAllOrders()
-	//Need order submitted, compare to holding wisemen
-	// orderContainer.ListOrders
-	//Get order for
-	// for i, v := range orderContainer.ListOrders {
-
-	// }
-
-	//Get the order compare...
-	//return status
-	if isPartialUnfinished {
-		return "isPartialUnfinished"
+	containerOrders := getAllOrders()
+	order := Order{Symbol: "default"}
+	for i, v := range containerOrders.ListOrders {
+		if v.Symbol == holdingWisemen.Symbol {
+			order = v
+		}
+		i++
 	}
+
+	//contingent that order.qty still exists.
+	//If order does not exist should pull trade information.
+	//Handle conditional where order is not placed.
+	if order.Symbol == "default" {
+		//cancel process return
+		holdingWisemen.OrderStatus = "order not placed"
+		return holdingWisemen
+	}
+
+	fmt.Println("order.Qty")
+	fmt.Println(order.Qty)
+
+	fmt.Println("holdingWisemen.QtyBought")
+	fmt.Println(holdingWisemen.QtyBought)
+	//compare order qty to bought qty.
+	if order.Qty == holdingWisemen.QtyBought {
+		isCompletedFull = true
+	}
+	if order.Qty > holdingWisemen.QtyBought {
+		isPartialUnfinished = true
+	}
+
+	//update holdingWisemen status
+	//return holdingWisemen
 	if isCompletedFull {
-		return "isCompletedFull"
+		holdingWisemen.OrderStatus = "completedFull"
 	}
-	return defaultHoldingStatus
+	if isPartialUnfinished {
+		holdingWisemen.OrderStatus = "partial"
+	}
+	return holdingWisemen
 }
 func calculateIsTradeBoughtSuccessful(symbol string) {
 	isSuccessful := detectIsTradeBoughtSuccessful(symbol)
@@ -138,4 +255,24 @@ func detectIsTradeBoughtSuccessful(symbol string) bool {
 		i++
 	}
 	return isSuccessful
+}
+
+func roundDown(floatValue float64) int {
+	stringValue := fmt.Sprintf("%f", floatValue)
+	stringSlice := strings.Split(stringValue, ".")
+	// intValue, err := strconv.ParseInt(stringSlice[0], 10, 64)
+	intValue, err := strconv.Atoi(stringSlice[0])
+	if err != nil {
+		fmt.Println(err)
+	}
+	// intValue := 9
+	// floatValue
+	//splice at "."
+	//string value to int.
+	return intValue
+}
+
+func floatToString(input_num float64) string {
+	// to convert a float number to a string
+	return strconv.FormatFloat(input_num, 'f', 6, 64)
 }

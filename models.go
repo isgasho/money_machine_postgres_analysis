@@ -6,6 +6,8 @@ type fn func(params ...interface{})
 
 var cycleMapPool = make(map[string]*Cycle)
 
+var intervalTradeMonitorDelimiter = 0
+
 // var dayID = 3
 
 //User object for DB
@@ -114,17 +116,6 @@ type Holding struct {
 	PurchasePrice string
 	Qty           string
 }
-
-// CREATE TABLE holding_wisemen
-// (
-//    id SERIAL PRIMARY KEY,
-//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-//    symbol VARCHAR,
-//    price VARCHAR,
-//    qty VARCHAR,
-//    qty_bought VARCHAR,
-//    order_status VARCHAR
-// );
 type HoldingWisemen struct {
 	CreatedAt   string
 	Symbol      string
@@ -133,11 +124,6 @@ type HoldingWisemen struct {
 	QtyBought   string
 	OrderStatus string
 }
-
-// type HoldingStatusWisemen struct {
-// 	Status string
-// }
-
 type TradeInfo struct {
 	ID                string
 	DayID             int
@@ -219,6 +205,9 @@ type Order struct {
 	OrderStatus string
 	Qty         string
 }
+type ContainerHolding struct {
+	ListHolding []HoldingWisemen
+}
 
 type TradeEnteredInformation struct {
 	CreatedAt   string
@@ -254,4 +243,16 @@ type WebscrapeNumberRange struct {
 type WisemenMatchClosestToDelimiter struct {
 	SplitStringValue      int
 	DistanceFromDelimiter int
+}
+
+type AlgorithmEvaluationForDay struct {
+	CreatedAt     string
+	Name          string
+	Symbol        string
+	TimeStart     string
+	TimeEnd       string
+	IsCompleted   string
+	IsProfitable  string
+	BalanceBefore string
+	BalanceAfter  string
 }

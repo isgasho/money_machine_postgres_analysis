@@ -306,6 +306,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("tradeBuyWisemen")
 		fmt.Println("dataList")
 		fmt.Println(dataList)
+
 		//process trade.
 		handleTradeWisemen(dataList[0], dataList[1])
 		js, err := json.Marshal("success")
@@ -319,6 +320,28 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		// time.Sleep(time.Duration(10) * time.Second)
 		// intiateMonitorTradeWisemon()
 	}
+
+	// if requestType == "initiateEarlySellWisemen" {
+	// 	dataList := databaseQuery.Data
+	// 	fmt.Println("initiateEarlySellWisemen")
+	// 	fmt.Println("dataList")
+	// 	fmt.Println(dataList)
+
+	// 	//Handle process
+	// 	intiateSellSystemProtocol()
+
+	// 	handleSellWisemen(dataList[0], dataList[1])
+	// 	js, err := json.Marshal("success")
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// 	//Delay before monitor cycle
+	// 	// time.Sleep(time.Duration(10) * time.Second)
+	// 	// intiateMonitorTradeWisemon()
+	// }
 
 	if requestType == "postPriceSellDelimiterMetrics" {
 		dataList := databaseQuery.Data
@@ -363,12 +386,50 @@ func handleRequests() {
 
 func main() {
 	go handleRequests()
+
+	//sell procedure.
+
+	//source symbol pull
+	//pull holding for symbol
+	// holding
+	// handleSellWisemen
+	containerHolding := getAllHolding()
+	// fmt.Println(response)
+	// parseAllHolding(response)
+	// containerHolding :=
+	for i, v := range containerHolding.ListHolding {
+		fmt.Println("listholding")
+		fmt.Println(v)
+		i++
+	}
+	// beginAlgorithmRecordingWisemen("test")
+	// completeAlgorithmRecordingWisemen()
+
+	// selectAlgorithmEvaluationForDay("test")
+	// intValue := roundDown(3.43)
+	// fmt.Println(intValue)
 	// response := queryBalance()
 	// fmt.Println(response)
-
 	// response := queryOrders()
 	// fmt.Println(response)
-	processCheckIsTradeBought("VICI")
+	// processCheckIsTradeBought("VICI")
+	// balances := queryBalance()
+	// fmt.Println(balances)
+
+	// orderContainer := getAllOrders()
+
+	//get all open orders.
+
+	// order := Order{SVI: "SVI-6085037565"}
+	// for i, v := range orderContainer.ListOrders {
+	// 	order = v
+	// 	i++
+	// }
+	// // var order = req.body.data.order;
+	// fmt.Println(order)
+	// func queryCancelOrder(symbol string, limitPrice string, qty string) string {
+	// queryCancelOrder(order.SVI)
+
 	// queryOrder := queryOrders()
 	// fmt.Println(queryOrder)
 	//Open server API connections

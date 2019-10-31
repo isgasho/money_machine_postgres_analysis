@@ -53,7 +53,11 @@ func startCycle(cycleInstance *Cycle) {
 
 func cancelCycle(cycleInstance *Cycle) {
 	fmt.Println("canceling")
-	cycleInstance.BooleanOperate = false
+	_, ok := cycleMapPool[cycleInstance.Name]
+	if ok {
+		delete(cycleMapPool, cycleInstance.Name)
+	}
+	// cycleInstance.BooleanOperate = false
 }
 
 // func main() {

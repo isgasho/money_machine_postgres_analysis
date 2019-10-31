@@ -1608,10 +1608,10 @@ func queryIsBrokerageResponding() string {
 }
 
 //Trade queries
-func queryHoldings() string {
+func queryHolding() string {
 	json := `
 	{
-		"request_type": "holdings"
+		"request_type": "holding"
 	}
 	`
 	url := "http://localhost:3000/api/brokerage"
@@ -1666,20 +1666,17 @@ func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
 	json = json + "\"qty\":" + "\"" + qty + "\""
 	json = json + `}}`
 
-	// fmt.Println(json)
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
 	return response
 }
 
-func queryCancelTrade(symbol string, limitPrice string, qty string) string {
+func queryCancelOrder(svi string) string {
 	json := `{
 		"request_type": "cancel_order",
 		"data": {
 		`
-	json = json + "\"symbol\":" + "\"" + symbol + "\","
-	json = json + "\"limit\":" + "\"" + limitPrice + "\","
-	json = json + "\"qty\":" + "\"" + qty + "\""
+	json = json + "\"order\":" + "\"" + svi + "\""
 	json = json + `}}`
 
 	// fmt.Println(json)
