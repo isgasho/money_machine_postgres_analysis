@@ -17,6 +17,14 @@ func queryWebscrape() string {
 	response := post(url, json)
 	return response
 }
+func queryWebscrapeTwi() string {
+	json := `{
+		"request_type": "webscrapeTwi"
+		}`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
 
 func queryTSP() string {
 
@@ -653,16 +661,6 @@ func queryTSP() string {
 }
 
 func queryMultiStockPull(symbolList []string) string {
-
-	// listVal := reflect.ValueOf(params[0])
-	// var listSymbolsInterface interface{} = listVal.Index(0).Interface()
-
-	// listSymbols := listSymbolsInterface.([]string)
-
-	// symbol1 := listSymbols[0]
-	// symbol2 := listSymbols[1]
-	// symbol3 := listSymbols[2]
-
 	json := `{
 		"request_type": "query_multi_stock",
 		"data": [
@@ -679,7 +677,6 @@ func queryMultiStockPull(symbolList []string) string {
 
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
-	// fmt.Println(response)
 
 	// response := `<?xml version="1.0" encoding="UTF-8"?><response id="2d8f6fce-8ac2-459c-b3cd-6d32775d7792"><elapsedtime>0</elapsedtime>
 	// <quotes>
@@ -1663,6 +1660,22 @@ func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
 		`
 	json = json + "\"symbol\":" + "\"" + symbol + "\","
 	json = json + "\"limit\":" + "\"" + limitPrice + "\","
+	json = json + "\"qty\":" + "\"" + qty + "\""
+	json = json + `}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+func queryTradeChangeLimit(origID string, symbol string, limitPrice string, qty string) string {
+	json := `{
+		"request_type": "trade_change_limit",
+		"data": {
+		`
+	json = json + "\"symbol\":" + "\"" + symbol + "\","
+	json = json + "\"limit\":" + "\"" + limitPrice + "\","
+	json = json + "\"origID\":" + "\"" + origID + "\","
 	json = json + "\"qty\":" + "\"" + qty + "\""
 	json = json + `}}`
 

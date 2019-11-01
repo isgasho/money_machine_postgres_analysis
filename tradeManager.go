@@ -62,14 +62,83 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	queryTradeBuyLimit(symbol, stringPrice, "1")
 }
 
-func handleSellWisemen(symbol string, limitPrice string, quantity string) {
-	// Need handle on quantity, symbol, price to sell.
+func handleSellWisemen(symbol string) {
 	//Overarch handle sell system metrics read data flow and set.
-
 	//Read order bought information.
 	//Is order bought information entered yet?
 	//or call holding... for a dynamic flow... yes.
 	//Future support for advanced recording system.
+
+	//source symbol pull
+	//pull holding for symbol
+	// holding
+	// handleSellWisemen
+	containerHolding := getAllHolding()
+	holdingToSell := HoldingWisemen{Symbol: "default"}
+	for i, v := range containerHolding.ListHolding {
+		if symbol == v.Symbol {
+			holdingToSell = v
+		}
+		i++
+	}
+
+	//Handle order not found
+	if holdingToSell.Symbol == "default" {
+		fmt.Println("Holding not present")
+	}
+
+	if holdingToSell.Symbol != "default" {
+		//get price information
+		// stockList := getCurrentPriceStatsForStock([]string{holdingToSell.Symbol})
+		// for i, v := range stockList {
+		// 	// fmt.Println("stock")
+
+		// 	// fmt.Println("bid")
+		// 	// fmt.Println(v.Bid)
+		// 	// fmt.Println("ask")
+		// 	// fmt.Println(v.Ask)
+		// 	// fmt.Println("last")
+		// 	// fmt.Println(v.Last)
+
+		// 	i++
+		// }
+
+		//Get metric delimiter
+		//
+		metricsWisemen := selectMetricsWisemen()[0]
+		holdingPrice := 0.0
+		metricsDesiredPchg := 0.0
+		//String to float
+		if s, err := strconv.ParseFloat(holdingToSell.Price, 64); err == nil {
+			holdingPrice = s
+		}
+
+		//String to float
+		if s, err := strconv.ParseFloat(metricsWisemen.DesiredPchg, 64); err == nil {
+			metricsDesiredPchg = s
+		}
+
+		fmt.Println("holdingPrice")
+		fmt.Println(holdingPrice)
+		limitPrice := holdingPrice + (holdingPrice * metricsDesiredPchg)
+		fmt.Println(limitPrice)
+		fmt.Println(limitPrice)
+
+		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
+		fmt.Println("stringLimitPrice")
+		fmt.Println(stringLimitPrice)
+
+		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
+		fmt.Println("stringLimitPrice")
+		fmt.Println(stringLimitPrice)
+		// fmt.Println("holdingPrice")
+		// fmt.Println(holdingPrice)
+		// fmt.Println("metricsDesiredPchg")
+		// fmt.Println(metricsDesiredPchg)
+		queryTradeSellLimit(holdingToSell.Symbol, stringLimitPrice, holdingToSell.QtyBought)
+	}
+
+	//sell
 
 	//Pull holdings
 
@@ -140,6 +209,12 @@ func handleSellWisemen(symbol string, limitPrice string, quantity string) {
 // intiateSellSystemProtocol(){
 
 // }
+func getCurrentPriceStatsForStock(symbolList []string) []Stock {
+	// func queryMultiStockPull(symbolList []string) string {
+	queryResponse := queryMultiStockPull(symbolList)
+	stockList := parseStockSetQuery(queryResponse)
+	return stockList
+}
 func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) float64 {
 	// pricePointOfStock being target limit to buy
 	//Calculate amount of shares to buy at given balance and bias
@@ -212,6 +287,7 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	fmt.Println("holdingWisemen.QtyBought")
 	fmt.Println(holdingWisemen.QtyBought)
 	//compare order qty to bought qty.
+
 	if order.Qty == holdingWisemen.QtyBought {
 		isCompletedFull = true
 	}
@@ -272,7 +348,47 @@ func roundDown(floatValue float64) int {
 	return intValue
 }
 
+func splitFloatAfterSecondDecimalPlace(floatValue float64) float64 {
+
+	// convert to string
+	s := fmt.Sprintf("%f", floatValue)
+	// split by period
+	stringSlice := strings.Split(s, ".")
+	//split 2 delimiter
+	fmt.Println(stringSlice)
+	returningFloat := floatValue
+
+	valueAfterPeriod := stringSlice[1]
+	if len(valueAfterPeriod) > 2 {
+		fmt.Println("hit")
+		diffenceIndex := 2
+		for diffenceIndex < 100 {
+			if diffenceIndex == len(valueAfterPeriod) {
+				break
+			}
+			diffenceIndex++
+		}
+		fmt.Println(diffenceIndex)
+		i := 2
+		for i < diffenceIndex {
+			valueAfterPeriod = valueAfterPeriod[:len(valueAfterPeriod)-1]
+			i++
+		}
+		stringedFloatValue := stringSlice[0] + "." + valueAfterPeriod
+		fmt.Println(stringedFloatValue)
+		returningFloat = stringToFloat(stringedFloatValue)
+	}
+	return returningFloat
+}
+
 func floatToString(input_num float64) string {
 	// to convert a float number to a string
 	return strconv.FormatFloat(input_num, 'f', 6, 64)
+}
+func stringToFloat(value string) float64 {
+	returnFloat := 0.0
+	if s, err := strconv.ParseFloat(value, 64); err == nil {
+		returnFloat = s
+	}
+	return returnFloat
 }

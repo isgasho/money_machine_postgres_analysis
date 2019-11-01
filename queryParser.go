@@ -581,9 +581,7 @@ func calculateIndexMatchClosestToDelimiter(listSpanClasses []string, listIndexPo
 
 func parseDowWebscrape(queryString string) string {
 	listSpanClasses := strings.Split(queryString, "<span")
-
 	listIndexPossibleMatches := []int{}
-
 	for i, v := range listSpanClasses {
 		isBool := containsMinimumSeriesNumbers(v)
 		if isBool {
@@ -591,15 +589,13 @@ func parseDowWebscrape(queryString string) string {
 		}
 	}
 	stringClosestMatch := calculateIndexMatchClosestToDelimiter(listSpanClasses, listIndexPossibleMatches)
-
-	fmt.Println("stringClosestMatch")
-	fmt.Println(stringClosestMatch)
+	// fmt.Println("stringClosestMatch")
+	// fmt.Println(stringClosestMatch)
 
 	currentDowValueQuery1 := strings.Split(stringClosestMatch, "</span>")[0]
 	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "\">")[1]
 	fmt.Println(currentDowValueQuery2)
 	currentDowValue := currentDowValueQuery2
-
 	return currentDowValue
 }
 

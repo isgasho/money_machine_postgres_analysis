@@ -1677,6 +1677,7 @@ func queryIsTradeCompleted(symbol string) TradeBoughtEvaluation {
 	tradeBoughtEvaluation := TradeBoughtEvaluation{}
 	response := queryHolding()
 	holdingList := parseHoldings(response)
+
 	isHoldingSymbol := false
 	for i, v := range holdingList {
 		if v.Symbol == symbol {

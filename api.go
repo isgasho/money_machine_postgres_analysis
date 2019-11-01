@@ -389,19 +389,42 @@ func main() {
 
 	//sell procedure.
 
-	//source symbol pull
-	//pull holding for symbol
-	// holding
-	// handleSellWisemen
-	containerHolding := getAllHolding()
-	// fmt.Println(response)
-	// parseAllHolding(response)
-	// containerHolding :=
-	for i, v := range containerHolding.ListHolding {
-		fmt.Println("listholding")
-		fmt.Println(v)
-		i++
-	}
+	// query
+	// queryTSP()
+	// handleTSPRefresh()
+
+	// processDowWebscrape()
+	processTwiWebscrap()
+	// queryWebscrapeTwi
+	// handleSellWisemen("CRC")
+	// // splitFloatAfterSecondDecimalPlace(251.298100)
+
+	// // dropMetricsWisemen()
+	// // createMetricsWisemen()
+
+	// stockList := getCurrentPriceStatsForStock([]string{"AAPL"})
+	// for i, v := range stockList {
+	// 	fmt.Println("v.Bid")
+	// 	fmt.Println(v.Bid)
+	// 	fmt.Println("v.Ask")
+	// 	fmt.Println(v.Ask)
+	// 	fmt.Println("v.Last")
+	// 	fmt.Println(v.Last)
+	// 	i++
+	// }
+
+	// //change order
+	// containerOrder := getAllOrders()
+	// order := Order{}
+	// for i, v := range containerOrder.ListOrders {
+	// 	if v.Symbol == "VICI" {
+	// 		order = v
+	// 	}
+	// 	i++
+	// }
+	// fmt.Println(order)
+	// queryTradeChangeLimit(order.SVI, order.Symbol, "23.50", order.Qty)
+
 	// beginAlgorithmRecordingWisemen("test")
 	// completeAlgorithmRecordingWisemen()
 
