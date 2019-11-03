@@ -599,6 +599,92 @@ func parseDowWebscrape(queryString string) string {
 	return currentDowValue
 }
 
+func parseTwiWebscrape(queryString string) []string {
+	listSpanClasses := strings.Split(queryString, "</span>") //"<span")
+	listPossibleMatches := []string{}
+	listIndexCuts := []int{}
+	listMatches := []string{}
+	listSymbolBeforeParse := []string{}
+	listSymbols := []string{}
+	filterDotList := []string{}
+	// for i, v := range listSpanClasses {
+	// 	isBool := containsMinimumSeriesNumbers(v)
+	// 	if isBool {
+	// 		listIndexPossibleMatches = append(listIndexPossibleMatches, i)
+	// 	}
+	// }
+	// stringClosestMatch := calculateIndexMatchClosestToDelimiter(listSpanClasses, listIndexPossibleMatches)
+
+	fmt.Println("hit twiparse")
+	for i, v := range listSpanClasses {
+		// if strings.Contains(v, "</div></a><a href=\"/symbol/") {
+		// 	listPossibleMatches = append(listPossibleMatches, v)
+		// }
+		if strings.Contains(v, "/symbol/") {
+			listPossibleMatches = append(listPossibleMatches, v)
+		}
+		i++
+	}
+	// listIndexPossibleMatches
+	fmt.Println(len(listPossibleMatches))
+	for i, v := range listPossibleMatches {
+		if strings.Contains(v, "/svg>") {
+			fmt.Println("inside yo")
+			listIndexCuts = append(listIndexCuts, i)
+		}
+		i++
+	}
+	// fmt.Println(len(listPossibleMatches))
+	fmt.Println("hit")
+	// fmt.Println(listPossibleMatches[listIndexCuts[len(listIndexCuts)-1]])
+
+	fmt.Println(listIndexCuts[len(listIndexCuts)-1])
+	for i, v := range listPossibleMatches {
+		// stringIndex := listIndexCuts[len(listIndexCuts)-1]
+		// valueIndex, err := //strconv.Atoi(stringIndex)
+		// if err != nil {
+		// 	fmt.Println(err)
+		// }
+
+		// listIndexCuts[len(listIndexCuts)-1]
+
+		if i >= listIndexCuts[len(listIndexCuts)-1] {
+			//</div></a><a href=\"/symbol/
+			if strings.Contains(v, "</div></a><a href=\\\"/symbol/") {
+				listMatches = append(listMatches, v)
+			}
+		}
+	}
+	// fmt.Println(len(listMatches))
+
+	for i, v := range listMatches {
+		// fmt.Println(v)
+		if len(v) < 150 {
+			// fmt.Println(v)
+			listSymbolBeforeParse = append(listSymbolBeforeParse, v)
+		}
+		i++
+	}
+
+	for i, v := range listSymbolBeforeParse {
+		// fmt.Println(v)
+		currentTwiValueQuery1 := strings.Split(v, ">")
+		listSymbols = append(listSymbols, currentTwiValueQuery1[len(currentTwiValueQuery1)-1])
+		// fmt.Println()
+		// currentTwiValueQuery2 := strings.Split(currentTwiValueQuery1, "\">")[1]
+		i++
+	}
+
+	for i, v := range listSymbols {
+		fmt.Println(v)
+		if strings.Contains(v, ".") == false {
+			filterDotList = append(filterDotList, v)
+		}
+		i++
+	}
+	return filterDotList
+}
+
 func parseBalance(queryString string) string {
 	// <accountvalue>5026.06</accountvalue>
 	splitDataQuery1 := strings.Split(queryString, "<accountvalue>")[2]

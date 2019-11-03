@@ -393,8 +393,9 @@ func main() {
 	// queryTSP()
 	// handleTSPRefresh()
 
+	processOverarchTopStock()
 	// processDowWebscrape()
-	processTwiWebscrap()
+	// processTwiWebscrape()
 	// queryWebscrapeTwi
 	// handleSellWisemen("CRC")
 	// // splitFloatAfterSecondDecimalPlace(251.298100)

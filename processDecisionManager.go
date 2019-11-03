@@ -158,7 +158,7 @@ func processWhaleQueryStockSet() {
 // }
 
 func processTSPRefresh() {
-	go handleTSPRefresh()
+	// go handleTSPRefresh()
 }
 
 func processFillHolds() {
@@ -169,8 +169,9 @@ func processDowWebscrape() {
 	go handleDowWebscrape()
 }
 
-func processTwiWebscrape() {
-	go handleTwiWebscrape()
+func processOverarchTopStock() {
+	go handleOverarchTopStock()
+	// go handleTwiWebscrape()
 }
 func processCheckIsTradeBought(symbol string) {
 	// go handleCheckIsTradeBought()
@@ -206,7 +207,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		fmt.Println("hit1 init operations")
 		boolOperate1 = false
 		// processTSPRefresh()
-		handleTSPRefresh()
+		// handleTSPRefresh()
 		processDowWebscrape()
 		processWisemenQueryStockSet()
 		processWhaleQueryStockSet()
@@ -477,6 +478,19 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	}
 }
 
+func handleOverarchTopStock(params ...interface{}) {
+	//TSP
+	topStockPullStockList := topStockPull()
+
+	//Twi
+	twiStockList := 
+	
+	//Append list
+
+	//Handle
+
+}
+
 func getIntervalTradeMonitorDelimiter() int {
 	return intervalTradeMonitorDelimiter
 }
@@ -493,71 +507,80 @@ func checkWhaleDelimiterMet() bool {
 	return isWhaleDelimiterMet
 }
 
-func handleTSPRefresh(params ...interface{}) {
+func topStockPull() []Stock {
 	//TSP
 	var queryResponse = queryTSP()
 	//Top 3 stocks
 	stockList := parseTopStockQuery(queryResponse)
-	topRankList := []Stock{}
-
-	//Store of symbols will affect both wisemen and whale.
-	//Temp,
-	//if symbols do not exist in set add to monitorSymbol
-	for indexStock, stock := range stockList {
-		if len(topRankList) < 3 {
-			if strings.Contains(stock.Symbol, ".") == false {
-				//compare price, proceed to add until met...
-				//pull wisemen metrics, price delimiter,
-				metricsWisemen := selectMetricsWisemen()[0]
-				if stock.Last >= metricsWisemen.DesiredPriceRangeLow && stock.Last <= metricsWisemen.DesiredPriceRangeHigh {
-					topRankList = append(topRankList, stock)
-				}
-			}
-
+	filteredStockList := []Stock{}
+	// topRankList := []Stock{}
+	// returningStockList := []Stock{}
+	//before getting top ranking of stocks, get all in list.
+	//See if duplicates exist in temp hold
+	//Contingent that wisemen and whale will inherit from temp
+	for i, v := range stockList {
+		if strings.Contains(v.Symbol, ".") == false {
+			filteredStockList = append(filteredStockList, v)
 		}
-		indexStock++
+		i++
 	}
+	return filteredStockList
+}
 
-	//Store for monitorList, handle temp hold and
-	//Query monitorSymbol
-	monitorList := selectTempSymbolHold()
-	if len(monitorList) == 0 {
-		for i, v := range topRankList {
-			insertTempSymbolHold(v.Symbol, false)
-			i++
-		}
-	}
-	if len(monitorList) != 0 {
-		boolStockMonitorMap := make(map[string]bool)
-		// for i, v := range topRankList {
-		for i, v := range topRankList {
-			for i1, v1 := range monitorList {
-				if v.Symbol == v1 {
-					fmt.Println(v.Symbol)
-					boolStockMonitorMap[v.Symbol] = true
-					break
-				}
-				if i1 == (len(monitorList) - 1) {
-					// fmt.Println("last symbol ", v.Symbol)
-					boolStockMonitorMap[v.Symbol] = false
-				}
-			}
-			i++
-		}
-		for k, v := range boolStockMonitorMap {
-			// fmt.Printf("key[%s] value[%s]\n", k, v)
-			if v == false {
-				insertTempSymbolHold(k, false)
-			}
-		}
-	}
-	// processFillHolds()
-	handleFillHolds()
-	// stockRanking := topRankList[0].Symbol + "," + topRankList[1].Symbol + "," + topRankList[2].Symbol
+	// //Store of symbols will affect both wisemen and whale.
+	// //Temp,
+	// //if symbols do not exist in set add to monitorSymbol
+	// for indexStock, stock := range stockList {
+	// 	if len(topRankList) < 3 {
+	// 		if strings.Contains(stock.Symbol, ".") == false {
+	// 			//compare price, proceed to add until met...
+	// 			//pull wisemen metrics, price delimiter,
+	// 			metricsWisemen := selectMetricsWisemen()[0]
+	// 			if stock.Last >= metricsWisemen.DesiredPriceRangeLow && stock.Last <= metricsWisemen.DesiredPriceRangeHigh {
+	// 				topRankList = append(topRankList, stock)
+	// 			}
+	// 		}
+	// 	}
+	// 	indexStock++
+	// }
 
-	// for i,v:= range topRankList
-	insertAnalyticsOperations(topRankList)
-	//Query follow-crossover should be handled by concurrent monitor cycle.
+	// //Store for monitorList, handle temp hold and
+	// //Query monitorSymbol
+	// monitorList := selectTempSymbolHold()
+	// if len(monitorList) == 0 {
+	// 	for i, v := range topRankList {
+	// 		insertTempSymbolHold(v.Symbol, false)
+	// 		i++
+	// 	}
+	// }
+	// if len(monitorList) != 0 {
+	// 	boolStockMonitorMap := make(map[string]bool)
+	// 	// for i, v := range topRankList {
+	// 	for i, v := range topRankList {
+	// 		for i1, v1 := range monitorList {
+	// 			if v.Symbol == v1 {
+	// 				fmt.Println(v.Symbol)
+	// 				boolStockMonitorMap[v.Symbol] = true
+	// 				break
+	// 			}
+	// 			if i1 == (len(monitorList) - 1) {
+	// 				// fmt.Println("last symbol ", v.Symbol)
+	// 				boolStockMonitorMap[v.Symbol] = false
+	// 			}
+	// 		}
+	// 		i++
+	// 	}
+
+	// 	//if symbol is not present
+	// 	for k, v := range boolStockMonitorMap {
+	// 		// fmt.Printf("key[%s] value[%s]\n", k, v)
+	// 		if v == false {
+	// 			returningStockList = append(returningStockList, k)
+	// 			insertTempSymbolHold(k, false)
+	// 		}
+	// 	}
+	// }
+	// return returningStockList
 }
 
 func handleFillHolds(params ...interface{}) {
@@ -753,10 +776,21 @@ func handleDowWebscrape(params ...interface{}) {
 	insertDow(currentDowValue)
 }
 
-func handleTwiWebscrape(params ...interface{}) {
-	response := queryWebscrape()
-	currentTwiValue := parseDowWebscrape(response)
-	// insertDow(currentDowValue)
+func twiWebscrape() []Stock{
+	response := queryWebscrapeTwi()
+	symbolList := parseTwiWebscrape(response)
+	//create query
+	//post multiquery.
+	responseSymbolList := queryMultiStockPull(symbolList)
+	fmt.Println(responseSymbolList)
+	stockList := parseStockSetQuery(responseSymbolList)
+
+	for i, v := range stockList {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
+	return stockList
 }
 
 func handleEndOfDayAnalyticsOperations() {
