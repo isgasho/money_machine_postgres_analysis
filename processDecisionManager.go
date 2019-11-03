@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"reflect"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -480,15 +481,93 @@ func handleCheckIsTradeBought(params ...interface{}) {
 
 func handleOverarchTopStock(params ...interface{}) {
 	//TSP
-	topStockPullStockList := topStockPull()
-
+	topStockPullStockList := []Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}} //topStockPull()
 	//Twi
-	twiStockList := 
-	
-	//Append list
+	twiStockList := twiWebscrape()
+	twiTSPList := twiStockList
+	listTempDuplicantFiltered := []Stock{}
+	isDuplicate := false
+	isDuplicateTemp := false
+	//No duplicates in lists
 
-	//Handle
+	for indexTsp, tsp := range topStockPullStockList {
+		isDuplicate = false
+		for indexTwi, twi := range twiStockList {
+			if twi.Symbol == tsp.Symbol {
+				isDuplicate = true
+				break
+			}
+			indexTwi++
+		}
+		if isDuplicate == false {
+			twiTSPList = append(twiTSPList, tsp)
+		}
+		indexTsp++
+	}
+	//Query temp
+	tempSymbolHold := selectTempSymbolHold()
+	//Find duplicants in temp and appendedList
 
+	for indexTwiTSP, twiTSP := range twiTSPList {
+		isDuplicateTemp = false
+		for indexTemp, temp := range tempSymbolHold {
+			if twiTSP.Symbol == temp {
+				isDuplicateTemp = true
+				break
+			}
+			indexTemp++
+		}
+		if isDuplicateTemp == false {
+			listTempDuplicantFiltered = append(listTempDuplicantFiltered, twiTSP)
+		}
+		indexTwiTSP++
+	}
+
+	i := 0
+	topStockList := []Stock{}
+	for i < 3 {
+		// 	// remove highest index 3 times, to get top stocks.
+		// 	//Pop top stock each iteration
+		highestStockIndex := 0
+		for indexTempDuplicantFiltered, tempDuplicantFiltered := range listTempDuplicantFiltered {
+			if indexTempDuplicantFiltered == 0 {
+				highestStockIndex = indexTempDuplicantFiltered
+				continue
+			}
+
+			floatHighest := 0.0
+			floatCurrent := 0.0
+			if s, err := strconv.ParseFloat(listTempDuplicantFiltered[highestStockIndex].Pchg, 64); err == nil {
+				floatHighest = s
+			}
+			if s1, err := strconv.ParseFloat(tempDuplicantFiltered.Pchg, 64); err == nil {
+				floatCurrent = s1
+			}
+
+			if floatCurrent > floatHighest {
+				// fmt.Println("previousHighest")
+				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+				highestStockIndex = indexTempDuplicantFiltered
+				// fmt.Println("index")
+				// fmt.Println(i)
+				// fmt.Println("listTempDuplicantFiltered[highestStockIndex].Pchg")
+				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+				// fmt.Println(tempDuplicantFiltered.Pchg)
+			}
+		}
+		topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
+		if i < 2 {
+			listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
+		}
+		i++
+	}
+	// fmt.Println("topStockList")
+	// fmt.Println(topStockList)
+	for i, v := range topStockList {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
 }
 
 func getIntervalTradeMonitorDelimiter() int {
@@ -508,16 +587,9 @@ func checkWhaleDelimiterMet() bool {
 }
 
 func topStockPull() []Stock {
-	//TSP
 	var queryResponse = queryTSP()
-	//Top 3 stocks
 	stockList := parseTopStockQuery(queryResponse)
 	filteredStockList := []Stock{}
-	// topRankList := []Stock{}
-	// returningStockList := []Stock{}
-	//before getting top ranking of stocks, get all in list.
-	//See if duplicates exist in temp hold
-	//Contingent that wisemen and whale will inherit from temp
 	for i, v := range stockList {
 		if strings.Contains(v.Symbol, ".") == false {
 			filteredStockList = append(filteredStockList, v)
@@ -527,61 +599,61 @@ func topStockPull() []Stock {
 	return filteredStockList
 }
 
-	// //Store of symbols will affect both wisemen and whale.
-	// //Temp,
-	// //if symbols do not exist in set add to monitorSymbol
-	// for indexStock, stock := range stockList {
-	// 	if len(topRankList) < 3 {
-	// 		if strings.Contains(stock.Symbol, ".") == false {
-	// 			//compare price, proceed to add until met...
-	// 			//pull wisemen metrics, price delimiter,
-	// 			metricsWisemen := selectMetricsWisemen()[0]
-	// 			if stock.Last >= metricsWisemen.DesiredPriceRangeLow && stock.Last <= metricsWisemen.DesiredPriceRangeHigh {
-	// 				topRankList = append(topRankList, stock)
-	// 			}
-	// 		}
-	// 	}
-	// 	indexStock++
-	// }
+// //Store of symbols will affect both wisemen and whale.
+// //Temp,
+// //if symbols do not exist in set add to monitorSymbol
+// for indexStock, stock := range stockList {
+// 	if len(topRankList) < 3 {
+// 		if strings.Contains(stock.Symbol, ".") == false {
+// 			//compare price, proceed to add until met...
+// 			//pull wisemen metrics, price delimiter,
+// 			metricsWisemen := selectMetricsWisemen()[0]
+// 			if stock.Last >= metricsWisemen.DesiredPriceRangeLow && stock.Last <= metricsWisemen.DesiredPriceRangeHigh {
+// 				topRankList = append(topRankList, stock)
+// 			}
+// 		}
+// 	}
+// 	indexStock++
+// }
 
-	// //Store for monitorList, handle temp hold and
-	// //Query monitorSymbol
-	// monitorList := selectTempSymbolHold()
-	// if len(monitorList) == 0 {
-	// 	for i, v := range topRankList {
-	// 		insertTempSymbolHold(v.Symbol, false)
-	// 		i++
-	// 	}
-	// }
-	// if len(monitorList) != 0 {
-	// 	boolStockMonitorMap := make(map[string]bool)
-	// 	// for i, v := range topRankList {
-	// 	for i, v := range topRankList {
-	// 		for i1, v1 := range monitorList {
-	// 			if v.Symbol == v1 {
-	// 				fmt.Println(v.Symbol)
-	// 				boolStockMonitorMap[v.Symbol] = true
-	// 				break
-	// 			}
-	// 			if i1 == (len(monitorList) - 1) {
-	// 				// fmt.Println("last symbol ", v.Symbol)
-	// 				boolStockMonitorMap[v.Symbol] = false
-	// 			}
-	// 		}
-	// 		i++
-	// 	}
+// //Store for monitorList, handle temp hold and
+// //Query monitorSymbol
+// monitorList := selectTempSymbolHold()
+// if len(monitorList) == 0 {
+// 	for i, v := range topRankList {
+// 		insertTempSymbolHold(v.Symbol, false)
+// 		i++
+// 	}
+// }
+// if len(monitorList) != 0 {
+// 	boolStockMonitorMap := make(map[string]bool)
+// 	// for i, v := range topRankList {
+// 	for i, v := range topRankList {
+// 		for i1, v1 := range monitorList {
+// 			if v.Symbol == v1 {
+// 				fmt.Println(v.Symbol)
+// 				boolStockMonitorMap[v.Symbol] = true
+// 				break
+// 			}
+// 			if i1 == (len(monitorList) - 1) {
+// 				// fmt.Println("last symbol ", v.Symbol)
+// 				boolStockMonitorMap[v.Symbol] = false
+// 			}
+// 		}
+// 		i++
+// 	}
 
-	// 	//if symbol is not present
-	// 	for k, v := range boolStockMonitorMap {
-	// 		// fmt.Printf("key[%s] value[%s]\n", k, v)
-	// 		if v == false {
-	// 			returningStockList = append(returningStockList, k)
-	// 			insertTempSymbolHold(k, false)
-	// 		}
-	// 	}
-	// }
-	// return returningStockList
-}
+// 	//if symbol is not present
+// 	for k, v := range boolStockMonitorMap {
+// 		// fmt.Printf("key[%s] value[%s]\n", k, v)
+// 		if v == false {
+// 			returningStockList = append(returningStockList, k)
+// 			insertTempSymbolHold(k, false)
+// 		}
+// 	}
+// }
+// return returningStockList
+// }
 
 func handleFillHolds(params ...interface{}) {
 	tempSymbolHoldList := selectTempSymbolHold()
@@ -776,20 +848,11 @@ func handleDowWebscrape(params ...interface{}) {
 	insertDow(currentDowValue)
 }
 
-func twiWebscrape() []Stock{
+func twiWebscrape() []Stock {
 	response := queryWebscrapeTwi()
 	symbolList := parseTwiWebscrape(response)
-	//create query
-	//post multiquery.
 	responseSymbolList := queryMultiStockPull(symbolList)
-	fmt.Println(responseSymbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
-
-	for i, v := range stockList {
-		fmt.Println(v.Symbol)
-		fmt.Println(v.Pchg)
-		i++
-	}
 	return stockList
 }
 

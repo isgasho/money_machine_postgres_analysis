@@ -383,6 +383,21 @@ func handleRequests() {
 	http.HandleFunc("/databaseQuery", databaseQuery)
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
+func removeElement(listEntered []Stock, symbol string) []Stock {
+	var i int
+	listAltered := listEntered
+	for {
+		if i == len(listAltered) {
+			break
+		}
+		if listAltered[i].Symbol == symbol {
+			listAltered = listAltered[:i+copy(listAltered[i:], listAltered[i+1:])]
+			i = 0
+		}
+		i++
+	}
+	return listAltered
+}
 
 func main() {
 	go handleRequests()
@@ -392,8 +407,63 @@ func main() {
 	// query
 	// queryTSP()
 	// handleTSPRefresh()
-
 	processOverarchTopStock()
+
+	// listTempDuplicantFiltered := []Stock{Stock{Symbol: "test1", Pchg: "5.0"}, Stock{Symbol: "test2", Pchg: "10.0"}, Stock{Symbol: "test3", Pchg: "20.0"}}
+	// i := 0
+	// topStockList := []Stock{}
+
+	// listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[2].Symbol)
+
+	// fmt.Println(listTempDuplicantFiltered)
+	//Filter for top pchg top 3
+	// for i < 3 {
+	// 	// 	// remove highest index 3 times, to get top stocks.
+	// 	// 	//Pop top stock each iteration
+	// 	highestStockIndex := 0
+	// 	for indexTempDuplicantFiltered, tempDuplicantFiltered := range listTempDuplicantFiltered {
+	// 		if indexTempDuplicantFiltered == 0 {
+	// 			highestStockIndex = indexTempDuplicantFiltered
+	// 			continue
+	// 		}
+
+	// 		floatHighest := 0.0
+	// 		floatCurrent := 0.0
+	// 		if s, err := strconv.ParseFloat(listTempDuplicantFiltered[highestStockIndex].Pchg, 64); err == nil {
+	// 			floatHighest = s
+	// 		}
+	// 		if s1, err := strconv.ParseFloat(tempDuplicantFiltered.Pchg, 64); err == nil {
+	// 			floatCurrent = s1
+	// 		}
+
+	// 		if floatCurrent > floatHighest {
+	// 			fmt.Println("previousHighest")
+	// 			fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+	// 			highestStockIndex = indexTempDuplicantFiltered
+	// 			fmt.Println("index")
+	// 			fmt.Println(i)
+	// 			fmt.Println("listTempDuplicantFiltered[highestStockIndex].Pchg")
+	// 			fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+	// 			fmt.Println(tempDuplicantFiltered.Pchg)
+	// 		}
+	// 	}
+	// 	topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
+	// 	fmt.Println(listTempDuplicantFiltered[highestStockIndex])
+	// 	if i < 2 {
+	// 		listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
+	// 	}
+	// 	// fmt.Println("listAltered")
+	// 	// fmt.Println(listTempDuplicantFiltered)
+	// 	i++
+	// }
+	// fmt.Println("topStockList")
+	// fmt.Println(topStockList)
+
+	// func removeElement(nums []int, val int) int {
+	// listNumbers := []Stock{Stock{Symbol: "1"}, Stock{Symbol: "2"}, Stock{Symbol: "3"}}
+	// response := removeElement(listNumbers, "1")
+	// fmt.Println(response)
+	// fmt.Println(listNumbers)
 	// processDowWebscrape()
 	// processTwiWebscrape()
 	// queryWebscrapeTwi

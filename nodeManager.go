@@ -4,9 +4,6 @@ import (
 	"fmt"
 )
 
-func topStockPull() {
-}
-
 // type fn func(params ...interface{})
 
 func queryWebscrape() string {

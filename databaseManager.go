@@ -465,7 +465,6 @@ func selectTempSymbolHold() []string {
 
 	rows, err1 := db.Query("SELECT symbol FROM temp_symbol_hold")
 	if err1 != nil {
-		// log.Fatal(err)
 		fmt.Println(err1)
 	}
 	defer rows.Close()
