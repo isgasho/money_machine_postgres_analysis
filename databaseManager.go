@@ -1918,7 +1918,16 @@ func postNeoBuyOrderResponse(holdingWisemen HoldingWisemen) string {
 	return response
 }
 
-//
+func postNeoHealthCheck() string {
+	json := `{
+		"requestType": "postNeoHealthCheck",
+		"data": [
+			]}`
+
+	url := "http://localhost:11000/databaseQuery"
+	response := post(url, json)
+	return response
+}
 
 //
 //AlgorithmEvaluationForDay

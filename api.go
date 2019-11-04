@@ -404,6 +404,7 @@ func main() {
 
 	//sell procedure.
 
+	// healthCheck()
 	// query
 	// queryTSP()
 	// handleTSPRefresh()

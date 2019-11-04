@@ -43,6 +43,7 @@ func get() {
 	fmt.Println(m["ID"])
 }
 func post(url string, json string) string {
+	bodyStringed := ""
 	var jsonStr = []byte(json)
 	req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonStr))
 	req.Header.Set("X-Custom-Header", "myvalue")
@@ -51,15 +52,18 @@ func post(url string, json string) string {
 	client := &http.Client{}
 	resp, err := client.Do(req)
 	if err != nil {
-		panic(err)
+		// panic(err)
+		fmt.Println(err)
+		bodyStringed = "error received"
 	}
-	defer resp.Body.Close()
+	if err == nil {
+		defer resp.Body.Close()
 
-	fmt.Println("response Status:", resp.Status)
-	fmt.Println("response Headers:", resp.Header)
-	body, _ := ioutil.ReadAll(resp.Body)
-	bodyStringed := string(body)
-
+		fmt.Println("response Status:", resp.Status)
+		fmt.Println("response Headers:", resp.Header)
+		body, _ := ioutil.ReadAll(resp.Body)
+		bodyStringed = string(body)
+	}
 	// fmt.Println("response Body:", string(body))
 	return bodyStringed
 }

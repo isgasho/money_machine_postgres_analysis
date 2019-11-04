@@ -1410,3 +1410,14 @@ func postNeoSellOrder() string {
 
 	return ""
 }
+
+func postHealthCheckNode(neoResponse string) string {
+	json := `{
+		"request_type": "healthCheck",
+		"data": {
+		}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}

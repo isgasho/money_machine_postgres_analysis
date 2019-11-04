@@ -598,6 +598,27 @@ func topStockPull() []Stock {
 	}
 	return filteredStockList
 }
+func healthCheck() {
+	isNeoResponse := "false"
+	//post to neo
+	response := postNeoHealthCheck()
+	//If response from neo
+	if response != "error received" {
+		// fmt.Println(response)
+		isNeoResponse = "true"
+	}
+
+	postHealthCheckNode(isNeoResponse)
+
+	// }
+	// if
+
+	//res from check
+	//nodemail
+}
+func purchaseUpdateSystem() {
+
+}
 
 // //Store of symbols will affect both wisemen and whale.
 // //Temp,
