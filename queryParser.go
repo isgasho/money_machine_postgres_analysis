@@ -156,32 +156,39 @@ func parseStockSetQuery(queryString string) []Stock {
 		//calculated createdAt
 		createdAt := createStockTimeStamp()
 
+		// isCurrentPriceHigherThanPreviousClose calculation
+		isCurrentPriceHigherThanPreviousClose := "false"
+		if pcls < last {
+			isCurrentPriceHigherThanPreviousClose = "true"
+		}
+
 		var stock = Stock{
-			Monitoring:   false,
-			Symbol:       symbol,
-			CreatedAt:    createdAt,
-			Bid:          bid,
-			Ask:          ask,
-			Last:         last,
-			Pchg:         pchg,
-			Pcls:         pcls,
-			Opn:          opn,
-			Vl:           vl,
-			Pvol:         pvol,
-			Volatility12: volatility12,
-			Wk52hi:       wk52hi,
-			Wk52hidate:   wk52hidate,
-			Wk52lo:       wk52lo,
-			Wk52lodate:   wk52lodate,
-			Hi:           hi,
-			Lo:           lo,
-			PrAdp50:      prAdp50,
-			PrAdp100:     prAdp100,
-			Prchg:        prchg,
-			Adp50:        adp50,
-			Adp100:       adp100,
-			Adv30:        adv30,
-			Adv90:        adv90,
+			Monitoring:                            false,
+			Symbol:                                symbol,
+			CreatedAt:                             createdAt,
+			Bid:                                   bid,
+			Ask:                                   ask,
+			Last:                                  last,
+			Pchg:                                  pchg,
+			Pcls:                                  pcls,
+			Opn:                                   opn,
+			Vl:                                    vl,
+			Pvol:                                  pvol,
+			Volatility12:                          volatility12,
+			Wk52hi:                                wk52hi,
+			Wk52hidate:                            wk52hidate,
+			Wk52lo:                                wk52lo,
+			Wk52lodate:                            wk52lodate,
+			Hi:                                    hi,
+			Lo:                                    lo,
+			PrAdp50:                               prAdp50,
+			PrAdp100:                              prAdp100,
+			Prchg:                                 prchg,
+			Adp50:                                 adp50,
+			Adp100:                                adp100,
+			Adv30:                                 adv30,
+			Adv90:                                 adv90,
+			IsCurrentPriceHigherThanPreviousClose: isCurrentPriceHigherThanPreviousClose,
 		}
 		stockList = append(stockList, stock)
 	}
@@ -399,6 +406,7 @@ func parseTopStockQuery(queryString string) []Stock {
 
 	fmt.Println(parseList[0])
 	for i, v := range parseList {
+		isCurrentPriceHigherThanPreviousClose := false
 		//Create stock and append to composite
 		// fmt.Println(i, v)
 		i++
@@ -428,6 +436,7 @@ func parseTopStockQuery(queryString string) []Stock {
 		// return stockList
 		// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
 	}
+
 	return stockList
 }
 

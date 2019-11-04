@@ -117,15 +117,15 @@ func processWisemenQueryStockSet() {
 }
 
 func processWhaleQueryStockSet() {
-	if initialWhaleStockQueryPerformed == true {
-		go startCycle(cycleMapPool["handleWhaleQueryStockList"])
-	}
-	if initialWhaleStockQueryPerformed == false {
-		createCycle(300, 1000000000000, handleWhaleQueryStockList, "handleWhaleQueryStockList")
-		operatingCycle := cycleMapPool["handleWhaleQueryStockList"]
-		go startCycle(operatingCycle)
-		initialWhaleStockQueryPerformed = true
-	}
+	// if initialWhaleStockQueryPerformed == true {
+	// 	go startCycle(cycleMapPool["handleWhaleQueryStockList"])
+	// }
+	// if initialWhaleStockQueryPerformed == false {
+	createCycle(300, 1000000000000, handleWhaleQueryStockList, "handleWhaleQueryStockList")
+	operatingCycle := cycleMapPool["handleWhaleQueryStockList"]
+	go startCycle(operatingCycle)
+	// initialWhaleStockQueryPerformed = true
+	// }
 }
 
 // func intiateMonitorTradeWisemon() {
@@ -508,7 +508,7 @@ func highTransferanceProcess() {
 		indexTsp++
 	}
 	//Query temp
-	tempSymbolHold := selectTempSymbolHold()
+	tempSymbolHold := selectTempSymbolHoldHigh()
 	//Find duplicants in temp and appendedList
 
 	for indexTwiTSP, twiTSP := range twiTSPList {
@@ -567,13 +567,11 @@ func highTransferanceProcess() {
 	fmt.Println("topStockList")
 	fmt.Println(topStockList)
 	for i, v := range topStockList {
-		insertTempSymbolHold(v.Symbol, false)
+		insertTempSymbolHoldHigh(v.Symbol, false)
 		i++
 	}
-	// insert temp
-	// fillholds
-	// handleFillHolds()
-	handleWisemenFillHolds()
+	//fill algorithm symbol holds
+	handleWisemenFillHold()
 	handleWhaleFillHoldHigh()
 }
 
@@ -613,7 +611,7 @@ func lowTransferanceProcess() {
 	// }
 	// fmt.Println("topStockPullStockList end")
 	//Query temp
-	tempSymbolHold := selectTempSymbolHold()
+	tempSymbolHold := selectTempSymbolHoldLow()
 	//Find duplicants in temp and appendedList
 
 	for indexTwiTSP, twiTSP := range twiTSPList {
@@ -672,12 +670,12 @@ func lowTransferanceProcess() {
 	fmt.Println("topStockList")
 	fmt.Println(topStockList)
 	for i, v := range topStockList {
-		insertTempSymbolHold(v.Symbol, false)
+		insertTempSymbolHoldLow(v.Symbol, false)
 		i++
 	}
 	// insert temp
-	// fillholds
-	handleFillHolds()
+	//fill hold
+	handleWhaleFillHoldLow()
 }
 
 func getIntervalTradeMonitorDelimiter() int {
@@ -687,9 +685,18 @@ func iterateIntervalTradeMonitorDelimiter() {
 	intervalTradeMonitorDelimiter++
 }
 
-func checkWhaleDelimiterMet() bool {
+func checkWhaleDelimiterMetHigh() bool {
 	isWhaleDelimiterMet := false
-	symbolList := selectWhaleSymbolHold()
+	symbolList := selectWhaleSymbolHoldHigh()
+	if len(symbolList) >= 200 {
+		isWhaleDelimiterMet = true
+	}
+	return isWhaleDelimiterMet
+}
+
+func checkWhaleDelimiterMetLow() bool {
+	isWhaleDelimiterMet := false
+	symbolList := selectWhaleSymbolHoldLow()
 	if len(symbolList) >= 200 {
 		isWhaleDelimiterMet = true
 	}
@@ -708,6 +715,7 @@ func topStockPull() []Stock {
 	}
 	return filteredStockList
 }
+
 func healthCheck() {
 	isNeoResponse := "false"
 	//post to neo
@@ -784,18 +792,14 @@ func purchaseUpdateSystem() {
 
 // func handleFillHolds(params ...interface{}) {
 
-func handleWisemenFillHolds() {
-	tempSymbolHoldList := selectTempSymbolHold()
+func handleWisemenFillHold() {
+	tempSymbolHoldList := selectTempSymbolHoldHigh()
 	// whaleDelimiterMet := checkWhaleDelimiterMet()
 	for i, tempSymbol := range tempSymbolHoldList {
 		//condition meet if whale symbol or wisemen symbol already exists.
 		isSymbolExistsInWisemen := false
-		isSymbolExistsInWhale := false
-
 		//select from wisemen
 		wisemenSymbolList := selectWisemenSymbolHold()
-		//select from whale
-		whaleSymbolList := selectWisemenSymbolHold()
 
 		//iterrate set isSymbolExistsInWiseMen
 		for indexWisemenSymbol, wisemenSymbol := range wisemenSymbolList {
@@ -804,27 +808,20 @@ func handleWisemenFillHolds() {
 			}
 			indexWisemenSymbol++
 		}
-		for indexWhaleSymbol, whaleSymbol := range whaleSymbolList {
-			if whaleSymbol == tempSymbol {
-				isSymbolExistsInWhale = true
-			}
-			indexWhaleSymbol++
-		}
 		if isSymbolExistsInWisemen == false {
-			//insert for wisemen
 			insertWisemenSymbolHold(tempSymbol, false)
 		}
 		i++
 	}
 }
 func handleWhaleFillHoldHigh() {
-	tempSymbolHoldList := selectTempSymbolHold()
-	whaleDelimiterMet := checkWhaleDelimiterMet()
+	tempSymbolHoldList := selectTempSymbolHoldHigh()
+	whaleDelimiterMet := checkWhaleDelimiterMetHigh()
 	for i, tempSymbol := range tempSymbolHoldList {
 		//condition meet if whale symbol or wisemen symbol already exists.
 		isSymbolExistsInWhale := false
 		//select from whale
-		whaleSymbolList := selectWisemenSymbolHold()
+		whaleSymbolList := selectWhaleSymbolHoldHigh()
 		for indexWhaleSymbol, whaleSymbol := range whaleSymbolList {
 			if whaleSymbol == tempSymbol {
 				isSymbolExistsInWhale = true
@@ -834,20 +831,20 @@ func handleWhaleFillHoldHigh() {
 		if isSymbolExistsInWhale == false {
 			//check process for whale delimiter
 			if whaleDelimiterMet == false {
-				insertWhaleSymbolHold(tempSymbol, false)
+				insertWhaleSymbolHoldHigh(tempSymbol, false)
 			}
 		}
 		i++
 	}
 }
 func handleWhaleFillHoldLow() {
-	tempSymbolHoldList := selectTempSymbolHold()
-	whaleDelimiterMet := checkWhaleDelimiterMet()
+	tempSymbolHoldList := selectTempSymbolHoldLow()
+	whaleDelimiterMet := checkWhaleDelimiterMetLow()
 	for i, tempSymbol := range tempSymbolHoldList {
 		//condition meet if whale symbol or wisemen symbol already exists.
 		isSymbolExistsInWhale := false
 		//select from whale
-		whaleSymbolList := selectWisemenSymbolHold()
+		whaleSymbolList := selectWhaleSymbolHoldLow()
 		for indexWhaleSymbol, whaleSymbol := range whaleSymbolList {
 			if whaleSymbol == tempSymbol {
 				isSymbolExistsInWhale = true
@@ -857,7 +854,7 @@ func handleWhaleFillHoldLow() {
 		if isSymbolExistsInWhale == false {
 			//check process for whale delimiter
 			if whaleDelimiterMet == false {
-				insertWhaleSymbolHold(tempSymbol, false)
+				insertWhaleSymbolHoldLow(tempSymbol, false)
 			}
 		}
 		i++
@@ -892,8 +889,10 @@ func handleWisemenQueryStockList(params ...interface{}) {
 }
 
 func handleWhaleQueryStockList(params ...interface{}) {
-	//Query monitor_symbol
-	symbolList := selectWhaleSymbolHold()
+	//Branch system for high, and for low
+	//for high
+	//
+	symbolList := selectWhaleSymbolHoldHigh()
 	//Parse format errors in symbols
 	formattedSymbolList := []string{}
 	for i, v := range symbolList {
@@ -911,7 +910,7 @@ func handleWhaleQueryStockList(params ...interface{}) {
 	//for each symbol query whale
 	listOfDatabaseStockListResponse := []DatabaseStockListResponse{}
 	for index, symbol := range formattedSymbolList {
-		stockList := selectStockWhale(symbol)
+		stockList := selectStockWhaleHigh(symbol)
 		if len(stockList) == 0 {
 			continue
 		}
@@ -936,7 +935,7 @@ func handleWhaleQueryStockList(params ...interface{}) {
 				isStocksComparedSameTimeStamps := compareTimeStamps(stockBrokerage, lastIndexedStock)
 				//if present and day is the same
 				if isStocksComparedSameTimeStamps {
-					insertStockWhale(stockBrokerage)
+					insertStockWhaleHigh(stockBrokerage)
 					isDaySame = true
 					break
 				}
@@ -947,11 +946,73 @@ func handleWhaleQueryStockList(params ...interface{}) {
 		if isDaySame == false {
 			appendedStock := processAppendDayOfWeekToStock(stockBrokerage)
 			//When stock is inserted it does not take into account the day.
-			insertStockWhale(appendedStock)
+			insertStockWhaleHigh(appendedStock)
+		}
+		indexStockBrokerage++
+	}
+
+	//for low
+	//
+	symbolListLow := selectWhaleSymbolHoldLow()
+	//Parse format errors in symbols
+	formattedSymbolListLow := []string{}
+	for i, v := range symbolListLow {
+		if strings.Contains(v, ".") {
+			continue
+		}
+		formattedSymbolListLow = append(formattedSymbolListLow, v)
+		i++
+	}
+	//Given a symbolList, query brokerage, stock list response.
+	queryResponseLow := queryMultiStockPull(formattedSymbolListLow)
+	stockListBrokerageLow := parseStockSetQuery(queryResponseLow)
+
+	//so monitorSymbol given
+	//for each symbol query whale
+	listOfDatabaseStockListResponseLow := []DatabaseStockListResponse{}
+	for index, symbol := range formattedSymbolListLow {
+		stockList := selectStockWhaleLow(symbol)
+		if len(stockList) == 0 {
+			continue
+		}
+		databaseStockListResponseLow := DatabaseStockListResponse{StockList: stockList}
+		listOfDatabaseStockListResponseLow = append(listOfDatabaseStockListResponseLow, databaseStockListResponseLow)
+		index++
+	}
+	isPresentInDBLow := false
+	isDaySameLow := false
+	for indexStockBrokerage, stockBrokerage := range stockListBrokerageLow {
+		isPresentInDBLow = false
+		isDaySameLow = false
+
+		for indexDatabaseStockListResponse, databaseStockListResponse := range listOfDatabaseStockListResponseLow {
+
+			fmt.Println(databaseStockListResponse.StockList)
+			lastIndexedStock := databaseStockListResponse.StockList[(len(databaseStockListResponse.StockList) - 1)]
+			if lastIndexedStock.Symbol == stockBrokerage.Symbol {
+				isPresentInDBLow = true
+			}
+			if isPresentInDBLow {
+				isStocksComparedSameTimeStamps := compareTimeStamps(stockBrokerage, lastIndexedStock)
+				//if present and day is the same
+				if isStocksComparedSameTimeStamps {
+					insertStockWhaleLow(stockBrokerage)
+					isDaySameLow = true
+					break
+				}
+			}
+			indexDatabaseStockListResponse++
+		}
+		//if symbol in DB, but different days
+		if isDaySameLow == false {
+			appendedStock := processAppendDayOfWeekToStock(stockBrokerage)
+			//When stock is inserted it does not take into account the day.
+			insertStockWhaleLow(appendedStock)
 		}
 		indexStockBrokerage++
 	}
 }
+
 func processDetectStockWhaleWhereDayIsAtIndex(stockList []Stock) {
 	for index, stock := range stockList {
 
