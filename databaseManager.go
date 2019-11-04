@@ -202,7 +202,8 @@ func selectAllStockWisemen() []Stock {
 // 	fmt.Println(count)
 // }
 
-func insertStockWhale(stockEntry Stock) {
+//Stock Whale high
+func insertStockWhaleHigh(stockEntry Stock) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -213,7 +214,7 @@ func insertStockWhale(stockEntry Stock) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO stock_whale (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
+		INSERT INTO stock_whale_high (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
 		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
 		RETURNING id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
 		`
@@ -225,7 +226,7 @@ func insertStockWhale(stockEntry Stock) {
 		fmt.Println("Create Error 2")
 	}
 }
-func selectAllStockWhale() []Stock {
+func selectAllStockWhaleHigh() []Stock {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -236,7 +237,7 @@ func selectAllStockWhale() []Stock {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_whale")
+	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_whale_high")
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -253,7 +254,7 @@ func selectAllStockWhale() []Stock {
 	return stockList
 }
 
-func selectStockWhale(symbol string) []Stock {
+func selectStockWhaleHigh(symbol string) []Stock {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -264,7 +265,7 @@ func selectStockWhale(symbol string) []Stock {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_whale WHERE symbol=$1", symbol)
+	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_whale_high WHERE symbol=$1", symbol)
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -281,7 +282,7 @@ func selectStockWhale(symbol string) []Stock {
 	return stockList
 }
 
-func deleteAllStockOfSymbolInWhale(symbol string) []Stock {
+func deleteAllStockOfSymbolInWhaleHigh(symbol string) []Stock {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -292,7 +293,116 @@ func deleteAllStockOfSymbolInWhale(symbol string) []Stock {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("DELETE FROM stock_whale WHERE symbol=$1;", symbol)
+	rows, err1 := db.Query("DELETE FROM stock_whale_high WHERE symbol=$1;", symbol)
+
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	stockList := make([]Stock, 0)
+
+	for rows.Next() {
+		var stock Stock
+		if err2 := rows.Scan(&stock.ID, &stock.CreatedAt, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90); err2 != nil {
+			fmt.Println("err2")
+		}
+		stockList = append(stockList, stock)
+	}
+	return stockList
+}
+
+//Stock Whale low
+func insertStockWhaleLow(stockEntry Stock) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO stock_whale_low (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
+		RETURNING id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
+		`
+	var stock Stock
+
+	row := db.QueryRow(sqlStatement, stockEntry.Symbol, stockEntry.Bid, stockEntry.Ask, stockEntry.Last, stockEntry.Pchg, stockEntry.Pcls, stockEntry.Opn, stockEntry.Vl, stockEntry.Pvol, stockEntry.Volatility12, stockEntry.Wk52hi, stockEntry.Wk52hidate, stockEntry.Wk52lo, stockEntry.Wk52lodate, stockEntry.Hi, stockEntry.Lo, stockEntry.PrAdp50, stockEntry.PrAdp100, stockEntry.Prchg, stockEntry.Adp50, stockEntry.Adp100, stockEntry.Adv30, stockEntry.Adv90)
+	err1 := row.Scan(&stock.ID, &stock.CreatedAt, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+func selectAllStockWhaleLow() []Stock {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_whale_low")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	stockList := make([]Stock, 0)
+
+	for rows.Next() {
+		var stock Stock
+		if err2 := rows.Scan(&stock.ID, &stock.CreatedAt, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90); err2 != nil {
+			fmt.Println("err2")
+		}
+		stockList = append(stockList, stock)
+	}
+	return stockList
+}
+
+func selectStockWhaleLow(symbol string) []Stock {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_whale_low WHERE symbol=$1", symbol)
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	stockList := make([]Stock, 0)
+
+	for rows.Next() {
+		var stock Stock
+		if err2 := rows.Scan(&stock.ID, &stock.CreatedAt, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90); err2 != nil {
+			fmt.Println("err2")
+		}
+		stockList = append(stockList, stock)
+	}
+	return stockList
+}
+
+func deleteAllStockOfSymbolInWhaleLow(symbol string) []Stock {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("DELETE FROM stock_whale_low WHERE symbol=$1;", symbol)
 
 	if err1 != nil {
 		fmt.Println(err1)
@@ -428,7 +538,8 @@ func deleteStock(symbolToDel string) {
 
 //
 
-func insertTempSymbolHold(symbol string, userInput bool) {
+//Temp symbol high
+func insertTempSymbolHoldHigh(symbol string, userInput bool) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -439,7 +550,7 @@ func insertTempSymbolHold(symbol string, userInput bool) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO temp_symbol_hold (symbol, user_inputed)
+		INSERT INTO temp_symbol_hold_high (symbol, user_inputed)
 			VALUES ($1,$2)
 			RETURNING symbol
 		`
@@ -452,7 +563,7 @@ func insertTempSymbolHold(symbol string, userInput bool) {
 	}
 }
 
-func selectTempSymbolHold() []string {
+func selectTempSymbolHoldHigh() []string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -463,7 +574,7 @@ func selectTempSymbolHold() []string {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT symbol FROM temp_symbol_hold")
+	rows, err1 := db.Query("SELECT symbol FROM temp_symbol_hold_high")
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -480,7 +591,7 @@ func selectTempSymbolHold() []string {
 	return symbolList
 }
 
-func deleteTempSymbolHold(symbolToDel string) {
+func deleteTempSymbolHoldHigh(symbolToDel string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -491,7 +602,7 @@ func deleteTempSymbolHold(symbolToDel string) {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("DELETE FROM temp_symbol_hold WHERE symbol=$1", symbolToDel)
+	res, err1 := db.Exec("DELETE FROM temp_symbol_hold_high WHERE symbol=$1", symbolToDel)
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}
@@ -502,7 +613,7 @@ func deleteTempSymbolHold(symbolToDel string) {
 	fmt.Println(count)
 }
 
-func dropTempSymbolHold() {
+func dropTempSymbolHoldHigh() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -513,7 +624,7 @@ func dropTempSymbolHold() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("drop table temp_symbol_hold")
+	res, err1 := db.Exec("drop table temp_symbol_hold_high")
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}
@@ -524,7 +635,7 @@ func dropTempSymbolHold() {
 	fmt.Println(count)
 }
 
-func createTempSymbolHold() {
+func createTempSymbolHoldHigh() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -535,7 +646,132 @@ func createTempSymbolHold() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold
+	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold_high
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   user_inputed boolean
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func insertTempSymbolHoldLow(symbol string, userInput bool) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO temp_symbol_hold_low (symbol, user_inputed)
+			VALUES ($1,$2)
+			RETURNING symbol
+		`
+	var stock Stock
+
+	row := db.QueryRow(sqlStatement, symbol, userInput)
+	err1 := row.Scan(&stock.Symbol)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectTempSymbolHoldLow() []string {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT symbol FROM temp_symbol_hold_low")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	symbolList := make([]string, 0)
+
+	for rows.Next() {
+		var symbol string
+		if err2 := rows.Scan(&symbol); err2 != nil {
+			fmt.Println("err2")
+		}
+		symbolList = append(symbolList, symbol)
+	}
+	return symbolList
+}
+
+func deleteTempSymbolHoldLow(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM temp_symbol_hold_low WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func dropTempSymbolHoldLow() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table temp_symbol_hold_low")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createTempSymbolHoldLow() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold_low
 	( 
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -900,9 +1136,8 @@ func createWisemenSymbolHold() {
 	fmt.Println(count)
 }
 
-//
-
-func insertWhaleSymbolHold(symbol string, userInput bool) {
+//Whale high
+func insertWhaleSymbolHoldHigh(symbol string, userInput bool) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -913,7 +1148,7 @@ func insertWhaleSymbolHold(symbol string, userInput bool) {
 	defer db.Close()
 
 	sqlStatement := `
-		INSERT INTO whale_symbol_hold (symbol, user_inputed)
+		INSERT INTO whale_symbol_hold_high (symbol, user_inputed)
 			VALUES ($1,$2)
 			RETURNING symbol
 		`
@@ -926,7 +1161,7 @@ func insertWhaleSymbolHold(symbol string, userInput bool) {
 	}
 }
 
-func selectWhaleSymbolHold() []string {
+func selectWhaleSymbolHoldHigh() []string {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -937,7 +1172,7 @@ func selectWhaleSymbolHold() []string {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT symbol FROM whale_symbol_hold")
+	rows, err1 := db.Query("SELECT symbol FROM whale_symbol_hold_high")
 	if err1 != nil {
 		// log.Fatal(err)
 		fmt.Println(err1)
@@ -955,7 +1190,7 @@ func selectWhaleSymbolHold() []string {
 	return symbolList
 }
 
-func deleteWhaleSymbolHold(symbolToDel string) {
+func deleteWhaleSymbolHoldHigh(symbolToDel string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -966,7 +1201,83 @@ func deleteWhaleSymbolHold(symbolToDel string) {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("DELETE FROM whale_symbol_hold WHERE symbol=$1", symbolToDel)
+	res, err1 := db.Exec("DELETE FROM whale_symbol_hold_high WHERE symbol=$1", symbolToDel)
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//Whale low
+func insertWhaleSymbolHoldLow(symbol string, userInput bool) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO whale_symbol_hold_low (symbol, user_inputed)
+			VALUES ($1,$2)
+			RETURNING symbol
+		`
+	var stock Stock
+
+	row := db.QueryRow(sqlStatement, symbol, userInput)
+	err1 := row.Scan(&stock.Symbol)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectWhaleSymbolHoldLow() []string {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	rows, err1 := db.Query("SELECT symbol FROM whale_symbol_hold_low")
+	if err1 != nil {
+		// log.Fatal(err)
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	symbolList := make([]string, 0)
+
+	for rows.Next() {
+		var symbol string
+		if err2 := rows.Scan(&symbol); err2 != nil {
+			fmt.Println("err2")
+		}
+		symbolList = append(symbolList, symbol)
+	}
+	return symbolList
+}
+
+func deleteWhaleSymbolHoldLow(symbolToDel string) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("DELETE FROM whale_symbol_hold_low WHERE symbol=$1", symbolToDel)
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}

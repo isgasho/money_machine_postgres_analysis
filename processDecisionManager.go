@@ -162,10 +162,6 @@ func processTSPRefresh() {
 	// go handleTSPRefresh()
 }
 
-func processFillHolds() {
-	go handleFillHolds()
-}
-
 func processDowWebscrape() {
 	go handleDowWebscrape()
 }
@@ -480,8 +476,15 @@ func handleCheckIsTradeBought(params ...interface{}) {
 }
 
 func handleOverarchTopStock(params ...interface{}) {
+	//High process for wisemen and whale
+	highTransferanceProcess()
+	//Low process for whale
+	lowTransferanceProcess()
+}
+func highTransferanceProcess() {
 	//TSP
-	topStockPullStockList := []Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}} //topStockPull()
+	topStockPullStockList := topStockPull()
+	//[]Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}}
 	//Twi
 	twiStockList := twiWebscrape()
 	twiTSPList := twiStockList
@@ -561,13 +564,120 @@ func handleOverarchTopStock(params ...interface{}) {
 		}
 		i++
 	}
-	// fmt.Println("topStockList")
-	// fmt.Println(topStockList)
+	fmt.Println("topStockList")
+	fmt.Println(topStockList)
 	for i, v := range topStockList {
-		fmt.Println(v.Symbol)
-		fmt.Println(v.Pchg)
+		insertTempSymbolHold(v.Symbol, false)
 		i++
 	}
+	// insert temp
+	// fillholds
+	// handleFillHolds()
+	handleWisemenFillHolds()
+	handleWhaleFillHoldHigh()
+}
+
+func lowTransferanceProcess() {
+	//TSP
+	topStockPullStockList := topStockPull()
+	//[]Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}}
+
+	//Twi
+	twiStockList := twiWebscrape()
+	twiTSPList := twiStockList
+	listTempDuplicantFiltered := []Stock{}
+	isDuplicate := false
+	isDuplicateTemp := false
+	//No duplicates in lists
+
+	for indexTsp, tsp := range topStockPullStockList {
+		isDuplicate = false
+		for indexTwi, twi := range twiStockList {
+			if twi.Symbol == tsp.Symbol {
+				isDuplicate = true
+				break
+			}
+			indexTwi++
+		}
+		if isDuplicate == false {
+			twiTSPList = append(twiTSPList, tsp)
+		}
+		indexTsp++
+	}
+
+	// fmt.Println("topStockPullStockList")
+	// for i, v := range topStockPullStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+	// fmt.Println("topStockPullStockList end")
+	//Query temp
+	tempSymbolHold := selectTempSymbolHold()
+	//Find duplicants in temp and appendedList
+
+	for indexTwiTSP, twiTSP := range twiTSPList {
+		isDuplicateTemp = false
+		for indexTemp, temp := range tempSymbolHold {
+			if twiTSP.Symbol == temp {
+				isDuplicateTemp = true
+				break
+			}
+			indexTemp++
+		}
+		if isDuplicateTemp == false {
+			listTempDuplicantFiltered = append(listTempDuplicantFiltered, twiTSP)
+		}
+		indexTwiTSP++
+	}
+
+	i := 0
+	topStockList := []Stock{}
+	for i < 3 {
+		// 	// remove highest index 3 times, to get top stocks.
+		// 	//Pop top stock each iteration
+		highestStockIndex := 0
+		for indexTempDuplicantFiltered, tempDuplicantFiltered := range listTempDuplicantFiltered {
+			if indexTempDuplicantFiltered == 0 {
+				highestStockIndex = indexTempDuplicantFiltered
+				continue
+			}
+
+			floatHighest := 0.0
+			floatCurrent := 0.0
+			if s, err := strconv.ParseFloat(listTempDuplicantFiltered[highestStockIndex].Pchg, 64); err == nil {
+				floatHighest = s
+			}
+			if s1, err := strconv.ParseFloat(tempDuplicantFiltered.Pchg, 64); err == nil {
+				floatCurrent = s1
+			}
+
+			if floatCurrent > floatHighest {
+				// fmt.Println("previousHighest")
+				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+				highestStockIndex = indexTempDuplicantFiltered
+				// fmt.Println("index")
+				// fmt.Println(i)
+				// fmt.Println("listTempDuplicantFiltered[highestStockIndex].Pchg")
+				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+				// fmt.Println(tempDuplicantFiltered.Pchg)
+			}
+		}
+		topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
+		if i < 2 {
+			listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
+		}
+		i++
+	}
+	fmt.Println("topStockList")
+	fmt.Println(topStockList)
+	for i, v := range topStockList {
+		insertTempSymbolHold(v.Symbol, false)
+		i++
+	}
+	// insert temp
+	// fillholds
+	handleFillHolds()
 }
 
 func getIntervalTradeMonitorDelimiter() int {
@@ -607,11 +717,7 @@ func healthCheck() {
 		// fmt.Println(response)
 		isNeoResponse = "true"
 	}
-
 	postHealthCheckNode(isNeoResponse)
-
-	// }
-	// if
 
 	//res from check
 	//nodemail
@@ -676,13 +782,13 @@ func purchaseUpdateSystem() {
 // return returningStockList
 // }
 
-func handleFillHolds(params ...interface{}) {
-	tempSymbolHoldList := selectTempSymbolHold()
+// func handleFillHolds(params ...interface{}) {
 
-	whaleDelimiterMet := checkWhaleDelimiterMet()
+func handleWisemenFillHolds() {
+	tempSymbolHoldList := selectTempSymbolHold()
+	// whaleDelimiterMet := checkWhaleDelimiterMet()
 	for i, tempSymbol := range tempSymbolHoldList {
 		//condition meet if whale symbol or wisemen symbol already exists.
-
 		isSymbolExistsInWisemen := false
 		isSymbolExistsInWhale := false
 
@@ -692,34 +798,70 @@ func handleFillHolds(params ...interface{}) {
 		whaleSymbolList := selectWisemenSymbolHold()
 
 		//iterrate set isSymbolExistsInWiseMen
-		for i, wisemenSymbol := range wisemenSymbolList {
+		for indexWisemenSymbol, wisemenSymbol := range wisemenSymbolList {
 			if wisemenSymbol == tempSymbol {
 				isSymbolExistsInWisemen = true
 			}
-			i++
+			indexWisemenSymbol++
 		}
-
-		for i, whaleSymbol := range whaleSymbolList {
+		for indexWhaleSymbol, whaleSymbol := range whaleSymbolList {
 			if whaleSymbol == tempSymbol {
 				isSymbolExistsInWhale = true
 			}
-			i++
+			indexWhaleSymbol++
 		}
-
 		if isSymbolExistsInWisemen == false {
 			//insert for wisemen
 			insertWisemenSymbolHold(tempSymbol, false)
 		}
+		i++
+	}
+}
+func handleWhaleFillHoldHigh() {
+	tempSymbolHoldList := selectTempSymbolHold()
+	whaleDelimiterMet := checkWhaleDelimiterMet()
+	for i, tempSymbol := range tempSymbolHoldList {
+		//condition meet if whale symbol or wisemen symbol already exists.
+		isSymbolExistsInWhale := false
+		//select from whale
+		whaleSymbolList := selectWisemenSymbolHold()
+		for indexWhaleSymbol, whaleSymbol := range whaleSymbolList {
+			if whaleSymbol == tempSymbol {
+				isSymbolExistsInWhale = true
+			}
+			indexWhaleSymbol++
+		}
 		if isSymbolExistsInWhale == false {
-			//check process for whale
+			//check process for whale delimiter
 			if whaleDelimiterMet == false {
 				insertWhaleSymbolHold(tempSymbol, false)
 			}
-			i++
 		}
+		i++
 	}
-	dropTempSymbolHold()
-	createTempSymbolHold()
+}
+func handleWhaleFillHoldLow() {
+	tempSymbolHoldList := selectTempSymbolHold()
+	whaleDelimiterMet := checkWhaleDelimiterMet()
+	for i, tempSymbol := range tempSymbolHoldList {
+		//condition meet if whale symbol or wisemen symbol already exists.
+		isSymbolExistsInWhale := false
+		//select from whale
+		whaleSymbolList := selectWisemenSymbolHold()
+		for indexWhaleSymbol, whaleSymbol := range whaleSymbolList {
+			if whaleSymbol == tempSymbol {
+				isSymbolExistsInWhale = true
+			}
+			indexWhaleSymbol++
+		}
+		if isSymbolExistsInWhale == false {
+			//check process for whale delimiter
+			if whaleDelimiterMet == false {
+				insertWhaleSymbolHold(tempSymbol, false)
+			}
+		}
+		i++
+	}
 }
 
 func handleWisemenQueryStockList(params ...interface{}) {

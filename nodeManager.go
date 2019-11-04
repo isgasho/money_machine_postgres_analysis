@@ -1415,7 +1415,9 @@ func postHealthCheckNode(neoResponse string) string {
 	json := `{
 		"request_type": "healthCheck",
 		"data": {
-		}}`
+			`
+	json = json + "\"neoResponse\":" + "\"" + neoResponse + "\""
+	json = json + `}}`
 
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)

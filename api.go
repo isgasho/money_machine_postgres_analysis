@@ -408,7 +408,16 @@ func main() {
 	// query
 	// queryTSP()
 	// handleTSPRefresh()
-	processOverarchTopStock()
+	// processOverarchTopStock()
+	listStocks := twiWebscrape()
+	// fmt.Println(listStocks)
+	for i, v := range listStocks {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
+	// dropWisemenSymbolHold()
+	// createWisemenSymbolHold()
 
 	// listTempDuplicantFiltered := []Stock{Stock{Symbol: "test1", Pchg: "5.0"}, Stock{Symbol: "test2", Pchg: "10.0"}, Stock{Symbol: "test3", Pchg: "20.0"}}
 	// i := 0
