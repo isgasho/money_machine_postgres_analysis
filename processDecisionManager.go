@@ -477,7 +477,7 @@ func handleCheckIsTradeBought(params ...interface{}) {
 
 func handleOverarchTopStock(params ...interface{}) {
 	//High process for wisemen and whale
-	highTransferanceProcess()
+	// highTransferanceProcess()
 	//Low process for whale
 	lowTransferanceProcess()
 }
@@ -486,16 +486,38 @@ func highTransferanceProcess() {
 	topStockPullStockList := topStockPull()
 	//[]Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}}
 	//Twi
+
+	for i, v := range topStockPullStockList {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
 	twiStockList := twiWebscrape()
-	twiTSPList := twiStockList
+	// twiTSPList := twiStockList
 	listTempDuplicantFiltered := []Stock{}
+	positiveTwiTSPList := []Stock{}
+	positiveTwiStockList := []Stock{}
 	isDuplicate := false
 	isDuplicateTemp := false
-	//No duplicates in lists
 
+	// //Handle positive values only in twiTSPList
+	for i, v := range twiStockList {
+		if v.IsCurrentPriceHigherThanPreviousClose == "true" {
+			positiveTwiStockList = append(positiveTwiStockList, v)
+		}
+		i++
+	}
+
+	// for i, v := range positiveTwiStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+
+	// //No duplicates in lists
 	for indexTsp, tsp := range topStockPullStockList {
 		isDuplicate = false
-		for indexTwi, twi := range twiStockList {
+		for indexTwi, twi := range positiveTwiStockList {
 			if twi.Symbol == tsp.Symbol {
 				isDuplicate = true
 				break
@@ -503,15 +525,25 @@ func highTransferanceProcess() {
 			indexTwi++
 		}
 		if isDuplicate == false {
-			twiTSPList = append(twiTSPList, tsp)
+			positiveTwiTSPList = append(positiveTwiTSPList, tsp)
 		}
 		indexTsp++
 	}
-	//Query temp
-	tempSymbolHold := selectTempSymbolHoldHigh()
-	//Find duplicants in temp and appendedList
 
-	for indexTwiTSP, twiTSP := range twiTSPList {
+	// for i, v := range positiveTwiTSPList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+
+	// //Query temp
+	tempSymbolHold := selectTempSymbolHoldHigh()
+	// //Find duplicants in temp and appendedList
+
+	// // fmt.Println("twiTSPList")
+	// // fmt.Println(twiTSPList)
+
+	for indexTwiTSP, twiTSP := range positiveTwiTSPList {
 		isDuplicateTemp = false
 		for indexTemp, temp := range tempSymbolHold {
 			if twiTSP.Symbol == temp {
@@ -570,38 +602,86 @@ func highTransferanceProcess() {
 		insertTempSymbolHoldHigh(v.Symbol, false)
 		i++
 	}
-	//fill algorithm symbol holds
+	// //fill algorithm symbol holds
 	handleWisemenFillHold()
 	handleWhaleFillHoldHigh()
 }
 
 func lowTransferanceProcess() {
 	//TSP
-	topStockPullStockList := topStockPull()
+	//Support for find lowest TSP
+	// topStockPullStockList := topStockPull()
 	//[]Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}}
 
 	//Twi
 	twiStockList := twiWebscrape()
-	twiTSPList := twiStockList
-	listTempDuplicantFiltered := []Stock{}
-	isDuplicate := false
-	isDuplicateTemp := false
+	// twiTSPList := twiStockList
+	// listTempDuplicantFiltered := []Stock{}
+	// isDuplicate := false
+	// isDuplicateTemp := false
+
+	// negativeTwiTSPList := []Stock{}
+	negativeTwiStockList := []Stock{}
+
 	//No duplicates in lists
 
-	for indexTsp, tsp := range topStockPullStockList {
-		isDuplicate = false
-		for indexTwi, twi := range twiStockList {
-			if twi.Symbol == tsp.Symbol {
-				isDuplicate = true
-				break
-			}
-			indexTwi++
+	// //Handle positive values only in twiTSPList
+	for i, v := range twiStockList {
+		fmt.Println("v.Symbol")
+		fmt.Println(v.Symbol)
+		fmt.Println("v.Pchg")
+		fmt.Println(v.Pchg)
+		fmt.Println("v.Last")
+		fmt.Println(v.Last)
+		fmt.Println("v.Pcls")
+		fmt.Println(v.Pcls)
+		fmt.Println("v.IsCurrentPriceHigherThanPreviousClose")
+		fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
+		if v.IsCurrentPriceHigherThanPreviousClose == "false" {
+			negativeTwiStockList = append(negativeTwiStockList, v)
 		}
-		if isDuplicate == false {
-			twiTSPList = append(twiTSPList, tsp)
-		}
-		indexTsp++
+		i++
 	}
+
+	fmt.Println("negativeTwiStockList")
+	fmt.Println(negativeTwiStockList)
+
+	for i, v := range negativeTwiStockList {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
+
+	// //No duplicates in lists
+	// for indexTsp, tsp := range topStockPullStockList {
+	// 	isDuplicate = false
+	// 	for indexTwi, twi := range negativeTwiStockList {
+	// 		if twi.Symbol == tsp.Symbol {
+	// 			isDuplicate = true
+	// 			break
+	// 		}
+	// 		indexTwi++
+	// 	}
+	// 	if isDuplicate == false {
+	// 		negativeTwiStockList = append(negativeTwiStockList, tsp)
+	// 	}
+	// 	indexTsp++
+	// }
+	//
+	// for indexTsp, tsp := range topStockPullStockList {
+	// 	isDuplicate = false
+	// 	for indexTwi, twi := range twiStockList {
+	// 		if twi.Symbol == tsp.Symbol {
+	// 			isDuplicate = true
+	// 			break
+	// 		}
+	// 		indexTwi++
+	// 	}
+	// 	if isDuplicate == false {
+	// 		twiTSPList = append(twiTSPList, tsp)
+	// 	}
+	// 	indexTsp++
+	// }
 
 	// fmt.Println("topStockPullStockList")
 	// for i, v := range topStockPullStockList {
@@ -611,71 +691,71 @@ func lowTransferanceProcess() {
 	// }
 	// fmt.Println("topStockPullStockList end")
 	//Query temp
-	tempSymbolHold := selectTempSymbolHoldLow()
+	// tempSymbolHold := selectTempSymbolHoldLow()
 	//Find duplicants in temp and appendedList
 
-	for indexTwiTSP, twiTSP := range twiTSPList {
-		isDuplicateTemp = false
-		for indexTemp, temp := range tempSymbolHold {
-			if twiTSP.Symbol == temp {
-				isDuplicateTemp = true
-				break
-			}
-			indexTemp++
-		}
-		if isDuplicateTemp == false {
-			listTempDuplicantFiltered = append(listTempDuplicantFiltered, twiTSP)
-		}
-		indexTwiTSP++
-	}
+	// for indexTwiTSP, twiTSP := range negativeTwiStockList {
+	// 	isDuplicateTemp = false
+	// 	for indexTemp, temp := range tempSymbolHold {
+	// 		if twiTSP.Symbol == temp {
+	// 			isDuplicateTemp = true
+	// 			break
+	// 		}
+	// 		indexTemp++
+	// 	}
+	// 	if isDuplicateTemp == false {
+	// 		listTempDuplicantFiltered = append(listTempDuplicantFiltered, twiTSP)
+	// 	}
+	// 	indexTwiTSP++
+	// }
 
-	i := 0
-	topStockList := []Stock{}
-	for i < 3 {
-		// 	// remove highest index 3 times, to get top stocks.
-		// 	//Pop top stock each iteration
-		highestStockIndex := 0
-		for indexTempDuplicantFiltered, tempDuplicantFiltered := range listTempDuplicantFiltered {
-			if indexTempDuplicantFiltered == 0 {
-				highestStockIndex = indexTempDuplicantFiltered
-				continue
-			}
+	// i := 0
+	// topStockList := []Stock{}
+	// for i < 3 {
+	// 	// 	// remove highest index 3 times, to get top stocks.
+	// 	// 	//Pop top stock each iteration
+	// 	highestStockIndex := 0
+	// 	for indexTempDuplicantFiltered, tempDuplicantFiltered := range listTempDuplicantFiltered {
+	// 		if indexTempDuplicantFiltered == 0 {
+	// 			highestStockIndex = indexTempDuplicantFiltered
+	// 			continue
+	// 		}
 
-			floatHighest := 0.0
-			floatCurrent := 0.0
-			if s, err := strconv.ParseFloat(listTempDuplicantFiltered[highestStockIndex].Pchg, 64); err == nil {
-				floatHighest = s
-			}
-			if s1, err := strconv.ParseFloat(tempDuplicantFiltered.Pchg, 64); err == nil {
-				floatCurrent = s1
-			}
+	// 		floatHighest := 0.0
+	// 		floatCurrent := 0.0
+	// 		if s, err := strconv.ParseFloat(listTempDuplicantFiltered[highestStockIndex].Pchg, 64); err == nil {
+	// 			floatHighest = s
+	// 		}
+	// 		if s1, err := strconv.ParseFloat(tempDuplicantFiltered.Pchg, 64); err == nil {
+	// 			floatCurrent = s1
+	// 		}
 
-			if floatCurrent > floatHighest {
-				// fmt.Println("previousHighest")
-				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
-				highestStockIndex = indexTempDuplicantFiltered
-				// fmt.Println("index")
-				// fmt.Println(i)
-				// fmt.Println("listTempDuplicantFiltered[highestStockIndex].Pchg")
-				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
-				// fmt.Println(tempDuplicantFiltered.Pchg)
-			}
-		}
-		topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
-		if i < 2 {
-			listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
-		}
-		i++
-	}
-	fmt.Println("topStockList")
-	fmt.Println(topStockList)
-	for i, v := range topStockList {
-		insertTempSymbolHoldLow(v.Symbol, false)
-		i++
-	}
-	// insert temp
-	//fill hold
-	handleWhaleFillHoldLow()
+	// 		if floatCurrent > floatHighest {
+	// 			// fmt.Println("previousHighest")
+	// 			// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+	// 			highestStockIndex = indexTempDuplicantFiltered
+	// 			// fmt.Println("index")
+	// 			// fmt.Println(i)
+	// 			// fmt.Println("listTempDuplicantFiltered[highestStockIndex].Pchg")
+	// 			// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
+	// 			// fmt.Println(tempDuplicantFiltered.Pchg)
+	// 		}
+	// 	}
+	// 	topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
+	// 	if i < 2 {
+	// 		listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
+	// 	}
+	// 	i++
+	// }
+	// fmt.Println("topStockList")
+	// fmt.Println(topStockList)
+	// for i, v := range topStockList {
+	// 	insertTempSymbolHoldLow(v.Symbol, false)
+	// 	i++
+	// }
+	// // insert temp
+	// //fill hold
+	// handleWhaleFillHoldLow()
 }
 
 func getIntervalTradeMonitorDelimiter() int {
@@ -1086,10 +1166,10 @@ func handleEndOfDayAnalyticsOperations() {
 	insertEndOfDayAnalyticsOperations(isMarketClosed, day.String())
 }
 
-func resetTempSymbolHold() {
-	dropTempSymbolHold()
-	createTempSymbolHold()
-}
+// func resetTempSymbolHold() {
+// 	dropTempSymbolHold()
+// 	createTempSymbolHold()
+// }
 func resetStockWisemenSymbolHold() {
 	dropWisemenSymbolHold()
 	createWisemenSymbolHold()

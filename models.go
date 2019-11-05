@@ -257,3 +257,10 @@ type AlgorithmEvaluationForDay struct {
 	BalanceBefore string
 	BalanceAfter  string
 }
+
+type HistoryValue struct {
+	Symbol string
+	Side   string
+	Qty    string
+	Price  string
+}

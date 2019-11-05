@@ -1423,3 +1423,14 @@ func postHealthCheckNode(neoResponse string) string {
 	response := post(url, json)
 	return response
 }
+
+func queryHistory() string {
+	json := `{
+		"request_type": "historyBrokerage",
+		"data": {
+			 }}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}

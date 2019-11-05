@@ -89,17 +89,17 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	}
 
 	//Select all monitor symbol
-	if requestType == "0" {
-		monitorSymbolList := selectTempSymbolHold()
-		monitorSymbolResponse := DatabaseMonitorSymbolListResponse{monitorSymbolList}
-		js, err := json.Marshal(monitorSymbolResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// if requestType == "0" {
+	// 	monitorSymbolList := selectTempSymbolHold()
+	// 	monitorSymbolResponse := DatabaseMonitorSymbolListResponse{monitorSymbolList}
+	// 	js, err := json.Marshal(monitorSymbolResponse)
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 	//Select all dow within range
 	if requestType == "1" {
 		dowList := selectDow()
@@ -142,19 +142,19 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	}
 
 	//Whale operations
-	if requestType == "selectAllStockWhale" {
-		stockList := selectAllStockWhale()
-		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
+	// if requestType == "selectAllStockWhale" {
+	// 	stockList := selectAllStockWhale()
+	// 	// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
 
-		stockListResponse := DatabaseStockListResponse{stockList}
-		js, err := json.Marshal(stockListResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// 	stockListResponse := DatabaseStockListResponse{stockList}
+	// 	js, err := json.Marshal(stockListResponse)
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 
 	//Metrics whale
 	if requestType == "insertMetricsWhale" {
@@ -349,7 +349,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("dataList")
 		fmt.Println(dataList)
 		//process trade.
-		// handleTradeWisemen(dataList[0], dataList[1])
+		handleTradeWisemen(dataList[0], dataList[1])
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -402,6 +402,10 @@ func removeElement(listEntered []Stock, symbol string) []Stock {
 func main() {
 	go handleRequests()
 
+	isSellShowingInHistory("CRC")
+	//if latest entry
+	// parseLatestHistory()
+
 	//sell procedure.
 
 	// healthCheck()
@@ -409,13 +413,15 @@ func main() {
 	// queryTSP()
 	// handleTSPRefresh()
 	// processOverarchTopStock()
-	listStocks := twiWebscrape()
-	// fmt.Println(listStocks)
-	for i, v := range listStocks {
-		fmt.Println(v.Symbol)
-		fmt.Println(v.Pchg)
-		i++
-	}
+
+	// listStocks := twiWebscrape()
+	// // fmt.Println(listStocks)
+	// for i, v := range listStocks {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+
 	// dropWisemenSymbolHold()
 	// createWisemenSymbolHold()
 

@@ -194,6 +194,7 @@ func parseStockSetQuery(queryString string) []Stock {
 	}
 	return stockList
 }
+
 func createStockTimeStamp() string {
 	// currentTime := time.Now()
 	year, month, day := time.Now().Date()
@@ -406,7 +407,7 @@ func parseTopStockQuery(queryString string) []Stock {
 
 	fmt.Println(parseList[0])
 	for i, v := range parseList {
-		isCurrentPriceHigherThanPreviousClose := false
+		// isCurrentPriceHigherThanPreviousClose := false
 		//Create stock and append to composite
 		// fmt.Println(i, v)
 		i++
@@ -436,7 +437,6 @@ func parseTopStockQuery(queryString string) []Stock {
 		// return stockList
 		// splitDataListQuery4 := strings.Split(splitDataListQuerySpaceIndexRemoved, "<quote>")
 	}
-
 	return stockList
 }
 
@@ -702,6 +702,19 @@ func parseBalance(queryString string) string {
 	// balance := strings.Split(splitDataQuery2, "</quotes>")[0]
 	// balance := ""
 	return balance
+}
+
+func parseHistory(queryString string) []string {
+	splitDataQuery1 := strings.Split(queryString, "</transaction>")
+	historyList := []string{}
+	for i, v := range splitDataQuery1 {
+		if len(v) < 15 {
+			continue
+		}
+		historyList = append(historyList, v)
+		i++
+	}
+	return historyList
 }
 
 func parseOrders(query string) ContainerOrders {

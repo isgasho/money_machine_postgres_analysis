@@ -62,6 +62,166 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	queryTradeBuyLimit(symbol, stringPrice, "1")
 }
 
+func isSellShowingInHistory(symbol string) {
+	//Future support for complex timing on trades, same symbols.
+	//
+
+	//Presume the latest order is the symbol...
+	//Think of any cases where this is not true.
+	//
+	//Query order information
+	//
+	// orderList := getAllOrders()
+	// ordersBySymbolList := []Order{}
+	// fmt.Println(orderList)
+	// for i, v := range orderList.ListOrders {
+	// 	if v.Symbol == symbol {
+	// 		ordersBySymbolList = append(ordersBySymbolList, v)
+	// 	}
+	// 	i++
+	// }
+
+	// if len(ordersBySymbolList) != 0 {
+	// latestOrder := ordersBySymbolList[(len(ordersBySymbolList) - 1)]
+	// fmt.Println(latestOrder)
+	//Get handle on history.
+	response := queryHistory()
+	// latestHistory, history1 := parseLatestHistory(response)
+
+	//UpgradeHistory to only have list.
+	historyList := parseHistory(response)
+	// handleListAppendedValues
+	listHistoryValues := createListHistoryValuesForWisemen(historyList)
+	//We want a list of appended values for
+	fmt.Println(listHistoryValues)
+
+	for i, v := range listHistoryValues {
+		fmt.Println(i)
+		fmt.Println(v)
+	}
+	// fmt.Println(latestEntry)
+	//Parse for symbol in latestEntry
+	//
+
+	// splitDataQuery := strings.Split(latestHistory, "</sym>")[0]
+	// symFromHistory := strings.Split(splitDataQuery, "<sym>")[1]
+
+	// //parse side
+	// sideQuery := strings.Split(latestHistory, "</side>")[0]
+	// sideFromHistory := strings.Split(sideQuery, "<side>")[1]
+
+	// //parse qty
+	// quantityQuery := strings.Split(latestHistory, "</quantity>")[0]
+	// quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
+
+	// //history1
+	// splitDataQuery1 := strings.Split(history1, "</sym>")[0]
+	// symFromHistory1 := strings.Split(splitDataQuery1, "<sym>")[1]
+
+	// //parse side
+	// sideQuery1 := strings.Split(history1, "</side>")[0]
+	// sideFromHistory1 := strings.Split(sideQuery1, "<side>")[1]
+
+	// //parse qty
+	// quantityQuery1 := strings.Split(history1, "</quantity>")[0]
+	// quantityFromHistory1 := strings.Split(quantityQuery1, "<quantity>")[1]
+
+	//Match symbol
+	// if symFromHistory == symbol {
+	// 	if sideFromHistory == "2" {
+	// 		//Handle side
+	// 		//if side then sell was done for symbol.
+	// 		//Read results
+	// 		//Read either balance or history
+	// 		//Need trade result
+	// 		//Analyze
+
+	// 		//pull trade order information and if change entered.
+	// 		//Support if trade entered.
+
+	// 		//previous history will have buy history before it.
+	// 		//get history 7.9
+	// 		//Only problem is if the entier
+
+	// 		// if
+	// 		//System to read previous consecutive historys if quantity does not match
+	// 		if symFromHistory1 == symFromHistory {
+	// 			//if not go back further. if further limit reached then stop.
+	// 		}
+	// 		//Indicating partial not completed. Except the changeorders.
+	// 		//How to determine change orders.
+	// 		// systemReadPreviousHistory()
+	// 		//Query trade store, was a changeorder entered.
+	// 	}
+	// }
+	//Need difference between sell order placed and holding...
+}
+
+func createListHistoryValuesForWisemen(listHistory []string) []HistoryValue {
+	listHistoryValues := []HistoryValue{}
+	isDelimiterNeeded := false
+	delimiter := 0
+	lenListHistory := len(listHistory)
+	listHistoryFiltered := listHistory[:len(listHistory)-1]
+
+	if lenListHistory > 5 {
+		delimiter = lenListHistory - 5
+		isDelimiterNeeded = true
+	}
+	// splitDataQuery2 = splitDataQuery2[:len(splitDataQuery2)-1]
+	for i, v := range listHistoryFiltered {
+		if isDelimiterNeeded {
+			if i >= delimiter {
+				fmt.Println(v)
+				fmt.Println(i)
+				//sym
+				symQuery := strings.Split(v, "</sym>")[0]
+				symFromHistory := strings.Split(symQuery, "<sym>")[1]
+
+				//side
+				sideQuery := strings.Split(v, "</side>")[0]
+				sideFromHistory := strings.Split(sideQuery, "<side>")[1]
+
+				//parse qty
+				quantityQuery := strings.Split(v, "</quantity>")[0]
+				quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
+
+				//parse price
+				priceQuery := strings.Split(v, "</price>")[0]
+				priceFromHistory := strings.Split(priceQuery, "<price>")[1]
+
+				//HistoryValue
+				historyValue := HistoryValue{Symbol: symFromHistory, Side: sideFromHistory, Qty: quantityFromHistory, Price: priceFromHistory}
+				listHistoryValues = append(listHistoryValues, historyValue)
+			}
+			continue
+		}
+
+		//sym
+
+		//go back only 5 orders.
+
+		// if
+		// if
+
+		//splitDataQuery2 = splitDataQuery2[:len(splitDataQuery2)-1]
+
+		//given len(splitDataQuery2)-1
+		//go back 5 orders
+
+		// fmt.Println(len(symFromHistory))
+		// if i == 1 {
+		// 	break
+		// }
+
+		// i++
+	}
+	return listHistoryValues
+}
+
+func systemReadPreviousHistory() {
+
+}
 func handleSellWisemen(symbol string) {
 	//Overarch handle sell system metrics read data flow and set.
 	//Read order bought information.
@@ -235,7 +395,6 @@ func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) flo
 }
 
 func getAllOrders() ContainerOrders {
-	//[["symbol",orderID]]
 	queryResponse := queryOrders()
 	containerOrders := parseOrders(queryResponse)
 	return containerOrders
