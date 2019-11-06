@@ -166,7 +166,8 @@ type MetricsWisemen struct {
 	CreatedAt                          string
 	DesiredPriceRangeHigh              string
 	DesiredPriceRangeLow               string
-	DesiredPchg                        string
+	PriceHighPchg                      string
+	PriceLowPchg                       string
 	DesiredPchgVarianceValue           string
 	DesiredVolatilityVarianceValue     string
 	TradeBuyMonitorDelaySeconds        string
@@ -259,8 +260,10 @@ type AlgorithmEvaluationForDay struct {
 }
 
 type HistoryValue struct {
-	Symbol string
-	Side   string
-	Qty    string
-	Price  string
+	Symbol            string
+	Side              string
+	Qty               string
+	Price             string
+	IntervalInList    string
+	IsCalculationTrue string
 }

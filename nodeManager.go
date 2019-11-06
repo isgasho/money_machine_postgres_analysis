@@ -1365,6 +1365,20 @@ func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
 	return response
 }
 
+func queryTradeSellMarket(holding HoldingWisemen) string {
+	json := `{
+		"request_type": "trade_sell_market",
+		"data": {
+		`
+	json = json + "\"symbol\":" + "\"" + holding.Symbol + "\","
+	json = json + "\"qty\":" + "\"" + holding.Qty + "\""
+	json = json + `}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryTradeChangeLimit(origID string, symbol string, limitPrice string, qty string) string {
 	json := `{
 		"request_type": "trade_change_limit",

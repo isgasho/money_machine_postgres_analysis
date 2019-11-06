@@ -899,7 +899,7 @@ func createMetricsWhale() {
 }
 
 //Wisemen metrics
-func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, desired_pchg, desired_pchg_variance_value string, desired_volatility_variance_value string, trade_buy_monitor_delay_seconds string, trade_buy_monitor_delay_query_seconds string, trade_buy_monitor_delay_iteration_count string) {
+func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, price_high_pchg string, price_low_pchg string, desired_pchg_variance_value string, desired_volatility_variance_value string, trade_buy_monitor_delay_seconds string, trade_buy_monitor_delay_query_seconds string, trade_buy_monitor_delay_iteration_count string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -909,14 +909,28 @@ func insertMetricsWisemen(desired_price_range_high string, desired_price_range_l
 	}
 	defer db.Close()
 
+	// 	CREATE TABLE metrics_wisemen
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    desired_price_range_high VARCHAR,
+	//    desired_price_range_low VARCHAR,
+	//    price_high_pchg VARCHAR,
+	//    price_low_pchg VARCHAR,
+	//    desired_pchg_variance_value VARCHAR,
+	//    desired_volatility_variance_value VARCHAR,
+	//    trade_buy_monitor_delay_seconds VARCHAR,
+	//    trade_buy_monitor_delay_query_seconds VARCHAR,
+	//    trade_buy_monitor_delay_iteration_count VARCHAR
+	// );
 	sqlStatement := `
-		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 			RETURNING created_at
 		`
 	var metricsWisemen MetricsWisemen
 
-	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
+	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
 	err1 := row.Scan(&metricsWisemen.CreatedAt)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -934,7 +948,22 @@ func selectMetricsWisemen() []MetricsWisemen {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, desired_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count FROM metrics_wisemen")
+	// 	CREATE TABLE metrics_wisemen
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    desired_price_range_high VARCHAR,
+	//    desired_price_range_low VARCHAR,
+	//    price_high_pchg VARCHAR,
+	//    price_low_pchg VARCHAR,
+	//    desired_pchg_variance_value VARCHAR,
+	//    desired_volatility_variance_value VARCHAR,
+	//    trade_buy_monitor_delay_seconds VARCHAR,
+	//    trade_buy_monitor_delay_query_seconds VARCHAR,
+	//    trade_buy_monitor_delay_iteration_count VARCHAR
+	// );
+
+	rows, err1 := db.Query("SELECT created_at, desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count FROM metrics_wisemen")
 	if err1 != nil {
 		// log.Fatal(err)
 		fmt.Println(err1)
@@ -942,9 +971,11 @@ func selectMetricsWisemen() []MetricsWisemen {
 	defer rows.Close()
 	metricsList := make([]MetricsWisemen, 0)
 
+	// DesiredPriceRangeHigh
+	// DesiredPriceRangeLow
 	for rows.Next() {
 		var metricsWisemen MetricsWisemen
-		if err2 := rows.Scan(&metricsWisemen.CreatedAt, &metricsWisemen.DesiredPriceRangeHigh, &metricsWisemen.DesiredPriceRangeLow, &metricsWisemen.DesiredPchg, &metricsWisemen.DesiredPchgVarianceValue, &metricsWisemen.DesiredVolatilityVarianceValue, &metricsWisemen.TradeBuyMonitorDelaySeconds, &metricsWisemen.TradeBuyMonitorDelayQuerySeconds, &metricsWisemen.TradeBuyMonitorDelayIterationCount); err2 != nil {
+		if err2 := rows.Scan(&metricsWisemen.CreatedAt, &metricsWisemen.DesiredPriceRangeHigh, &metricsWisemen.DesiredPriceRangeLow, &metricsWisemen.PriceHighPchg, &metricsWisemen.PriceLowPchg, &metricsWisemen.DesiredPchgVarianceValue, &metricsWisemen.DesiredVolatilityVarianceValue, &metricsWisemen.TradeBuyMonitorDelaySeconds, &metricsWisemen.TradeBuyMonitorDelayQuerySeconds, &metricsWisemen.TradeBuyMonitorDelayIterationCount); err2 != nil {
 			fmt.Println("err2")
 		}
 		metricsList = append(metricsList, metricsWisemen)
@@ -989,15 +1020,15 @@ func createMetricsWisemen() {
 	( 
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   desired_price_range_high VARCHAR,
-	   desired_price_range_low VARCHAR,
-	   desired_pchg VARCHAR,
+	   price_high_pchg VARCHAR,
+	   price_low_pchg VARCHAR,
 	   desired_pchg_variance_value VARCHAR,
 	   desired_volatility_variance_value VARCHAR,
 	   trade_buy_monitor_delay_seconds VARCHAR,
 	   trade_buy_monitor_delay_query_seconds VARCHAR,
 	   trade_buy_monitor_delay_iteration_count VARCHAR
-	);`)
+	);
+	`)
 
 	if err1 != nil {
 		fmt.Println("Delete Error 2")

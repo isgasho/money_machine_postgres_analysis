@@ -210,7 +210,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	if requestType == "insertMetricsWisemen" {
 		// data := databaseQuery.Data
 		dataList := databaseQuery.Data
-		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6], dataList[7])
+		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6], dataList[7], dataList[8])
 
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -349,7 +349,10 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("dataList")
 		fmt.Println(dataList)
 		//process trade.
-		handleTradeWisemen(dataList[0], dataList[1])
+		//
+		processMonitorSell(dataList[0], dataList[1], dataList[2])
+		// processMonitorSell("20.20", "1430")
+		// handleTradeWisemen(dataList[0], dataList[1])
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -383,26 +386,29 @@ func handleRequests() {
 	http.HandleFunc("/databaseQuery", databaseQuery)
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
-func removeElement(listEntered []Stock, symbol string) []Stock {
-	var i int
-	listAltered := listEntered
-	for {
-		if i == len(listAltered) {
-			break
-		}
-		if listAltered[i].Symbol == symbol {
-			listAltered = listAltered[:i+copy(listAltered[i:], listAltered[i+1:])]
-			i = 0
-		}
-		i++
-	}
-	return listAltered
-}
 
 func main() {
 	go handleRequests()
 
-	isSellShowingInHistory("CRC")
+	// isSellShowingInHistory("CRC")
+	// fmt.Println(isSymbolPresentInHolding("VICI"))
+	// queryMultiStockPull()
+
+	// monitorSell("VICI")
+	//dropoff price, time delimiter
+	// processMonitorSell("VICI", "20.20", "1430")
+
+	calculateIsTimeDelimiterMetSell("1330")
+
+	// dropPrice := calculateIsDropPriceMet("VICI")
+	// fmt.Println(dropPrice)
+
+	// queryHolding()
+	// container := getAllHolding()
+	// for i, v := range container.ListHolding {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
 	//if latest entry
 	// parseLatestHistory()
 

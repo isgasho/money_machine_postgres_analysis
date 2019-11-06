@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 )
@@ -13,35 +14,29 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
 		desiredLimitPrice = s
 	}
-
 	fmt.Println("desiredLimitPrice")
 	fmt.Println(desiredLimitPrice)
 	//get balance
 	response := queryBalance()
 	balance := parseBalance(response)
-
 	floatBalance := 0.0
 	if s, err := strconv.ParseFloat(balance, 64); err == nil {
 		floatBalance = s
 	}
-
 	fmt.Println("floatBalance")
 	fmt.Println(floatBalance)
-	//
+
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
 	fmt.Println("before rounding down")
 	fmt.Println(qty)
-
 	qtyInt := roundDown(qty)
 	fmt.Println("After rounding down")
 	fmt.Println(qtyInt)
-
 	// stringBalance := fmt.Sprintf("%f", floatBalance)
 	stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
-
 	//store trade entered information
 	tradeEnteredInformation := TradeEnteredInformation{
 		Symbol:      symbol,
@@ -51,7 +46,6 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 		QtyBought:   "0",
 	}
 	insertTradeEnteredInformation(tradeEnteredInformation)
-
 	//Submit buy limit to brokerage
 	fmt.Println("symbol")
 	fmt.Println(symbol)
@@ -62,118 +56,340 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	queryTradeBuyLimit(symbol, stringPrice, "1")
 }
 
+func monitorSell(params ...interface{}) {
+	listVal := reflect.ValueOf(params[0])
+	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
+	listStrings := listSymbolsInterface.([]string)
+	symbol := listStrings[0]
+	// priceDropPercentage := listStrings[1]
+	timeDelimiter := listStrings[2]
+
+	// Hook
+	// fmt.Println(priceDrop)
+	// fmt.Println(timeDelimiter)
+	// isDropPriceMet := false
+	// isTimeDelimiterMet := false
+	// // queryMultiStockPull()
+	// //
+	isDropPriceMet := calculateIsDropPriceMet(symbol)
+	// //
+	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
+
+	// fmt.Println(isDropPriceMet)
+	// fmt.Println(isTimeDelimiterMet)
+	// //require feed, query.
+
+	// //check on time
+
+	// //
+	// // handleTimeDelimiterMetSell
+	if isTimeDelimiterMet {
+		//if drop price met sell at market immediately
+		holding := HoldingWisemen{}
+		holdingList := getAllHolding()
+		for i, v := range holdingList.ListHolding {
+			if v.Symbol == symbol {
+				// isBoolReturning = "true"
+				holding = v
+			}
+			fmt.Println(v)
+			i++
+		}
+		postSellAtMarket(holding)
+	}
+
+	if isDropPriceMet {
+		//if drop price met sell at market immediately
+		holding := HoldingWisemen{}
+		holdingList := getAllHolding()
+		for i, v := range holdingList.ListHolding {
+			if v.Symbol == symbol {
+				// isBoolReturning = "true"
+				holding = v
+			}
+			fmt.Println(v)
+			i++
+		}
+		postSellAtMarket(holding)
+	}
+
+}
+
+func calculateIsDropPriceMet(symbol string) bool {
+	// listSymbol := []string{symbol}
+	isBoolReturning := false
+
+	holding := HoldingWisemen{}
+	holdingList := getAllHolding()
+	for i, v := range holdingList.ListHolding {
+		if v.Symbol == symbol {
+			// isBoolReturning = "true"
+			holding = v
+		}
+		fmt.Println(v)
+		i++
+	}
+
+	priceFromQuery := "23.02"
+	metrics := selectMetricsWisemen()[0]
+	//Here we need a handle on drop metrics,...
+	//Partial bind...
+	metricPchgDrop := metrics.PriceLowPchg
+	// fmt.Println(metricPchgDrop)
+
+	floatPriceFromQuery := 0.0
+	floatMetricPchgDrop := 0.0
+	if s, err := strconv.ParseFloat(priceFromQuery, 64); err == nil {
+		floatPriceFromQuery = s
+	}
+	if s, err := strconv.ParseFloat(metricPchgDrop, 64); err == nil {
+		floatMetricPchgDrop = s
+	}
+
+	dropPrice := floatPriceFromQuery - (floatPriceFromQuery * floatMetricPchgDrop)
+	holdingPrice := 0.0
+
+	if s, err := strconv.ParseFloat(holding.Price, 64); err == nil {
+		holdingPrice = s
+	}
+	//compare drop price to holding price.
+
+	if holdingPrice <= dropPrice {
+		// sellAtMarket
+		isBoolReturning = true
+	}
+	return isBoolReturning
+}
+
+func calculateIsTimeDelimiterMetSell(timeDelimiter string) bool {
+	isTimeDelimiterMet := false
+	//get current hour
+	currentHour := getCurrentHour()
+	//get current hour
+	currentMinute := getCurrentMinute()
+
+	fmt.Println("currentHour")
+	fmt.Println(currentHour)
+
+	fmt.Println("currentMinute")
+	fmt.Println(currentMinute)
+
+	stringCurrentHour := strconv.Itoa(currentHour)
+	stringCurrentMinute := strconv.Itoa(currentMinute)
+
+	//append 0 if current minute is single digit
+	if len(stringCurrentMinute) == 1 {
+		stringCurrentMinute = "0" + stringCurrentMinute
+	}
+
+	timeCompositeCurrentString := stringCurrentHour + stringCurrentMinute
+	fmt.Println("timeDelimiter")
+	fmt.Println(timeDelimiter)
+	//compare time to delimiter
+
+	fmt.Println("timeCompositeCurrentString")
+	fmt.Println(timeCompositeCurrentString)
+	// fmt.Println(timeDelimiter)
+	if timeCompositeCurrentString == timeDelimiter {
+		isTimeDelimiterMet = true
+	}
+	return isTimeDelimiterMet
+}
+
+// func removeElement(listEntered []int, val int) []int {
+// 	var i int
+// 	listAltered := listEntered
+// 	for {
+// 		if i == len(listAltered) {
+// 			break
+// 		}
+
+// 		if listAltered[i] == val {
+// 			listAltered = listAltered[:i+copy(listAltered[i:], listAltered[i+1:])]
+// 			i = 0
+// 		}
+// 		i++
+// 	}
+// 	return listAltered
+// }
+
+func handleTimeDelimiterMetSell() {
+
+}
+
+func handleDropPriceMet() {
+
+}
+func isSymbolPresentInHolding(symbol string) string {
+	//Question, when is sold fully out.
+	//When is there no holding,
+	//Is there an order still open
+	//Who cares if it's still open.
+	//
+	//There is no other case.
+	//It's either gone or not.
+	//If it's not
+	//Given time delimiter, or pchg Dropoff
+	//Get holding QTY
+	//set limit to sell.
+	//
+	isBoolReturning := "false"
+	holdingList := getAllHolding()
+	for i, v := range holdingList.ListHolding {
+		if v.Symbol == symbol {
+			isBoolReturning = "true"
+		}
+		fmt.Println(v)
+		i++
+	}
+	return isBoolReturning
+}
+
 func isSellShowingInHistory(symbol string) {
-	//Future support for complex timing on trades, same symbols.
+	//Question, when is sold fully out.
+	//When is there no holding,
+	//Is there an order still open
+	//Who cares if it's still open.
+
+	//
+	//There is no other case.
+	//It's either gone or not.
+	//If it's not
+	//Given time delimiter, or pchg Dropoff
+	//Get holding QTY
+	//set limit to sell.
 	//
 
-	//Presume the latest order is the symbol...
-	//Think of any cases where this is not true.
-	//
-	//Query order information
-	//
-	// orderList := getAllOrders()
-	// ordersBySymbolList := []Order{}
-	// fmt.Println(orderList)
-	// for i, v := range orderList.ListOrders {
-	// 	if v.Symbol == symbol {
-	// 		ordersBySymbolList = append(ordersBySymbolList, v)
-	// 	}
+	// holdingList := getAllHolding()
+	// for i, v := range holdingList.ListHolding {
+	// 	if
+	// 	fmt.Println(v)
 	// 	i++
 	// }
 
-	// if len(ordersBySymbolList) != 0 {
-	// latestOrder := ordersBySymbolList[(len(ordersBySymbolList) - 1)]
-	// fmt.Println(latestOrder)
+	//Future support for complex timing on trades, same symbols.
+	//
 	//Get handle on history.
 	response := queryHistory()
-	// latestHistory, history1 := parseLatestHistory(response)
-
 	//UpgradeHistory to only have list.
 	historyList := parseHistory(response)
-	// handleListAppendedValues
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
-	//We want a list of appended values for
-	fmt.Println(listHistoryValues)
 
+	//Given historySell
+	historySell := HistoryValue{}
 	for i, v := range listHistoryValues {
-		fmt.Println(i)
-		fmt.Println(v)
+		alteredHistoryValue := HistoryValue{}
+		// fmt.Println(i)
+		// fmt.Println(v)
+		stringedInterval := strconv.Itoa(i)
+		alteredHistoryValue = calculateSellHistoryMatchesSymbol(v, symbol, stringedInterval)
+		if alteredHistoryValue.IsCalculationTrue == "true" {
+			historySell = v
+			break
+		}
 	}
-	// fmt.Println(latestEntry)
-	//Parse for symbol in latestEntry
+
+	//Given historyBuy
+	historyBuy := HistoryValue{}
+	for i, v := range listHistoryValues {
+		alteredHistoryValue := HistoryValue{}
+		// fmt.Println(i)
+		// fmt.Println(v)
+		stringedInterval := strconv.Itoa(i)
+
+		alteredHistoryValue = calculateBuyHistoryMatchesSymbol(v, symbol, stringedInterval)
+		if alteredHistoryValue.IsCalculationTrue == "true" {
+			historyBuy = v
+			break
+		}
+	}
+	fmt.Println("sell")
+	fmt.Println(historySell)
+	fmt.Println("buy")
+	fmt.Println(historyBuy)
+	//conditional if QTY fully sold...
+	//Handling partitioned buys will be difficult...
+	//Because the QTY will be less? or will it?
+	//There's no way of knowing, not even a way of setting that case in the wild.
+	//
+	//But can create a conditional watch, handle outcomes and holdings.
+	//
+	//create the net and the environment to catch that data...
+	//
+	//Here future support for conditional -> partial store and retrieval.
+
 	//
 
-	// splitDataQuery := strings.Split(latestHistory, "</sym>")[0]
-	// symFromHistory := strings.Split(splitDataQuery, "<sym>")[1]
+	//For right now just handle conditional with presumption that full orders commited both ways.
+	//
+	//But what are we even looking for. If we are simply looking for none in holding...
+	//If none in holding then bought...
+	//...We are looking to see if fully sold.
+	//A fully sold condition will show no in holding...
+	//
+	//If some still in Holding than we have a partial, or still open order and condition...
+	//
+	//That partial detection is needed for this calculation.
+	//
 
-	// //parse side
-	// sideQuery := strings.Split(latestHistory, "</side>")[0]
-	// sideFromHistory := strings.Split(sideQuery, "<side>")[1]
+	//
+	//Handle full detection...
 
-	// //parse qty
-	// quantityQuery := strings.Split(latestHistory, "</quantity>")[0]
-	// quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
+	//get holding...
 
-	// //history1
-	// splitDataQuery1 := strings.Split(history1, "</sym>")[0]
-	// symFromHistory1 := strings.Split(splitDataQuery1, "<sym>")[1]
+}
 
-	// //parse side
-	// sideQuery1 := strings.Split(history1, "</side>")[0]
-	// sideFromHistory1 := strings.Split(sideQuery1, "<side>")[1]
+func calculateBuyHistoryMatchesSymbol(historyValue HistoryValue, symbol string, intervalInList string) HistoryValue {
+	isBoolResult := "false"
 
-	// //parse qty
-	// quantityQuery1 := strings.Split(history1, "</quantity>")[0]
-	// quantityFromHistory1 := strings.Split(quantityQuery1, "<quantity>")[1]
+	alteredHistoryValue := historyValue
+	if historyValue.Symbol == symbol {
+		if historyValue.Side == "1" {
+			alteredHistoryValue.IntervalInList = intervalInList
+			isBoolResult = "true"
+		}
+	}
+	alteredHistoryValue.IsCalculationTrue = isBoolResult
+	return alteredHistoryValue
+}
 
-	//Match symbol
-	// if symFromHistory == symbol {
-	// 	if sideFromHistory == "2" {
-	// 		//Handle side
-	// 		//if side then sell was done for symbol.
-	// 		//Read results
-	// 		//Read either balance or history
-	// 		//Need trade result
-	// 		//Analyze
+func calculateSellHistoryMatchesSymbol(historyValue HistoryValue, symbol string, intervalInList string) HistoryValue {
+	isBoolResult := "false"
 
-	// 		//pull trade order information and if change entered.
-	// 		//Support if trade entered.
-
-	// 		//previous history will have buy history before it.
-	// 		//get history 7.9
-	// 		//Only problem is if the entier
-
-	// 		// if
-	// 		//System to read previous consecutive historys if quantity does not match
-	// 		if symFromHistory1 == symFromHistory {
-	// 			//if not go back further. if further limit reached then stop.
-	// 		}
-	// 		//Indicating partial not completed. Except the changeorders.
-	// 		//How to determine change orders.
-	// 		// systemReadPreviousHistory()
-	// 		//Query trade store, was a changeorder entered.
-	// 	}
-	// }
-	//Need difference between sell order placed and holding...
+	alteredHistoryValue := historyValue
+	if historyValue.Symbol == symbol {
+		if historyValue.Side == "2" {
+			alteredHistoryValue.IntervalInList = intervalInList
+			isBoolResult = "true"
+		}
+	}
+	alteredHistoryValue.IsCalculationTrue = isBoolResult
+	return alteredHistoryValue
 }
 
 func createListHistoryValuesForWisemen(listHistory []string) []HistoryValue {
 	listHistoryValues := []HistoryValue{}
 	isDelimiterNeeded := false
 	delimiter := 0
-	lenListHistory := len(listHistory)
 	listHistoryFiltered := listHistory[:len(listHistory)-1]
-
+	lenListHistory := len(listHistoryFiltered)
+	// lengthListLessThanFive := []string{}
+	delimiter = lenListHistory - 5
+	//test len less than 5
+	// for i, v := range listHistoryFiltered {
+	// 	if i >= delimiter {
+	// 		lengthListLessThanFive = append(lengthListLessThanFive, v)
+	// 	}
+	// }
 	if lenListHistory > 5 {
 		delimiter = lenListHistory - 5
 		isDelimiterNeeded = true
 	}
-	// splitDataQuery2 = splitDataQuery2[:len(splitDataQuery2)-1]
 	for i, v := range listHistoryFiltered {
+		fmt.Println(i)
+		fmt.Println(v)
 		if isDelimiterNeeded {
 			if i >= delimiter {
-				fmt.Println(v)
-				fmt.Println(i)
 				//sym
 				symQuery := strings.Split(v, "</sym>")[0]
 				symFromHistory := strings.Split(symQuery, "<sym>")[1]
@@ -196,25 +412,24 @@ func createListHistoryValuesForWisemen(listHistory []string) []HistoryValue {
 			}
 			continue
 		}
+		symQuery := strings.Split(v, "</sym>")[0]
+		symFromHistory := strings.Split(symQuery, "<sym>")[1]
 
-		//sym
+		//side
+		sideQuery := strings.Split(v, "</side>")[0]
+		sideFromHistory := strings.Split(sideQuery, "<side>")[1]
 
-		//go back only 5 orders.
+		//parse qty
+		quantityQuery := strings.Split(v, "</quantity>")[0]
+		quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
 
-		// if
-		// if
+		//parse price
+		priceQuery := strings.Split(v, "</price>")[0]
+		priceFromHistory := strings.Split(priceQuery, "<price>")[1]
 
-		//splitDataQuery2 = splitDataQuery2[:len(splitDataQuery2)-1]
-
-		//given len(splitDataQuery2)-1
-		//go back 5 orders
-
-		// fmt.Println(len(symFromHistory))
-		// if i == 1 {
-		// 	break
-		// }
-
-		// i++
+		//HistoryValue
+		historyValue := HistoryValue{Symbol: symFromHistory, Side: sideFromHistory, Qty: quantityFromHistory, Price: priceFromHistory}
+		listHistoryValues = append(listHistoryValues, historyValue)
 	}
 	return listHistoryValues
 }
@@ -222,149 +437,150 @@ func createListHistoryValuesForWisemen(listHistory []string) []HistoryValue {
 func systemReadPreviousHistory() {
 
 }
-func handleSellWisemen(symbol string) {
-	//Overarch handle sell system metrics read data flow and set.
-	//Read order bought information.
-	//Is order bought information entered yet?
-	//or call holding... for a dynamic flow... yes.
-	//Future support for advanced recording system.
 
-	//source symbol pull
-	//pull holding for symbol
-	// holding
-	// handleSellWisemen
-	containerHolding := getAllHolding()
-	holdingToSell := HoldingWisemen{Symbol: "default"}
-	for i, v := range containerHolding.ListHolding {
-		if symbol == v.Symbol {
-			holdingToSell = v
-		}
-		i++
-	}
+// func handleSellWisemen(symbol string) {
+// 	//Overarch handle sell system metrics read data flow and set.
+// 	//Read order bought information.
+// 	//Is order bought information entered yet?
+// 	//or call holding... for a dynamic flow... yes.
+// 	//Future support for advanced recording system.
 
-	//Handle order not found
-	if holdingToSell.Symbol == "default" {
-		fmt.Println("Holding not present")
-	}
+// 	//source symbol pull
+// 	//pull holding for symbol
+// 	// holding
+// 	// handleSellWisemen
+// 	containerHolding := getAllHolding()
+// 	holdingToSell := HoldingWisemen{Symbol: "default"}
+// 	for i, v := range containerHolding.ListHolding {
+// 		if symbol == v.Symbol {
+// 			holdingToSell = v
+// 		}
+// 		i++
+// 	}
 
-	if holdingToSell.Symbol != "default" {
-		//get price information
-		// stockList := getCurrentPriceStatsForStock([]string{holdingToSell.Symbol})
-		// for i, v := range stockList {
-		// 	// fmt.Println("stock")
+// 	//Handle order not found
+// 	if holdingToSell.Symbol == "default" {
+// 		fmt.Println("Holding not present")
+// 	}
 
-		// 	// fmt.Println("bid")
-		// 	// fmt.Println(v.Bid)
-		// 	// fmt.Println("ask")
-		// 	// fmt.Println(v.Ask)
-		// 	// fmt.Println("last")
-		// 	// fmt.Println(v.Last)
+// 	if holdingToSell.Symbol != "default" {
+// 		//get price information
+// 		// stockList := getCurrentPriceStatsForStock([]string{holdingToSell.Symbol})
+// 		// for i, v := range stockList {
+// 		// 	// fmt.Println("stock")
 
-		// 	i++
-		// }
+// 		// 	// fmt.Println("bid")
+// 		// 	// fmt.Println(v.Bid)
+// 		// 	// fmt.Println("ask")
+// 		// 	// fmt.Println(v.Ask)
+// 		// 	// fmt.Println("last")
+// 		// 	// fmt.Println(v.Last)
 
-		//Get metric delimiter
-		//
-		metricsWisemen := selectMetricsWisemen()[0]
-		holdingPrice := 0.0
-		metricsDesiredPchg := 0.0
-		//String to float
-		if s, err := strconv.ParseFloat(holdingToSell.Price, 64); err == nil {
-			holdingPrice = s
-		}
+// 		// 	i++
+// 		// }
 
-		//String to float
-		if s, err := strconv.ParseFloat(metricsWisemen.DesiredPchg, 64); err == nil {
-			metricsDesiredPchg = s
-		}
+// 		//Get metric delimiter
+// 		//
+// 		metricsWisemen := selectMetricsWisemen()[0]
+// 		holdingPrice := 0.0
+// 		metricsDesiredPchg := 0.0
+// 		//String to float
+// 		if s, err := strconv.ParseFloat(holdingToSell.Price, 64); err == nil {
+// 			holdingPrice = s
+// 		}
 
-		fmt.Println("holdingPrice")
-		fmt.Println(holdingPrice)
-		limitPrice := holdingPrice + (holdingPrice * metricsDesiredPchg)
-		fmt.Println(limitPrice)
-		fmt.Println(limitPrice)
+// 		//String to float
+// 		if s, err := strconv.ParseFloat(metricsWisemen.DesiredPchg, 64); err == nil {
+// 			metricsDesiredPchg = s
+// 		}
 
-		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
-		fmt.Println("stringLimitPrice")
-		fmt.Println(stringLimitPrice)
+// 		fmt.Println("holdingPrice")
+// 		fmt.Println(holdingPrice)
+// 		limitPrice := holdingPrice + (holdingPrice * metricsDesiredPchg)
+// 		fmt.Println(limitPrice)
+// 		fmt.Println(limitPrice)
 
-		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
-		fmt.Println("stringLimitPrice")
-		fmt.Println(stringLimitPrice)
-		// fmt.Println("holdingPrice")
-		// fmt.Println(holdingPrice)
-		// fmt.Println("metricsDesiredPchg")
-		// fmt.Println(metricsDesiredPchg)
-		queryTradeSellLimit(holdingToSell.Symbol, stringLimitPrice, holdingToSell.QtyBought)
-	}
+// 		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
+// 		fmt.Println("stringLimitPrice")
+// 		fmt.Println(stringLimitPrice)
 
-	//sell
+// 		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
+// 		fmt.Println("stringLimitPrice")
+// 		fmt.Println(stringLimitPrice)
+// 		// fmt.Println("holdingPrice")
+// 		// fmt.Println(holdingPrice)
+// 		// fmt.Println("metricsDesiredPchg")
+// 		// fmt.Println(metricsDesiredPchg)
+// 		queryTradeSellLimit(holdingToSell.Symbol, stringLimitPrice, holdingToSell.QtyBought)
+// 	}
 
-	//Pull holdings
+// 	//sell
 
-	//Read metrics and set system
+// 	//Pull holdings
 
-	//Data flow for one stock and analysis
+// 	//Read metrics and set system
 
-	//handleSellWisemen set
+// 	//Data flow for one stock and analysis
 
-	//
-	// queryTradeSellLimit(symbol, stringPrice, quantity)
+// 	//handleSellWisemen set
 
-	// fmt.Println("limitPrice")
-	// fmt.Println(limitPrice)
-	// desiredLimitPrice := 0.0
-	// if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
-	// 	desiredLimitPrice = s
-	// }
+// 	//
+// 	// queryTradeSellLimit(symbol, stringPrice, quantity)
 
-	// fmt.Println("desiredLimitPrice")
-	// fmt.Println(desiredLimitPrice)
-	// //get balance
-	// response := queryBalance()
-	// balance := parseBalance(response)
+// 	// fmt.Println("limitPrice")
+// 	// fmt.Println(limitPrice)
+// 	// desiredLimitPrice := 0.0
+// 	// if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
+// 	// 	desiredLimitPrice = s
+// 	// }
 
-	// floatBalance := 0.0
-	// if s, err := strconv.ParseFloat(balance, 64); err == nil {
-	// 	floatBalance = s
-	// }
+// 	// fmt.Println("desiredLimitPrice")
+// 	// fmt.Println(desiredLimitPrice)
+// 	// //get balance
+// 	// response := queryBalance()
+// 	// balance := parseBalance(response)
 
-	// fmt.Println("floatBalance")
-	// fmt.Println(floatBalance)
-	// //
-	// //calculate qty to buy
-	// qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
-	// fmt.Println("before rounding down")
-	// fmt.Println(qty)
+// 	// floatBalance := 0.0
+// 	// if s, err := strconv.ParseFloat(balance, 64); err == nil {
+// 	// 	floatBalance = s
+// 	// }
 
-	// qtyInt := roundDown(qty)
-	// fmt.Println("After rounding down")
-	// fmt.Println(qtyInt)
+// 	// fmt.Println("floatBalance")
+// 	// fmt.Println(floatBalance)
+// 	// //
+// 	// //calculate qty to buy
+// 	// qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
+// 	// fmt.Println("before rounding down")
+// 	// fmt.Println(qty)
 
-	// stringBalance := fmt.Sprintf("%f", floatBalance)
-	// stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
-	// // stringQty := fmt.Sprintf("%f", qtyInt)
-	// stringQty := strconv.Itoa(qtyInt)
+// 	// qtyInt := roundDown(qty)
+// 	// fmt.Println("After rounding down")
+// 	// fmt.Println(qtyInt)
 
-	//store trade entered information
-	// tradeEnteredInformation := TradeEnteredInformation{
-	// 	Symbol:      symbol,
-	// 	Price:       stringPrice,
-	// 	OrderStatus: "pending",
-	// 	Qty:         stringQty,
-	// 	QtyBought:   "0",
-	// }
-	// insertTradeEnteredInformation(tradeEnteredInformation)
+// 	// stringBalance := fmt.Sprintf("%f", floatBalance)
+// 	// stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
+// 	// // stringQty := fmt.Sprintf("%f", qtyInt)
+// 	// stringQty := strconv.Itoa(qtyInt)
 
-	//Submit buy limit to brokerage
-	// fmt.Println("symbol")
-	// fmt.Println(symbol)
-	// fmt.Println("stringQty")
-	// fmt.Println(stringQty)
-	// fmt.Println("stringPrice")
-	// fmt.Println(stringPrice)
+// 	//store trade entered information
+// 	// tradeEnteredInformation := TradeEnteredInformation{
+// 	// 	Symbol:      symbol,
+// 	// 	Price:       stringPrice,
+// 	// 	OrderStatus: "pending",
+// 	// 	Qty:         stringQty,
+// 	// 	QtyBought:   "0",
+// 	// }
+// 	// insertTradeEnteredInformation(tradeEnteredInformation)
 
-}
+// 	//Submit buy limit to brokerage
+// 	// fmt.Println("symbol")
+// 	// fmt.Println(symbol)
+// 	// fmt.Println("stringQty")
+// 	// fmt.Println(stringQty)
+// 	// fmt.Println("stringPrice")
+// 	// fmt.Println(stringPrice)
+
+// }
 
 // intiateSellSystemProtocol(){
 
@@ -550,4 +766,37 @@ func stringToFloat(value string) float64 {
 		returnFloat = s
 	}
 	return returnFloat
+}
+
+func removeElementString(listEntered []Stock, symbol string) []Stock {
+	var i int
+	listAltered := listEntered
+	for {
+		if i == len(listAltered) {
+			break
+		}
+		if listAltered[i].Symbol == symbol {
+			listAltered = listAltered[:i+copy(listAltered[i:], listAltered[i+1:])]
+			i = 0
+		}
+		i++
+	}
+	return listAltered
+}
+
+func removeElementInt(listEntered []int, val int) []int {
+	var i int
+	listAltered := listEntered
+	for {
+		if i == len(listAltered) {
+			break
+		}
+
+		if listAltered[i] == val {
+			listAltered = listAltered[:i+copy(listAltered[i:], listAltered[i+1:])]
+			i = 0
+		}
+		i++
+	}
+	return listAltered
 }

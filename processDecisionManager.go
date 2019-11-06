@@ -101,6 +101,15 @@ func processTimelineStart() {
 	go startCycle(operatingCycle)
 }
 
+func processMonitorSell(symbol string, priceRequested string, timeToSell string) {
+	//Metrics from sell
+	// create cycle for
+	cycleMapPool = map[string]*Cycle{}
+	createCycle(10, 10000000000000, monitorSell, "monitorSell", []string{symbol, priceRequested, timeToSell})
+	operatingCycle := cycleMapPool["monitorSell"]
+	go startCycle(operatingCycle)
+}
+
 func processWisemenQueryStockSet() {
 	if initialWisemenStockQueryPerformed == true {
 		fmt.Println("hit initialWisemenStockQueryPerformed == true")
@@ -592,7 +601,7 @@ func highTransferanceProcess() {
 		}
 		topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
 		if i < 2 {
-			listTempDuplicantFiltered = removeElement(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
+			listTempDuplicantFiltered = removeElementString(listTempDuplicantFiltered, listTempDuplicantFiltered[highestStockIndex].Symbol)
 		}
 		i++
 	}
