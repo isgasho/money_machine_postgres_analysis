@@ -64,22 +64,20 @@ func monitorSell(params ...interface{}) {
 	// priceDropPercentage := listStrings[1]
 	timeDelimiter := listStrings[2]
 
-	// Hook
-	// fmt.Println(priceDrop)
-	// fmt.Println(timeDelimiter)
-	// isDropPriceMet := false
-	// isTimeDelimiterMet := false
-	// // queryMultiStockPull()
-	// //
+	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
+	//Is holding is not present cancel cycle process
+	//and move to wrap up.
+	if isSymbolPresentInHolding == false {
+		//cancel cycle.
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
+		transactionHistory := TransactionHistory{Symbol: symbol}
+		wrapUpWisemenOutcome(transactionHistory)
+	}
+
 	isDropPriceMet := calculateIsDropPriceMet(symbol)
 	// //
 	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
-
-	// fmt.Println(isDropPriceMet)
-	// fmt.Println(isTimeDelimiterMet)
-	// //require feed, query.
-
-	// //check on time
 
 	// //
 	// // handleTimeDelimiterMetSell
@@ -95,7 +93,14 @@ func monitorSell(params ...interface{}) {
 			fmt.Println(v)
 			i++
 		}
-		postSellAtMarket(holding)
+		queryTradeSellMarket(holding)
+		//parse response, if success proceed to wrapup
+		//pause 60 seconds
+		//query holdings...
+		// operatingCycle := cycleMapPool["monitorSell"]
+		// cancelCycle(operatingCycle)
+		// transactionHistory := TransactionHistory{Symbol: symbol}
+		// wrapUpWisemenOutcome(transactionHistory)
 	}
 
 	if isDropPriceMet {
@@ -110,13 +115,20 @@ func monitorSell(params ...interface{}) {
 			fmt.Println(v)
 			i++
 		}
-		postSellAtMarket(holding)
+		queryTradeSellMarket(holding)
+		//parse response, if success proceed to wrapup
+		//pause 60 seconds
+		//query holdings...
+		// operatingCycle := cycleMapPool["monitorSell"]
+		// cancelCycle(operatingCycle)
+		// transactionHistory := TransactionHistory{Symbol: symbol}
+		// wrapUpWisemenOutcome(transactionHistory)
 	}
 
 }
 
 func calculateIsDropPriceMet(symbol string) bool {
-	// listSymbol := []string{symbol}
+	listSymbol := []string{symbol}
 	isBoolReturning := false
 
 	holding := HoldingWisemen{}
@@ -130,13 +142,15 @@ func calculateIsDropPriceMet(symbol string) bool {
 		i++
 	}
 
-	priceFromQuery := "23.02"
+	response := queryMultiStockPull(listSymbol)
+	stockList := parseStockSetQuery(response)
+	priceFromQuery := stockList[0].Last
+	//Support for bid vs ask variance from last.
+
 	metrics := selectMetricsWisemen()[0]
 	//Here we need a handle on drop metrics,...
 	//Partial bind...
 	metricPchgDrop := metrics.PriceLowPchg
-	// fmt.Println(metricPchgDrop)
-
 	floatPriceFromQuery := 0.0
 	floatMetricPchgDrop := 0.0
 	if s, err := strconv.ParseFloat(priceFromQuery, 64); err == nil {
@@ -146,15 +160,25 @@ func calculateIsDropPriceMet(symbol string) bool {
 		floatMetricPchgDrop = s
 	}
 
-	dropPrice := floatPriceFromQuery - (floatPriceFromQuery * floatMetricPchgDrop)
 	holdingPrice := 0.0
 
 	if s, err := strconv.ParseFloat(holding.Price, 64); err == nil {
 		holdingPrice = s
 	}
+	dropPrice := holdingPrice - (holdingPrice * floatMetricPchgDrop)
+
 	//compare drop price to holding price.
 
-	if holdingPrice <= dropPrice {
+	fmt.Println("dropPrice")
+	fmt.Println(dropPrice)
+
+	fmt.Println("dropPrice")
+	fmt.Println(dropPrice)
+
+	fmt.Println("floatPriceFromQuery")
+	fmt.Println(floatPriceFromQuery)
+
+	if floatPriceFromQuery <= dropPrice {
 		// sellAtMarket
 		isBoolReturning = true
 	}
@@ -220,24 +244,12 @@ func handleTimeDelimiterMetSell() {
 func handleDropPriceMet() {
 
 }
-func isSymbolPresentInHolding(symbol string) string {
-	//Question, when is sold fully out.
-	//When is there no holding,
-	//Is there an order still open
-	//Who cares if it's still open.
-	//
-	//There is no other case.
-	//It's either gone or not.
-	//If it's not
-	//Given time delimiter, or pchg Dropoff
-	//Get holding QTY
-	//set limit to sell.
-	//
-	isBoolReturning := "false"
+func calculateIsSymbolPresentInHolding(symbol string) bool {
+	isBoolReturning := false
 	holdingList := getAllHolding()
 	for i, v := range holdingList.ListHolding {
 		if v.Symbol == symbol {
-			isBoolReturning = "true"
+			isBoolReturning = true
 		}
 		fmt.Println(v)
 		i++
@@ -245,12 +257,13 @@ func isSymbolPresentInHolding(symbol string) string {
 	return isBoolReturning
 }
 
-func isSellShowingInHistory(symbol string) {
+func calculateTransactionHistory(transactionHistory TransactionHistory) TransactionHistory {
+
+	alteredTransactionHistory := transactionHistory
 	//Question, when is sold fully out.
 	//When is there no holding,
 	//Is there an order still open
 	//Who cares if it's still open.
-
 	//
 	//There is no other case.
 	//It's either gone or not.
@@ -282,7 +295,7 @@ func isSellShowingInHistory(symbol string) {
 		// fmt.Println(i)
 		// fmt.Println(v)
 		stringedInterval := strconv.Itoa(i)
-		alteredHistoryValue = calculateSellHistoryMatchesSymbol(v, symbol, stringedInterval)
+		alteredHistoryValue = calculateSellHistoryMatchesSymbol(v, alteredTransactionHistory.Symbol, stringedInterval)
 		if alteredHistoryValue.IsCalculationTrue == "true" {
 			historySell = v
 			break
@@ -297,16 +310,15 @@ func isSellShowingInHistory(symbol string) {
 		// fmt.Println(v)
 		stringedInterval := strconv.Itoa(i)
 
-		alteredHistoryValue = calculateBuyHistoryMatchesSymbol(v, symbol, stringedInterval)
+		alteredHistoryValue = calculateBuyHistoryMatchesSymbol(v, alteredTransactionHistory.Symbol, stringedInterval)
 		if alteredHistoryValue.IsCalculationTrue == "true" {
 			historyBuy = v
 			break
 		}
 	}
-	fmt.Println("sell")
-	fmt.Println(historySell)
-	fmt.Println("buy")
-	fmt.Println(historyBuy)
+	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, historyBuy)
+	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, historySell)
+	return alteredTransactionHistory
 	//conditional if QTY fully sold...
 	//Handling partitioned buys will be difficult...
 	//Because the QTY will be less? or will it?
@@ -336,7 +348,6 @@ func isSellShowingInHistory(symbol string) {
 	//Handle full detection...
 
 	//get holding...
-
 }
 
 func calculateBuyHistoryMatchesSymbol(historyValue HistoryValue, symbol string, intervalInList string) HistoryValue {

@@ -398,10 +398,14 @@ func main() {
 	//dropoff price, time delimiter
 	// processMonitorSell("VICI", "20.20", "1430")
 
-	calculateIsTimeDelimiterMetSell("1330")
+	// monitorSell
+	// calculateIsTimeDelimiterMetSell("1330")
 
-	// dropPrice := calculateIsDropPriceMet("VICI")
-	// fmt.Println(dropPrice)
+	// isDropPriceMet := calculateIsDropPriceMet("VICI")
+	// // dropPrice := calculateIsDropPriceMet("VICI")
+	// fmt.Println(isDropPriceMet)
+	// transactionHistory := TransactionHistory{Symbol: "VICI"}
+	// wrapUpWisemenOutcome(transactionHistory)
 
 	// queryHolding()
 	// container := getAllHolding()
@@ -419,6 +423,10 @@ func main() {
 	// queryTSP()
 	// handleTSPRefresh()
 	// processOverarchTopStock()
+
+	// processDowWebscrape()
+	// processWisemenQueryStockSet()
+	// processWhaleQueryStockSet()
 
 	// listStocks := twiWebscrape()
 	// // fmt.Println(listStocks)

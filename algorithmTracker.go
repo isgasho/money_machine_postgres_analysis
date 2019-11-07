@@ -33,7 +33,7 @@ func beginAlgorithmRecordingWisemen(symbol string) {
 	}
 	// fmt.Println("algorithmEvaluationForDay")
 	fmt.Println(algorithmEvaluationForDay)
-	insertAlgorithmEvaluationForDay(algorithmEvaluationForDay)
+	// insertAlgorithmEvaluationForDay(algorithmEvaluationForDay)
 }
 func completeAlgorithmRecordingWisemen() {
 	// minute := strconv.Itoa(getCurrentMinute())
@@ -42,6 +42,6 @@ func completeAlgorithmRecordingWisemen() {
 	// balance := queryBalance()
 	// parsedBalance := parseBalance(balance)
 
-	algorithmEvaluationForDay := selectAlgorithmEvaluationForDay("test")
-	fmt.Println(algorithmEvaluationForDay)
+	// algorithmEvaluationForDay := selectAlgorithmEvaluationForDay("test")
+	// fmt.Println(algorithmEvaluationForDay)
 }

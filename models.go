@@ -267,3 +267,22 @@ type HistoryValue struct {
 	IntervalInList    string
 	IsCalculationTrue string
 }
+
+type TransactionHistory struct {
+	Symbol           string
+	Outcome          string
+	HistoryValueList []HistoryValue
+}
+
+type TradeResultStore struct {
+	CreatedAt     string
+	AlgorithmUsed string
+	Result        string
+	ChangeAmount  string
+	StockSymbol   string
+	TimeStart     string
+	TimeEnd       string
+	DowStart      string
+	DowMid        string
+	DowEnd        string
+}

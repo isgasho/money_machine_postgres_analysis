@@ -2272,8 +2272,8 @@ func postNeoHealthCheck() string {
 }
 
 //
-//AlgorithmEvaluationForDay
-func insertAlgorithmEvaluationForDay(algorithmEvaluationForDay AlgorithmEvaluationForDay) {
+//TradeResultStore
+func insertTradeResultStore(tradeResultStore TradeResultStore) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -2281,37 +2281,48 @@ func insertAlgorithmEvaluationForDay(algorithmEvaluationForDay AlgorithmEvaluati
 	if err != nil {
 		fmt.Println("Create Error 1")
 	}
-	// 	CREATE TABLE algorithm_evaluation_for_day
+
+	// 	CREATE TABLE trade_result_store
 	// (
 	//    id SERIAL PRIMARY KEY,
 	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    name VARCHAR,
-	//   symbol VARCHAR,
+	//    algorithm_used VARCHAR,
+	//    result VARCHAR,
+	//    change_amount VARCHAR,
+	//    stock_symbol VARCHAR,
 	//    time_start VARCHAR,
 	//    time_end VARCHAR,
-	//    is_completed VARCHAR,
-	//    is_profitable VARCHAR,
-	//    balance_before VARCHAR,
-	//    balance_after VARCHAR
+	//    dow_start VARCHAR,
+	//    dow_mid VARCHAR,
+	//    dow_end VARCHAR
 	// );
-	// , $5, $6, $7, $8)
-	// , is_profitable, balance_before, balance_after)v
-	//is_profitable
+
+	// type TradeResultStore struct {
+	// 	AlgorithmUsed string
+	// 	Result        string
+	// 	ChangeAmount  string
+	// 	StockSymbol   string
+	// 	TimeStart    string
+	// 	TimeEnd      string
+	// 	DowStart      string
+	// 	DowMid        string
+	// 	DowEnd        string
+	//  }
 	defer db.Close()
 	sqlStatement := `
-		INSERT INTO algorithm_evaluation_for_day (name, symbol, time_start, time_end, is_completed, is_profitable, balance_before, balance_after)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+		INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, dow_start, dow_mid, dow_end)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
 		RETURNING id
 		`
 	var id int
-	row := db.QueryRow(sqlStatement, algorithmEvaluationForDay.Name, algorithmEvaluationForDay.Symbol, algorithmEvaluationForDay.TimeStart, algorithmEvaluationForDay.TimeEnd, algorithmEvaluationForDay.IsCompleted, algorithmEvaluationForDay.IsProfitable, algorithmEvaluationForDay.BalanceBefore, algorithmEvaluationForDay.BalanceAfter)
+	row := db.QueryRow(sqlStatement, tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.DowStart, tradeResultStore.DowMid, tradeResultStore.DowEnd)
 	err1 := row.Scan(&id)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
 }
 
-func selectAlgorithmEvaluationForDay(symbol string) []AlgorithmEvaluationForDay {
+func selectTradeResultStore(algorithmUsed string) []TradeResultStore {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -2320,26 +2331,37 @@ func selectAlgorithmEvaluationForDay(symbol string) []AlgorithmEvaluationForDay 
 		fmt.Println("Read Error 1")
 		panic(err)
 	}
+	// type TradeResultStore struct {
+	// 	CreatedAt     string
+	// 	AlgorithmUsed string
+	// 	Result        string
+	// 	ChangeAmount  string
+	// 	StockSymbol   string
+	// 	TimeStart     string
+	// 	TimeEnd       string
+	// 	DowStart      string
+	// 	DowMid        string
+	// 	DowEnd        string
+	// }
 	defer db.Close()
-	// rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_wisemen")
-	rows, err1 := db.Query("SELECT created_at, name, symbol, time_start, time_end, is_completed, is_profitable, balance_before, balance_after FROM algorithm_evaluation_for_day") // WHERE symbol=$1", symbol)
+	rows, err1 := db.Query("SELECT created_at, algorithm_used, result, change_amount, stock_symbol, time_start, time_end, dow_start, dow_mid, dow_end FROM trade_result_store") // WHERE symbol=$1", symbol)
 	if err1 != nil {
 		fmt.Println(err1)
 	}
 	defer rows.Close()
-	algorithmEvaluationForDayList := []AlgorithmEvaluationForDay{} //make([]AlgorithmEvaluationForDay, 0)
+	tradeResultStoreList := []TradeResultStore{} //make([]AlgorithmEvaluationForDay, 0)
 
 	for rows.Next() {
-		var algorithmEvaluationForDay AlgorithmEvaluationForDay
-		if err2 := rows.Scan(&algorithmEvaluationForDay.CreatedAt, &algorithmEvaluationForDay.Name, &algorithmEvaluationForDay.Symbol, &algorithmEvaluationForDay.TimeStart, &algorithmEvaluationForDay.TimeEnd, &algorithmEvaluationForDay.IsCompleted, &algorithmEvaluationForDay.IsProfitable, &algorithmEvaluationForDay.BalanceBefore, &algorithmEvaluationForDay.BalanceAfter); err2 != nil {
+		var tradeResultStore TradeResultStore
+		if err2 := rows.Scan(&tradeResultStore.CreatedAt, &tradeResultStore.AlgorithmUsed, &tradeResultStore.Result, &tradeResultStore.ChangeAmount, &tradeResultStore.StockSymbol, &tradeResultStore.TimeStart, &tradeResultStore.TimeEnd, &tradeResultStore.DowStart, &tradeResultStore.DowMid, &tradeResultStore.DowEnd); err2 != nil {
 			fmt.Println("err2")
 		}
-		algorithmEvaluationForDayList = append(algorithmEvaluationForDayList, algorithmEvaluationForDay)
+		tradeResultStoreList = append(tradeResultStoreList, tradeResultStore)
 	}
-	return algorithmEvaluationForDayList
+	return tradeResultStoreList
 }
 
-func deleteAlgorithmEvaluationForDay(symbolToDel string) {
+func deleteTradeResultStore(createdAt string) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -2350,7 +2372,7 @@ func deleteAlgorithmEvaluationForDay(symbolToDel string) {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("DELETE FROM algorithm_evaluation_for_day WHERE symbol=$1", symbolToDel)
+	res, err1 := db.Exec("DELETE FROM trade_result_store WHERE created_at=$1", createdAt)
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}
