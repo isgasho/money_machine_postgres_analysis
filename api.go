@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 var isTimeMonitoringLoop bool
@@ -308,7 +309,11 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println(dataList)
 
 		//process trade.
-		handleTradeWisemen(dataList[0], dataList[1])
+		// handleTradeWisemen(dataList[0], dataList[1])
+		time.Sleep(time.Duration(10) * time.Second)
+
+		//Begin process monitoring for buy fulfilled.
+		processCheckIsTradeBought(dataList[0])
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -362,6 +367,30 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 
+	if requestType == "postSellMarket" {
+		dataList := databaseQuery.Data
+		fmt.Println("postSellMarket")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		//process trade.
+		//
+
+		///get current holding qty
+		handleSellAtMarket(dataList[0])
+		// queryTradeSellMarket()
+		// process
+		// processMonitorSell(dataList[0], dataList[1], dataList[2])
+		// processMonitorSell("20.20", "1430")
+		// handleTradeWisemen(dataList[0], dataList[1])
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
 	//
 
 	// if requestType == "selectMetricsWisemen" {
@@ -387,9 +416,55 @@ func handleRequests() {
 	log.Fatal(http.ListenAndServe(":10000", nil))
 }
 
+func createRecordSystemMonthContainer() RecordSystemMonthContainer {
+	recordSystemMonthContainer := RecordSystemMonthContainer{}
+	//Static populate days in month
+	recordSystemMonth := RecordSystemMonth{IntMonthOfYear: 11, IntNumberOfDays: 30}
+	recordSystemMonth1 := RecordSystemMonth{IntMonthOfYear: 12, IntNumberOfDays: 31}
+	recordSystemMonth2 := RecordSystemMonth{IntMonthOfYear: 1, IntNumberOfDays: 31}
+	recordSystemMonth3 := RecordSystemMonth{IntMonthOfYear: 2, IntNumberOfDays: 29}
+	recordSystemMonth4 := RecordSystemMonth{IntMonthOfYear: 3, IntNumberOfDays: 31}
+	recordSystemMonth5 := RecordSystemMonth{IntMonthOfYear: 4, IntNumberOfDays: 30}
+	recordSystemMonth6 := RecordSystemMonth{IntMonthOfYear: 5, IntNumberOfDays: 31}
+	recordSystemMonth7 := RecordSystemMonth{IntMonthOfYear: 6, IntNumberOfDays: 30}
+	recordSystemMonth8 := RecordSystemMonth{IntMonthOfYear: 7, IntNumberOfDays: 31}
+	recordSystemMonth9 := RecordSystemMonth{IntMonthOfYear: 8, IntNumberOfDays: 31}
+	recordSystemMonth10 := RecordSystemMonth{IntMonthOfYear: 9, IntNumberOfDays: 30}
+	recordSystemMonth11 := RecordSystemMonth{IntMonthOfYear: 10, IntNumberOfDays: 31}
+
+	recordSystemMonthContainer.RecordSystemMonthList = append(recordSystemMonthContainer.RecordSystemMonthList, recordSystemMonth, recordSystemMonth1, recordSystemMonth2, recordSystemMonth3, recordSystemMonth4, recordSystemMonth5, recordSystemMonth6, recordSystemMonth7, recordSystemMonth8, recordSystemMonth9, recordSystemMonth10, recordSystemMonth11)
+	return recordSystemMonthContainer
+}
+
+func calculateIsResetDayRecord() {
+	recordSystemMonthContainer := createRecordSystemMonthContainer()
+	for i, v := range recordSystemMonthContainer.RecordSystemMonthList {
+		fmt.Println(v.IntMonthOfYear)
+		fmt.Println(v.IntNumberOfDays)
+		i++
+	}
+	month, day := getDate()
+	fmt.Println(month)
+	fmt.Println(day)
+
+	//depending on cuurent month get number of days
+
+	//get record month and day of trade record.
+	//determine 7 days from that value
+	//if current day is greater thab that value reset.
+}
 func main() {
 	go handleRequests()
 
+	// dataList := []string{"MTW"}
+	// handleCheckIsTradeBought()
+	// processCheckIsTradeBought(dataList[0])
+
+	// handleCheckIsTradeBought([]string{"MTW"})
+
+	// calculateIsResetDayRecord()
+	// monthString, dayInt := getDate()
+	// fmt.Println(monthString, dayInt)
 	// isSellShowingInHistory("CRC")
 	// fmt.Println(isSymbolPresentInHolding("VICI"))
 	// queryMultiStockPull()
@@ -422,7 +497,15 @@ func main() {
 	// query
 	// queryTSP()
 	// handleTSPRefresh()
+
+	// dropTempSymbolHoldHigh()
+	// createTempSymbolHoldHigh()
+	// dropWisemenSymbolHold()
+	// createWisemenSymbolHold()
+
 	// processOverarchTopStock()
+	// time.Sleep(time.Duration(40) * time.Second)
+	// processWisemenQueryStockSet()
 
 	// processDowWebscrape()
 	// processWisemenQueryStockSet()

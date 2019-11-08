@@ -721,6 +721,9 @@ func parseOrders(query string) ContainerOrders {
 	splitDataQuery := strings.Split(query, "</FIXML>]]>")
 	//remove last index which is a server message
 	splitDataQuery = splitDataQuery[:len(splitDataQuery)-1]
+
+	// fmt.Println("splitDataQuery")
+	// fmt.Println(splitDataQuery)
 	containerOrders := ContainerOrders{}
 	for i, v := range splitDataQuery {
 		symParsed := strings.Split(v, "Sym=")
@@ -730,12 +733,12 @@ func parseOrders(query string) ContainerOrders {
 		orderCreated := Order{Symbol: symParsed3}
 
 		//parse qty
-		qtyParsed := strings.Split(v, "Qty=")
+		qtyParsed := strings.Split(v, "OrdQty Qty=")
 		qtyParsed1 := strings.Split(qtyParsed[1], "\"/>")
 		qtyParsed2 := strings.Split(qtyParsed1[0], "\"")
 		qtyParsed3 := strings.Replace(qtyParsed2[1], "\\", "", -1)
 		orderCreated.Qty = qtyParsed3
-		// fmt.Println("Qty")
+		// fmt.Println("Qty in")
 		// fmt.Println(qtyParsed3)
 		// fmt.Println(qtyParsed)
 		//parse SVI ex) SVI-6084382688
@@ -784,7 +787,7 @@ func parseAllHolding(query string) ContainerHolding {
 	splitHolding := strings.Split(query, "</holding>")
 
 	splitHolding = splitHolding[:len(splitHolding)-1]
-	fmt.Println(len(splitHolding))
+	// fmt.Println(len(splitHolding))
 	// splitDataQuery2 := strings.Split(splitDataQuery1, "</accountholdings>")
 	// </holding>\r\n
 	// type HoldingWisemen struct {
@@ -795,9 +798,12 @@ func parseAllHolding(query string) ContainerHolding {
 	// 	QtyBought   string
 	// 	OrderStatus string
 	// }
+	fmt.Println("splitHolding out")
+	fmt.Println(splitHolding)
+
 	for i, v := range splitHolding {
-		fmt.Println()
-		fmt.Println(v)
+		// fmt.Println()
+		// fmt.Println(v)
 		symbolString1 := strings.Split(v, "<sym>")[1]
 		symbolString2 := strings.Split(symbolString1, "</sym>")
 		symbol := symbolString2[0]
@@ -810,7 +816,10 @@ func parseAllHolding(query string) ContainerHolding {
 		qtyString2 := strings.Split(qtyString1, "</qty>")
 		qty := qtyString2[0]
 
-		holding := HoldingWisemen{Symbol: symbol, Price: purchasePrice, QtyBought: qty}
+		fmt.Println("qty")
+		fmt.Println(qty)
+
+		holding := HoldingWisemen{Symbol: symbol, Price: purchasePrice, Qty: qty}
 		containerHolding.ListHolding = append(containerHolding.ListHolding, holding)
 		i++
 	}

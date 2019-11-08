@@ -286,3 +286,12 @@ type TradeResultStore struct {
 	DowMid        string
 	DowEnd        string
 }
+
+type RecordSystemMonthContainer struct {
+	RecordSystemMonthList []RecordSystemMonth
+}
+
+type RecordSystemMonth struct {
+	IntMonthOfYear  int
+	IntNumberOfDays int
+}

@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -111,18 +110,9 @@ func processMonitorSell(symbol string, priceRequested string, timeToSell string)
 }
 
 func processWisemenQueryStockSet() {
-	// if initialWisemenStockQueryPerformed == true {
-	// 	fmt.Println("hit initialWisemenStockQueryPerformed == true")
-	// 	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
-	// 	go startCycle(operatingCycle)
-	// }
-	// if initialWisemenStockQueryPerformed == false {
-	// 	fmt.Println("hit initialWisemenStockQueryPerformed == false")
 	createCycle(3, 1000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
 	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
 	go startCycle(operatingCycle)
-	// initialWisemenStockQueryPerformed = true
-	// }
 }
 
 func processWhaleQueryStockSet() {
@@ -183,7 +173,7 @@ func processCheckIsTradeBought(symbol string) {
 	// go handleCheckIsTradeBought()
 	//THe idea is to check every 5 seconds, and if a trade evaluation is positive,
 	//or if the time delimiter for checking is met, then cancle this cycle and record results in DB.
-	createCycle(10, 2, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
+	createCycle(10, 100000, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
 	go startCycle(operatingCycle)
 	initialWhaleStockQueryPerformed = true
@@ -425,10 +415,13 @@ func resetCyclePools() {
 	processTimelineStart()
 }
 func handleCheckIsTradeBought(params ...interface{}) {
-	listVal := reflect.ValueOf(params[0])
-	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
-	listSymbols := listSymbolsInterface.([]string)
-	symbol := listSymbols[0]
+	// listVal := reflect.ValueOf(params[0])
+	// var listSymbolsInterface interface{} = listVal.Index(0).Interface()
+	// listSymbols := listSymbolsInterface.([]string)
+	// symbol := listSymbols[0]
+	symbol := "MTW"
+
+	// fmt.Println(symbol)
 	//Is holding for symbol present
 	holdingWisemen := HoldingWisemen{}
 	//Get all
@@ -436,12 +429,13 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	for i, v := range holdingList.ListHolding {
 		if v.Symbol == symbol {
 			// fmt.Println("hit internal")
-			holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: "0", QtyBought: v.Qty, OrderStatus: "pending eval"}
+			holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: v.Qty, QtyBought: "0", OrderStatus: "pending eval"}
 		}
 		i++
 	}
-	holdingWisemen = calculateHoldingStatus(holdingWisemen)
 
+	holdingWisemen = calculateHoldingStatus(holdingWisemen)
+	// fmt.Println(holdingWisemen)
 	if holdingWisemen.OrderStatus == "order not placed" {
 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
 		postNeoBuyOrderResponse(holdingWisemen)
@@ -451,8 +445,13 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	if holdingWisemen.OrderStatus == "completedFull" {
 		fmt.Println("completedFull hit")
 		//End cycle for monitoring
-		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-		postNeoBuyOrderResponse(holdingWisemen)
+		// fmt.Println("len(cycleMapPool)")
+		// fmt.Println(len(cycleMapPool))
+		// cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+		// fmt.Println("len(cycleMapPool)")
+		// fmt.Println(len(cycleMapPool))
+		response := postNeoBuyOrderResponse(holdingWisemen)
+		fmt.Println(response)
 	}
 	if holdingWisemen.OrderStatus == "partial" {
 		fmt.Println("partial hit")
@@ -485,7 +484,9 @@ func handleCheckIsTradeBought(params ...interface{}) {
 }
 
 func handleOverarchTopStock(params ...interface{}) {
-	twiStockList := twiWebscrape()
+	// twiStockList := twiWebscrape()
+
+	twiStockList := []Stock{}
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
 	//Low process for whale

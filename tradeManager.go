@@ -449,6 +449,24 @@ func systemReadPreviousHistory() {
 
 }
 
+func handleSellAtMarket(symbol string) {
+	// handleSellAtMarket
+
+	//Query holding get QTY...
+	holdingWisemen := HoldingWisemen{}
+	holdingWisemenContainer := getAllHolding()
+
+	for i, v := range holdingWisemenContainer.ListHolding {
+		if v.Symbol == symbol {
+			holdingWisemen = v
+		}
+		i++
+	}
+	//
+	// fmt.Println(holdingWisemen)
+	queryTradeSellMarket(holdingWisemen)
+}
+
 // func handleSellWisemen(symbol string) {
 // 	//Overarch handle sell system metrics read data flow and set.
 // 	//Read order bought information.
@@ -658,6 +676,8 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 		i++
 	}
 
+	// fmt.Println("order")
+	// fmt.Println(order)
 	//contingent that order.qty still exists.
 	//If order does not exist should pull trade information.
 	//Handle conditional where order is not placed.
@@ -670,14 +690,26 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	fmt.Println("order.Qty")
 	fmt.Println(order.Qty)
 
-	fmt.Println("holdingWisemen.QtyBought")
-	fmt.Println(holdingWisemen.QtyBought)
+	stringOrderQty := order.Qty
+	if len(stringOrderQty) == 1 {
+		//Append '.00' for comparison with holding.qty
+		stringOrderQty = stringOrderQty + ".00"
+	}
+
+	fmt.Println(holdingWisemen)
+	fmt.Println("holdingWisemen.Qty")
+	fmt.Println(holdingWisemen.Qty)
+	fmt.Println(len(holdingWisemen.Qty))
+	fmt.Println("stringOrderQty")
+	fmt.Println(stringOrderQty)
+	fmt.Println(len(stringOrderQty))
 	//compare order qty to bought qty.
 
-	if order.Qty == holdingWisemen.QtyBought {
+	if stringOrderQty == holdingWisemen.Qty {
 		isCompletedFull = true
+		// fmt.Println("hit inside")
 	}
-	if order.Qty > holdingWisemen.QtyBought {
+	if order.Qty > holdingWisemen.Qty {
 		isPartialUnfinished = true
 	}
 
