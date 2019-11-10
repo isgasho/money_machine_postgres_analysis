@@ -188,6 +188,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 
 	//Conditional operate
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
+		systemStartProcesses()
 		checKIsBrokerageResponding()
 		//Wisemen algorithm same day calculation
 		// handleDayRotation()
@@ -1062,10 +1063,32 @@ func handleDowWebscrape(params ...interface{}) {
 }
 
 func twiWebscrape() []Stock {
-	response := queryWebscrapeTwi()
-	symbolList := parseTwiWebscrape(response)
+
+	// func queryWebscrapeTwi() string {
+	// 	json := `{
+	// 		"request_type": "webscrapeTwi"
+	// 		}`
+	// 	url := "http://localhost:3000/api/brokerage"
+	// 	response := post(url, json)
+	// 	return response
+	// }
+	//stop twi server
+	// response := queryStopTwi()
+	// fmt.Println(response)
+	// //start twi server
+	// response1 := queryStartTwi()
+	// fmt.Println(response1)
+
+	response2 := queryWebscrapeTwi()
+	// fmt.Println(response2)
+	symbolList := parseTwiWebscrape(response2)
 	responseSymbolList := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
+	// stockList := []Stock{}
+	for i, v := range stockList {
+		fmt.Println(v)
+		i++
+	}
 	return stockList
 }
 
@@ -1073,6 +1096,15 @@ func handleEndOfDayAnalyticsOperations() {
 	day := getDayOfWeek()
 	//insert into table conditional
 	insertEndOfDayAnalyticsOperations(isMarketClosed, day.String())
+}
+
+func systemStartProcesses() {
+	//reset existing twi server
+	response := queryStopTwi()
+	fmt.Println(response)
+	response1 := queryStartTwi()
+	fmt.Println(response1)
+
 }
 
 // func resetTempSymbolHold() {

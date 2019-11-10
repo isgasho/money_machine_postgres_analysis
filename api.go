@@ -456,6 +456,8 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 
+	twiWebscrape()
+
 	// dataList := []string{"MTW"}
 	// handleCheckIsTradeBought()
 	// processCheckIsTradeBought(dataList[0])

@@ -14,6 +14,23 @@ func queryWebscrape() string {
 	response := post(url, json)
 	return response
 }
+
+func queryStopTwi() string {
+	json := `{
+		"request_type": "stopTwi"
+		}`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+func queryStartTwi() string {
+	json := `{
+		"request_type": "startTwi"
+		}`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
 func queryWebscrapeTwi() string {
 	json := `{
 		"request_type": "webscrapeTwi"
