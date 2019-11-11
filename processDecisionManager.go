@@ -1093,7 +1093,6 @@ func systemStartProcesses() {
 	fmt.Println(response)
 	response1 := queryStartTwi()
 	fmt.Println(response1)
-
 }
 
 // func resetTempSymbolHold() {

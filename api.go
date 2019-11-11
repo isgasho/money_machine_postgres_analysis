@@ -480,6 +480,7 @@ func main() {
 	// 	initialWhaleStockQueryPerformed = true
 	// }
 
+	systemStartProcesses()
 	// twiWebscrape()
 
 	// dataList := []string{"MTW"}

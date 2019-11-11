@@ -476,7 +476,7 @@ func handleSellLimitWisemen(symbol string) {
 	}
 	if holdingToSell.Symbol != "default" {
 		//get price information
-		stockQueried := getCurrentStockFromQuery([]string{holdingToSell.Symbol})[0]
+		// stockQueried := getCurrentStockFromQuery([]string{holdingToSell.Symbol})[0]
 		//get metric delimiter
 		metricsWisemen := selectMetricsWisemen()[0]
 		//
