@@ -3,8 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
-
-	_ "github.com/lib/pq"
+	// _ "github.com/lib/pq"
 )
 
 func createEntry(age int, email string, firstName string, lastName string) int {

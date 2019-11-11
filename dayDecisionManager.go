@@ -51,13 +51,12 @@ func checkConditionalIsAskTime(askTime string) {
 	}
 }
 
-func getDate() (int, int) {
+func getDate() (int, int, int) {
 	currentTime := time.Now()
 	yr, mt, day := currentTime.Date()
-	// dateSplit := strings.Split(day, " ")
 	intMonth := int(mt)
 	fmt.Println(yr, mt, day)
-	return intMonth, day
+	return yr, intMonth, day
 }
 
 func getCurrentHour() int {

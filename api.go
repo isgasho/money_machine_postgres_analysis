@@ -441,7 +441,8 @@ func calculateIsResetDayRecord() {
 		fmt.Println(v.IntNumberOfDays)
 		i++
 	}
-	month, day := getDate()
+	year, month, day := getDate()
+	fmt.Println(year)
 	fmt.Println(month)
 	fmt.Println(day)
 
@@ -453,6 +454,20 @@ func calculateIsResetDayRecord() {
 }
 func main() {
 	go handleRequests()
+	// insertDow("boom")
+
+	// informationAtTrade := InformationAtTrade{}
+	// insertInformationAtTrade(informationAtTrade)
+	// handleInsertInformationAtTrade("MTW")
+	//Create artificial or go with bad metrics... in this case bad metrics is fine.
+
+	// handleHistoryDayListArbitration()
+	// transactionHistory := TransactionHistory{Symbol: "MTW"}
+	// calculateTransactionHistory(transactionHistory)
+	// transactionHistory := TransactionHistory{Symbol: "MTW"}
+	// wrapUpWisemenOutcome(transactionHistory)
+
+	handleInformationAtTradeDayListArbitration("MTW")
 
 	// holdingWisemen := HoldingWisemen{Symbol: "symbol", Price: "v.Price", Qty: "v.Qty", OrderStatus: "pending eval"}
 	// insertHoldingWisemen(holdingWisemen)
@@ -480,7 +495,8 @@ func main() {
 	// 	initialWhaleStockQueryPerformed = true
 	// }
 
-	systemStartProcesses()
+	// systemStartProcesses()
+	// handleOverarchTopStock()
 	// twiWebscrape()
 
 	// dataList := []string{"MTW"}

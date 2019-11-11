@@ -146,6 +146,8 @@ func handleInsertInformationAtTrade(symbol string) {
 		Ask:    ask,
 		Last:   last,
 	}
+	fmt.Println("informationAtTrade")
+	fmt.Println(informationAtTrade)
 	//insert
 	insertInformationAtTrade(informationAtTrade)
 }
@@ -279,69 +281,102 @@ func calculateIsSymbolPresentInHolding(symbol string) bool {
 	return isBoolReturning
 }
 
-func calculateTransactionHistory(transactionHistory TransactionHistory) TransactionHistory {
-
-	alteredTransactionHistory := transactionHistory
-
+func handleHistoryDayListArbitration(symbol string) []HistoryValue {
+	listMatchingSymbolHistoryValue := []HistoryValue{}
 	response := queryHistory()
 	historyList := parseHistory(response)
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
-
-	//Given historySell
-	historySell := HistoryValue{}
+	//date
+	yearCurrent, monthCurrent, dayCurrent := getDate()
+	dayCurrent = 8
+	//sort values by day...
+	//store values of today only...
 	for i, v := range listHistoryValues {
-		alteredHistoryValue := HistoryValue{}
-		stringedInterval := strconv.Itoa(i)
-		alteredHistoryValue = calculateSellHistoryMatchesSymbol(v, alteredTransactionHistory.Symbol, stringedInterval)
-		if alteredHistoryValue.IsCalculationTrue == "true" {
-			historySell = v
-			break
+		i++
+		year := strings.Split(v.Date, " ")[0]
+		month := strings.Split(v.Date, " ")[1]
+		day := strings.Split(v.Date, " ")[2]
+		intYear, err := strconv.Atoi(year)
+		intMonth, err := strconv.Atoi(month)
+		intDay, err := strconv.Atoi(day)
+		if err != nil {
+			fmt.Println(err)
+		}
+		//get trades done today...
+		if intYear == yearCurrent {
+			if intMonth == monthCurrent {
+				if intDay == dayCurrent {
+					if v.Symbol == symbol {
+						fmt.Println("values in")
+						fmt.Println(v)
+						listMatchingSymbolHistoryValue = append(listMatchingSymbolHistoryValue, v)
+					}
+				}
+			}
 		}
 	}
+	return listMatchingSymbolHistoryValue
+}
 
-	//Given historyBuy
-	historyBuy := HistoryValue{}
-	for i, v := range listHistoryValues {
-		alteredHistoryValue := HistoryValue{}
-		stringedInterval := strconv.Itoa(i)
-		alteredHistoryValue = calculateBuyHistoryMatchesSymbol(v, alteredTransactionHistory.Symbol, stringedInterval)
-		if alteredHistoryValue.IsCalculationTrue == "true" {
-			historyBuy = v
-			break
+func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTrade {
+	listMatchingSymbolInformationAtTrade := []InformationAtTrade{}
+	listInformationAtTrade := selectInformationAtTrade()
+	for i, v := range listInformationAtTrade {
+		listInformationAtTrade[i].CreatedAt = formatCreatedAtFromInformationAtTrade(v.CreatedAt)
+	}
+	fmt.Println("listInformationAtTrade")
+	fmt.Println(listInformationAtTrade)
+	//date
+	yearCurrent, monthCurrent, dayCurrent := getDate()
+	//dayCurrent = 8
+	//sort values by day...
+	//store values of today only...
+	for i, v := range listInformationAtTrade {
+		i++
+		year := strings.Split(v.CreatedAt, " ")[0]
+		month := strings.Split(v.CreatedAt, " ")[1]
+		day := strings.Split(v.CreatedAt, " ")[2]
+		intYear, err := strconv.Atoi(year)
+		intMonth, err := strconv.Atoi(month)
+		intDay, err := strconv.Atoi(day)
+		if err != nil {
+			fmt.Println(err)
+		}
+		//get trades done today...
+		if intYear == yearCurrent {
+			if intMonth == monthCurrent {
+				if intDay == dayCurrent {
+					if v.Symbol == symbol {
+						fmt.Println("values in")
+						fmt.Println(v)
+						listMatchingSymbolInformationAtTrade = append(listMatchingSymbolInformationAtTrade, v)
+					}
+				}
+			}
 		}
 	}
-	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, historyBuy)
-	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, historySell)
+	return listMatchingSymbolInformationAtTrade
+}
+
+func calculateTransactionHistory(transactionHistory TransactionHistory) TransactionHistory {
+	alteredTransactionHistory := transactionHistory
+	listValuesMatchedHistoryDayList := handleHistoryDayListArbitration(alteredTransactionHistory.Symbol)
+	//if condition: a sell exists, from previous day and algorithm with the same symbol, before buy...
+	//remove sell from consideration index...
+	//at this point trading is completed and wrap up engaged.
+	buySellList := []HistoryValue{}
+	for i, v := range listValuesMatchedHistoryDayList {
+		if i == 0 {
+			if v.Side == "-1" {
+				continue
+			}
+		}
+		buySellList = append(buySellList, v)
+	}
+	//future support for multiple trade in same day of algorithm.
+	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[0])
+	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[1])
 	return alteredTransactionHistory
-	//conditional if QTY fully sold...
-	//Handling partitioned buys will be difficult...
-	//Because the QTY will be less? or will it?
-	//There's no way of knowing, not even a way of setting that case in the wild.
-	//
-	//But can create a conditional watch, handle outcomes and holdings.
-	//
-	//create the net and the environment to catch that data...
-	//
-	//Here future support for conditional -> partial store and retrieval.
-
-	//
-
-	//For right now just handle conditional with presumption that full orders commited both ways.
-	//
-	//But what are we even looking for. If we are simply looking for none in holding...
-	//If none in holding then bought...
-	//...We are looking to see if fully sold.
-	//A fully sold condition will show no in holding...
-	//
-	//If some still in Holding than we have a partial, or still open order and condition...
-	//
-	//That partial detection is needed for this calculation.
-	//
-
-	//
-	//Handle full detection...
-
-	//get holding...
 }
 
 func calculateBuyHistoryMatchesSymbol(historyValue HistoryValue, symbol string, intervalInList string) HistoryValue {
@@ -374,69 +409,106 @@ func calculateSellHistoryMatchesSymbol(historyValue HistoryValue, symbol string,
 
 func createListHistoryValuesForWisemen(listHistory []string) []HistoryValue {
 	listHistoryValues := []HistoryValue{}
-	isDelimiterNeeded := false
-	delimiter := 0
 	listHistoryFiltered := listHistory[:len(listHistory)-1]
-	lenListHistory := len(listHistoryFiltered)
-	// lengthListLessThanFive := []string{}
-	delimiter = lenListHistory - 5
-	//test len less than 5
-	// for i, v := range listHistoryFiltered {
-	// 	if i >= delimiter {
-	// 		lengthListLessThanFive = append(lengthListLessThanFive, v)
-	// 	}
-	// }
-	if lenListHistory > 5 {
-		delimiter = lenListHistory - 5
-		isDelimiterNeeded = true
-	}
+
 	for i, v := range listHistoryFiltered {
 		fmt.Println(i)
+		fmt.Println("v")
 		fmt.Println(v)
-		if isDelimiterNeeded {
-			if i >= delimiter {
-				//sym
-				symQuery := strings.Split(v, "</sym>")[0]
-				symFromHistory := strings.Split(symQuery, "<sym>")[1]
-
-				//side
-				sideQuery := strings.Split(v, "</side>")[0]
-				sideFromHistory := strings.Split(sideQuery, "<side>")[1]
-
-				//parse qty
-				quantityQuery := strings.Split(v, "</quantity>")[0]
-				quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
-
-				//parse price
-				priceQuery := strings.Split(v, "</price>")[0]
-				priceFromHistory := strings.Split(priceQuery, "<price>")[1]
-
-				//HistoryValue
-				historyValue := HistoryValue{Symbol: symFromHistory, Side: sideFromHistory, Qty: quantityFromHistory, Price: priceFromHistory}
-				listHistoryValues = append(listHistoryValues, historyValue)
-			}
-			continue
+		isTrade := false
+		if strings.Contains(v, ">Trade<") {
+			isTrade = true
 		}
-		symQuery := strings.Split(v, "</sym>")[0]
-		symFromHistory := strings.Split(symQuery, "<sym>")[1]
+		if isTrade {
+			//sym
+			symQuery := strings.Split(v, "</sym>")[0]
+			symFromHistory := strings.Split(symQuery, "<sym>")[1]
 
-		//side
-		sideQuery := strings.Split(v, "</side>")[0]
-		sideFromHistory := strings.Split(sideQuery, "<side>")[1]
+			//date
+			dateQuery := strings.Split(v, "</date>")[0]
+			dateFromHistory := strings.Split(dateQuery, "<date>")[1]
+			//parse date to usuable format
+			date := formatDateFromHistory(dateFromHistory)
 
-		//parse qty
-		quantityQuery := strings.Split(v, "</quantity>")[0]
-		quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
+			//side
+			sideQuery := strings.Split(v, "</side>")[0]
+			sideFromHistory := strings.Split(sideQuery, "<side>")[1]
 
-		//parse price
-		priceQuery := strings.Split(v, "</price>")[0]
-		priceFromHistory := strings.Split(priceQuery, "<price>")[1]
+			//parse qty
+			quantityQuery := strings.Split(v, "</quantity>")[0]
+			quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
 
-		//HistoryValue
-		historyValue := HistoryValue{Symbol: symFromHistory, Side: sideFromHistory, Qty: quantityFromHistory, Price: priceFromHistory}
-		listHistoryValues = append(listHistoryValues, historyValue)
+			//parse price
+			priceQuery := strings.Split(v, "</price>")[0]
+			priceFromHistory := strings.Split(priceQuery, "<price>")[1]
+
+			//HistoryValue
+			historyValue := HistoryValue{Symbol: symFromHistory, Date: date, Side: sideFromHistory, Qty: quantityFromHistory, Price: priceFromHistory}
+			listHistoryValues = append(listHistoryValues, historyValue)
+		}
 	}
 	return listHistoryValues
+}
+
+// isDelimiterNeeded := false
+// delimiter := 0
+// fmt.Println("listHistoryFiltered")
+// fmt.Println(listHistoryFiltered)
+// lenListHistory := len(listHistoryFiltered)
+// // lengthListLessThanFive := []string{}
+// delimiter = lenListHistory - 5
+//test len less than 5
+// for i, v := range listHistoryFiltered {
+// 	fmt.Println(i)
+// 	fmt.Println(v)
+// }
+// 	if i >= delimiter {
+// 		lengthListLessThanFive = append(lengthListLessThanFive, v)
+// 	}
+// }
+// if lenListHistory > 5 {
+// 	delimiter = lenListHistory - 5
+// 	isDelimiterNeeded = true
+// }
+
+// 	// 		}
+// 	// 		continue
+// 	// 	}
+// 	// 	symQuery := strings.Split(v, "</sym>")[0]
+// 	// 	symFromHistory := strings.Split(symQuery, "<sym>")[1]
+
+// 	// 	//side
+// 	// 	sideQuery := strings.Split(v, "</side>")[0]
+// 	// 	sideFromHistory := strings.Split(sideQuery, "<side>")[1]
+
+// 	// 	//parse qty
+// 	// 	quantityQuery := strings.Split(v, "</quantity>")[0]
+// 	// 	quantityFromHistory := strings.Split(quantityQuery, "<quantity>")[1]
+
+// 	// 	//parse price
+// 	// 	priceQuery := strings.Split(v, "</price>")[0]
+// 	// 	priceFromHistory := strings.Split(priceQuery, "<price>")[1]
+
+// 	// 	//HistoryValue
+// 	// 	historyValue := HistoryValue{Symbol: symFromHistory, Side: sideFromHistory, Qty: quantityFromHistory, Price: priceFromHistory}
+// 	// 	listHistoryValues = append(listHistoryValues, historyValue)
+// 	i++
+
+func formatDateFromHistory(date string) string {
+	splitDate := strings.Split(date, "-")
+	year := splitDate[0]
+	month := splitDate[1]
+	daySplit := strings.Split(splitDate[2], "T")[0]
+	formattedHistory := year + " " + month + " " + daySplit
+	return formattedHistory
+}
+func formatCreatedAtFromInformationAtTrade(createdAt string) string {
+	splitDate := strings.Split(createdAt, "-")
+	year := splitDate[0]
+	month := splitDate[1]
+	daySplit := strings.Split(splitDate[2], "T")[0]
+	formattedHistory := year + " " + month + " " + daySplit
+	return formattedHistory
 }
 
 func systemReadPreviousHistory() {

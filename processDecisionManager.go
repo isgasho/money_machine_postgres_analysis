@@ -474,9 +474,8 @@ func handleCheckIsTradeBought(params ...interface{}) {
 }
 
 func handleOverarchTopStock(params ...interface{}) {
-	// twiStockList := twiWebscrape()
-
-	twiStockList := []Stock{}
+	twiStockList := twiWebscrape()
+	// twiStockList := []Stock{}
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
 	//Low process for whale
@@ -1048,7 +1047,6 @@ func handleDowWebscrape() string {
 	response := queryWebscrape()
 	currentDowValue := parseDowWebscrape(response)
 	return currentDowValue
-	// insertDow(currentDowValue)
 }
 
 func twiWebscrape() []Stock {
@@ -1155,44 +1153,51 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//handle on outcomes.
 	//record wisemen.
 	alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
-	// get
+	//get insertInformationAtTrade for buy and sell
 
-	// 	CREATE TABLE trade_result_store
-	// (
-	//    id SERIAL PRIMARY KEY,
-	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    algorithm_used VARCHAR,
-	//    result VARCHAR,
-	//    change_amount VARCHAR,
-	//    stock_symbol VARCHAR,
-	//    dow_start VARCHAR,
-	//    dow_mid VARCHAR,
-	//    dow_end VARCHAR
-	// );
+	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
 
-	// type TradeResultStore struct {
-	//    AlgorithmUsed string
-	//    Result        string
-	//    ChangeAmount  string
-	//    StockSymbol   string
-	//    DowStart      string
-	//    DowMid        string
-	//    DowEnd        string
+	// listInformationAtTrade := selectInformationAtTrade()
+	for i, v := range listMatchingSymbolInformationAtTrade {
+		if v.Symbol == alteredTransactionHistory.Symbol {
+			listMatchingSymbolInformationAtTrade = append(listMatchingSymbolInformationAtTrade, v)
+		}
+		i++
+	}
+	fmt.Println("alteredTransactionHistory")
+	fmt.Println(alteredTransactionHistory)
+	fmt.Println("listMatchingSymbolInformationAtTrade")
+	fmt.Println(listMatchingSymbolInformationAtTrade)
+
+	//handle multiple InformationAtTrade during day...
+	//typically only would be two... but in case of two of more...
+	//Support for more than 2 trades
+	//get insert
+	// for i, v := range listMatchingSymbolInformationAtTrade {
+	// 	i++
+	// 	//get the latest two...
+	// 	if v.
 	// }
-	fmt.Println(alteredTransactionHistory.HistoryValueList)
 
-	// DowStart
-	//listDowForDay := select
-	// alteredTransactionHistory
-	// tradeResultStore := TradeResultStore{
-	// 	AlgorithmUsed: "Wisemen",
-	// 	Result:        "",
-	// 	ChangeAmount:  "",
-	// 	StockSymbol:   alteredTransactionHistory.Symbol,
-	// 	DowStart:      "",
-	// 	DowMid:        "",
-	// 	DowEnd:        "",
+	//get all
+	//
+	//populate TRS
+
+	//handle if buy and sell completed...
+	//if same day buy and sell recorded....
+	// in calculateTransactionHistory
+
+	// for i, v := range listMatchingSymbol {
+	// 	if len(listMatchingSymbol) > 3{
+	// 		if i < (len(listMatchingSymbol) - 2){
+
+	// 		}
+	// 	}
+	// 	if len(listMatchingSymbol) == 3{
+	// 		if i < len(listMatchingSymbol) - )
+	// 	}
 	// }
+	// fmt.Println(alteredTransactionHistory.HistoryValueList)
 
 	//store transactionHistoryOutcome
 	//Multi store for different algorithms.

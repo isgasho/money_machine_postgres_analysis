@@ -262,11 +262,20 @@ type AlgorithmEvaluationForDay struct {
 
 type HistoryValue struct {
 	Symbol            string
+	Date              string
 	Side              string
 	Qty               string
 	Price             string
 	IntervalInList    string
 	IsCalculationTrue string
+}
+
+type HistoryValueDay struct {
+	ListHistoryValue []HistoryValue
+}
+
+type HistoryDayListContainer struct {
+	HistoryValueDayList []HistoryValueDay
 }
 
 type TransactionHistory struct {
