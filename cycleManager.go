@@ -57,7 +57,7 @@ func cancelCycle(cycleInstance *Cycle) {
 	if ok {
 		delete(cycleMapPool, cycleInstance.Name)
 	}
-	// cycleInstance.BooleanOperate = false
+	cycleInstance.BooleanOperate = false
 }
 
 // func main() {

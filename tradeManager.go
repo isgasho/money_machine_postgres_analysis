@@ -5,6 +5,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func handleTradeWisemen(symbol string, limitPrice string) {
@@ -38,14 +39,14 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
 	//store trade entered information
-	tradeEnteredInformation := TradeEnteredInformation{
-		Symbol:      symbol,
-		Price:       stringPrice,
-		OrderStatus: "pending",
-		Qty:         stringQty,
-		QtyBought:   "0",
-	}
-	insertTradeEnteredInformation(tradeEnteredInformation)
+	// tradeEnteredInformation := TradeEnteredInformation{
+	// 	Symbol:      symbol,
+	// 	Price:       stringPrice,
+	// 	OrderStatus: "pending",
+	// 	Qty:         stringQty,
+	// 	QtyBought:   "0",
+	// }
+	// insertTradeEnteredInformation(tradeEnteredInformation)
 	//Submit buy limit to brokerage
 	fmt.Println("symbol")
 	fmt.Println(symbol)
@@ -61,28 +62,26 @@ func monitorSell(params ...interface{}) {
 	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
 	listStrings := listSymbolsInterface.([]string)
 	symbol := listStrings[0]
-	// priceDropPercentage := listStrings[1]
+	priceDrop := listStrings[1]
 	timeDelimiter := listStrings[2]
-
 	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
+	isDropPriceMet := calculateIsDropPriceMet(symbol, priceDrop)
+	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
+
 	//Is holding is not present cancel cycle process
 	//and move to wrap up.
 	if isSymbolPresentInHolding == false {
-		//cancel cycle.
+		//cancel cycle
+		//support nodemailerror
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
+		handleInsertInformationAtTrade(symbol)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
 	}
 
-	isDropPriceMet := calculateIsDropPriceMet(symbol)
-	// //
-	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
-
-	// //
-	// // handleTimeDelimiterMetSell
 	if isTimeDelimiterMet {
-		//if drop price met sell at market immediately
+		//if time delimiter met sell at market immediately
 		holding := HoldingWisemen{}
 		holdingList := getAllHolding()
 		for i, v := range holdingList.ListHolding {
@@ -94,13 +93,12 @@ func monitorSell(params ...interface{}) {
 			i++
 		}
 		queryTradeSellMarket(holding)
-		//parse response, if success proceed to wrapup
-		//pause 60 seconds
-		//query holdings...
-		// operatingCycle := cycleMapPool["monitorSell"]
-		// cancelCycle(operatingCycle)
-		// transactionHistory := TransactionHistory{Symbol: symbol}
-		// wrapUpWisemenOutcome(transactionHistory)
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
+		handleInsertInformationAtTrade(symbol)
+		time.Sleep(time.Duration(30) * time.Second)
+		transactionHistory := TransactionHistory{Symbol: symbol}
+		wrapUpWisemenOutcome(transactionHistory)
 	}
 
 	if isDropPriceMet {
@@ -116,18 +114,42 @@ func monitorSell(params ...interface{}) {
 			i++
 		}
 		queryTradeSellMarket(holding)
-		//parse response, if success proceed to wrapup
-		//pause 60 seconds
-		//query holdings...
-		// operatingCycle := cycleMapPool["monitorSell"]
-		// cancelCycle(operatingCycle)
-		// transactionHistory := TransactionHistory{Symbol: symbol}
-		// wrapUpWisemenOutcome(transactionHistory)
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
+		handleInsertInformationAtTrade(symbol)
+		time.Sleep(time.Duration(30) * time.Second)
+		transactionHistory := TransactionHistory{Symbol: symbol}
+		wrapUpWisemenOutcome(transactionHistory)
 	}
-
 }
-
-func calculateIsDropPriceMet(symbol string) bool {
+func handleInsertInformationAtTrade(symbol string) {
+	//query stock
+	response := queryMultiStockPull([]string{symbol})
+	stockList := parseStockSetQuery(response)
+	bid := stockList[0].Bid
+	ask := stockList[0].Ask
+	last := stockList[0].Last
+	//dow
+	dow := handleDowWebscrape()
+	//time
+	hour := getCurrentHour()
+	minute := getCurrentMinute()
+	hourString := strconv.Itoa(hour)
+	minuteString := strconv.Itoa(minute)
+	//instantiate
+	informationAtTrade := InformationAtTrade{
+		Symbol: symbol,
+		Hour:   hourString,
+		Minute: minuteString,
+		Dow:    dow,
+		Bid:    bid,
+		Ask:    ask,
+		Last:   last,
+	}
+	//insert
+	insertInformationAtTrade(informationAtTrade)
+}
+func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 	listSymbol := []string{symbol}
 	isBoolReturning := false
 
@@ -260,31 +282,8 @@ func calculateIsSymbolPresentInHolding(symbol string) bool {
 func calculateTransactionHistory(transactionHistory TransactionHistory) TransactionHistory {
 
 	alteredTransactionHistory := transactionHistory
-	//Question, when is sold fully out.
-	//When is there no holding,
-	//Is there an order still open
-	//Who cares if it's still open.
-	//
-	//There is no other case.
-	//It's either gone or not.
-	//If it's not
-	//Given time delimiter, or pchg Dropoff
-	//Get holding QTY
-	//set limit to sell.
-	//
 
-	// holdingList := getAllHolding()
-	// for i, v := range holdingList.ListHolding {
-	// 	if
-	// 	fmt.Println(v)
-	// 	i++
-	// }
-
-	//Future support for complex timing on trades, same symbols.
-	//
-	//Get handle on history.
 	response := queryHistory()
-	//UpgradeHistory to only have list.
 	historyList := parseHistory(response)
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
 
@@ -292,8 +291,6 @@ func calculateTransactionHistory(transactionHistory TransactionHistory) Transact
 	historySell := HistoryValue{}
 	for i, v := range listHistoryValues {
 		alteredHistoryValue := HistoryValue{}
-		// fmt.Println(i)
-		// fmt.Println(v)
 		stringedInterval := strconv.Itoa(i)
 		alteredHistoryValue = calculateSellHistoryMatchesSymbol(v, alteredTransactionHistory.Symbol, stringedInterval)
 		if alteredHistoryValue.IsCalculationTrue == "true" {
@@ -306,10 +303,7 @@ func calculateTransactionHistory(transactionHistory TransactionHistory) Transact
 	historyBuy := HistoryValue{}
 	for i, v := range listHistoryValues {
 		alteredHistoryValue := HistoryValue{}
-		// fmt.Println(i)
-		// fmt.Println(v)
 		stringedInterval := strconv.Itoa(i)
-
 		alteredHistoryValue = calculateBuyHistoryMatchesSymbol(v, alteredTransactionHistory.Symbol, stringedInterval)
 		if alteredHistoryValue.IsCalculationTrue == "true" {
 			historyBuy = v
@@ -467,154 +461,45 @@ func handleSellAtMarket(symbol string) {
 	queryTradeSellMarket(holdingWisemen)
 }
 
-// func handleSellWisemen(symbol string) {
-// 	//Overarch handle sell system metrics read data flow and set.
-// 	//Read order bought information.
-// 	//Is order bought information entered yet?
-// 	//or call holding... for a dynamic flow... yes.
-// 	//Future support for advanced recording system.
+func handleSellLimitWisemen(symbol string) {
+	containerHolding := getAllHolding()
+	holdingToSell := HoldingWisemen{Symbol: "default"}
+	for i, v := range containerHolding.ListHolding {
+		if symbol == v.Symbol {
+			holdingToSell = v
+		}
+		i++
+	}
+	// //Handle hold not found
+	if holdingToSell.Symbol == "default" {
+		fmt.Println("Holding not present")
+	}
+	if holdingToSell.Symbol != "default" {
+		//get price information
+		stockQueried := getCurrentStockFromQuery([]string{holdingToSell.Symbol})[0]
+		//get metric delimiter
+		metricsWisemen := selectMetricsWisemen()[0]
+		//
+		holdingPrice := 0.0
+		metricsDesiredPriceRangeHigh := 0.0
+		//string to float
+		if s, err := strconv.ParseFloat(holdingToSell.Price, 64); err == nil {
+			holdingPrice = s
+		}
+		if s1, err := strconv.ParseFloat(metricsWisemen.DesiredPriceRangeHigh, 64); err == nil {
+			metricsDesiredPriceRangeHigh = s1
+		}
+		//calculate limit price...
+		limitPrice := holdingPrice + (holdingPrice * metricsDesiredPriceRangeHigh)
 
-// 	//source symbol pull
-// 	//pull holding for symbol
-// 	// holding
-// 	// handleSellWisemen
-// 	containerHolding := getAllHolding()
-// 	holdingToSell := HoldingWisemen{Symbol: "default"}
-// 	for i, v := range containerHolding.ListHolding {
-// 		if symbol == v.Symbol {
-// 			holdingToSell = v
-// 		}
-// 		i++
-// 	}
+		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
 
-// 	//Handle order not found
-// 	if holdingToSell.Symbol == "default" {
-// 		fmt.Println("Holding not present")
-// 	}
+		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
+		queryTradeSellLimit(holdingToSell.Symbol, stringLimitPrice, holdingToSell.Qty)
+	}
+}
 
-// 	if holdingToSell.Symbol != "default" {
-// 		//get price information
-// 		// stockList := getCurrentPriceStatsForStock([]string{holdingToSell.Symbol})
-// 		// for i, v := range stockList {
-// 		// 	// fmt.Println("stock")
-
-// 		// 	// fmt.Println("bid")
-// 		// 	// fmt.Println(v.Bid)
-// 		// 	// fmt.Println("ask")
-// 		// 	// fmt.Println(v.Ask)
-// 		// 	// fmt.Println("last")
-// 		// 	// fmt.Println(v.Last)
-
-// 		// 	i++
-// 		// }
-
-// 		//Get metric delimiter
-// 		//
-// 		metricsWisemen := selectMetricsWisemen()[0]
-// 		holdingPrice := 0.0
-// 		metricsDesiredPchg := 0.0
-// 		//String to float
-// 		if s, err := strconv.ParseFloat(holdingToSell.Price, 64); err == nil {
-// 			holdingPrice = s
-// 		}
-
-// 		//String to float
-// 		if s, err := strconv.ParseFloat(metricsWisemen.DesiredPchg, 64); err == nil {
-// 			metricsDesiredPchg = s
-// 		}
-
-// 		fmt.Println("holdingPrice")
-// 		fmt.Println(holdingPrice)
-// 		limitPrice := holdingPrice + (holdingPrice * metricsDesiredPchg)
-// 		fmt.Println(limitPrice)
-// 		fmt.Println(limitPrice)
-
-// 		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
-// 		fmt.Println("stringLimitPrice")
-// 		fmt.Println(stringLimitPrice)
-
-// 		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
-// 		fmt.Println("stringLimitPrice")
-// 		fmt.Println(stringLimitPrice)
-// 		// fmt.Println("holdingPrice")
-// 		// fmt.Println(holdingPrice)
-// 		// fmt.Println("metricsDesiredPchg")
-// 		// fmt.Println(metricsDesiredPchg)
-// 		queryTradeSellLimit(holdingToSell.Symbol, stringLimitPrice, holdingToSell.QtyBought)
-// 	}
-
-// 	//sell
-
-// 	//Pull holdings
-
-// 	//Read metrics and set system
-
-// 	//Data flow for one stock and analysis
-
-// 	//handleSellWisemen set
-
-// 	//
-// 	// queryTradeSellLimit(symbol, stringPrice, quantity)
-
-// 	// fmt.Println("limitPrice")
-// 	// fmt.Println(limitPrice)
-// 	// desiredLimitPrice := 0.0
-// 	// if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
-// 	// 	desiredLimitPrice = s
-// 	// }
-
-// 	// fmt.Println("desiredLimitPrice")
-// 	// fmt.Println(desiredLimitPrice)
-// 	// //get balance
-// 	// response := queryBalance()
-// 	// balance := parseBalance(response)
-
-// 	// floatBalance := 0.0
-// 	// if s, err := strconv.ParseFloat(balance, 64); err == nil {
-// 	// 	floatBalance = s
-// 	// }
-
-// 	// fmt.Println("floatBalance")
-// 	// fmt.Println(floatBalance)
-// 	// //
-// 	// //calculate qty to buy
-// 	// qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
-// 	// fmt.Println("before rounding down")
-// 	// fmt.Println(qty)
-
-// 	// qtyInt := roundDown(qty)
-// 	// fmt.Println("After rounding down")
-// 	// fmt.Println(qtyInt)
-
-// 	// stringBalance := fmt.Sprintf("%f", floatBalance)
-// 	// stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
-// 	// // stringQty := fmt.Sprintf("%f", qtyInt)
-// 	// stringQty := strconv.Itoa(qtyInt)
-
-// 	//store trade entered information
-// 	// tradeEnteredInformation := TradeEnteredInformation{
-// 	// 	Symbol:      symbol,
-// 	// 	Price:       stringPrice,
-// 	// 	OrderStatus: "pending",
-// 	// 	Qty:         stringQty,
-// 	// 	QtyBought:   "0",
-// 	// }
-// 	// insertTradeEnteredInformation(tradeEnteredInformation)
-
-// 	//Submit buy limit to brokerage
-// 	// fmt.Println("symbol")
-// 	// fmt.Println(symbol)
-// 	// fmt.Println("stringQty")
-// 	// fmt.Println(stringQty)
-// 	// fmt.Println("stringPrice")
-// 	// fmt.Println(stringPrice)
-
-// }
-
-// intiateSellSystemProtocol(){
-
-// }
-func getCurrentPriceStatsForStock(symbolList []string) []Stock {
+func getCurrentStockFromQuery(symbolList []string) []Stock {
 	// func queryMultiStockPull(symbolList []string) string {
 	queryResponse := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(queryResponse)
@@ -661,12 +546,10 @@ func cancelOrder(symbol string) {
 }
 
 func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
-	// defaultHoldingStatus := "undetermined"
 	holdingWisemen.OrderStatus = "undetermined"
 	isPartialUnfinished := false
 	isCompletedFull := false
-	//calculate
-	//Get order
+	//Populate order container
 	containerOrders := getAllOrders()
 	order := Order{Symbol: "default"}
 	for i, v := range containerOrders.ListOrders {
@@ -675,9 +558,6 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 		}
 		i++
 	}
-
-	// fmt.Println("order")
-	// fmt.Println(order)
 	//contingent that order.qty still exists.
 	//If order does not exist should pull trade information.
 	//Handle conditional where order is not placed.
@@ -703,11 +583,10 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	fmt.Println("stringOrderQty")
 	fmt.Println(stringOrderQty)
 	fmt.Println(len(stringOrderQty))
-	//compare order qty to bought qty.
 
+	//compare order qty to bought qty.
 	if stringOrderQty == holdingWisemen.Qty {
 		isCompletedFull = true
-		// fmt.Println("hit inside")
 	}
 	if order.Qty > holdingWisemen.Qty {
 		isPartialUnfinished = true
@@ -730,14 +609,12 @@ func calculateIsTradeBoughtSuccessful(symbol string) {
 	}
 	return
 }
-
 func updateDayTrackingRecordSystem(symbol string) {
 	dayOfWeek := getDayOfWeek()
 	//create record
 	dayTrackingRecord := DayTrackingRecord{Symbol: symbol, DayOfWeekCreated: dayOfWeek.String(), DayOfWeekDayIteration: "0", LastDayOfWeekDayUpdate: getDayOfWeek().String(), AmountOfTrades: "0", IsWeekPassed: "false"}
 	insertDayTrackingRecord(dayTrackingRecord)
 }
-
 func detectIsTradeBoughtSuccessful(symbol string) bool {
 	isSuccessful := false
 	entryList := selectTradeBoughtEvaluation()

@@ -122,7 +122,6 @@ type HoldingWisemen struct {
 	Symbol      string
 	Price       string
 	Qty         string
-	QtyBought   string
 	OrderStatus string
 }
 type TradeInfo struct {
@@ -211,13 +210,15 @@ type ContainerHolding struct {
 	ListHolding []HoldingWisemen
 }
 
-type TradeEnteredInformation struct {
-	CreatedAt   string
-	Symbol      string
-	Price       string
-	OrderStatus string
-	Qty         string
-	QtyBought   string
+type InformationAtTrade struct {
+	CreatedAt string
+	Symbol    string
+	Hour      string
+	Minute    string
+	Dow       string
+	Bid       string
+	Ask       string
+	Last      string
 }
 
 type TradeConditionalMetrics struct {

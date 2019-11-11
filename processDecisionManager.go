@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"reflect"
 	"strconv"
 	"strings"
 	"time"
@@ -100,11 +101,11 @@ func processTimelineStart() {
 	go startCycle(operatingCycle)
 }
 
-func processMonitorSell(symbol string, priceRequested string, timeToSell string) {
+func processMonitorSell(symbol string, dropLoss string, timeToSell string) {
 	//Metrics from sell
 	// create cycle for
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(10, 10000000000000, monitorSell, "monitorSell", []string{symbol, priceRequested, timeToSell})
+	createCycle(10, 10000000000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
 	operatingCycle := cycleMapPool["monitorSell"]
 	go startCycle(operatingCycle)
 }
@@ -170,9 +171,6 @@ func processOverarchTopStock() {
 	// go handleTwiWebscrape()
 }
 func processCheckIsTradeBought(symbol string) {
-	// go handleCheckIsTradeBought()
-	//THe idea is to check every 5 seconds, and if a trade evaluation is positive,
-	//or if the time delimiter for checking is met, then cancle this cycle and record results in DB.
 	createCycle(10, 100000, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
 	go startCycle(operatingCycle)
@@ -416,72 +414,63 @@ func resetCyclePools() {
 	processTimelineStart()
 }
 func handleCheckIsTradeBought(params ...interface{}) {
-	// listVal := reflect.ValueOf(params[0])
-	// var listSymbolsInterface interface{} = listVal.Index(0).Interface()
-	// listSymbols := listSymbolsInterface.([]string)
-	// symbol := listSymbols[0]
-	symbol := "MTW"
-
-	// fmt.Println(symbol)
+	listVal := reflect.ValueOf(params[0])
+	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
+	listSymbols := listSymbolsInterface.([]string)
+	symbol := listSymbols[0]
 	//Is holding for symbol present
 	holdingWisemen := HoldingWisemen{}
-	//Get all
+	//if holding matches symbol seeking
 	holdingList := getAllHolding()
 	for i, v := range holdingList.ListHolding {
 		if v.Symbol == symbol {
-			// fmt.Println("hit internal")
-			holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: v.Qty, QtyBought: "0", OrderStatus: "pending eval"}
+			holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: v.Qty, OrderStatus: "pending eval"}
 		}
 		i++
 	}
-
 	holdingWisemen = calculateHoldingStatus(holdingWisemen)
-	// fmt.Println(holdingWisemen)
 	if holdingWisemen.OrderStatus == "order not placed" {
 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
 		postNeoBuyOrderResponse(holdingWisemen)
 	}
-
 	//Handle conditions for holding incomplete
 	if holdingWisemen.OrderStatus == "completedFull" {
 		fmt.Println("completedFull hit")
 		//End cycle for monitoring
-		// fmt.Println("len(cycleMapPool)")
-		// fmt.Println(len(cycleMapPool))
-		// cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-		// fmt.Println("len(cycleMapPool)")
-		// fmt.Println(len(cycleMapPool))
+		handleInsertInformationAtTrade(symbol)
+		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
 		response := postNeoBuyOrderResponse(holdingWisemen)
 		fmt.Println(response)
 	}
-	if holdingWisemen.OrderStatus == "partial" {
-		fmt.Println("partial hit")
-		//in the impartial case it will iterate a global check variable,
-		//upon global variable reaching a delimter count, which represents monitor cycle time intervals.
-		//upon delmiter met, cancel and post to neo with holding "partial" status.
-		if getIntervalTradeMonitorDelimiter() == 4 {
-			cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-			orderContainer := getAllOrders()
-			orderForSymbol := Order{Symbol: "default"}
-			for i, v := range orderContainer.ListOrders {
-				if v.Symbol == symbol {
-					fmt.Println("hit ")
-					orderForSymbol = v
-					break
-				}
-				i++
-			}
-			if orderForSymbol.Symbol == "default" {
-				// queryCancelOrder()
-				postNeoBuyOrderResponse(holdingWisemen)
-			}
-			if orderForSymbol.Symbol != "default" {
-				queryCancelOrder(orderForSymbol.SVI)
-				postNeoBuyOrderResponse(holdingWisemen)
-			}
-		}
-		iterateIntervalTradeMonitorDelimiter()
-	}
+	// if holdingWisemen.OrderStatus == "partial" {
+	// 	fmt.Println("partial hit")
+	// 	//in the impartial case it will iterate a global check variable,
+	// 	//upon global variable reaching a delimter count, which represents monitor cycle time intervals.
+	// 	//upon delmiter met, cancel and post to neo with holding "partial" status.
+	// 	if getIntervalTradeMonitorDelimiter() == 4 {
+	// 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+	// 		orderContainer := getAllOrders()
+	// 		orderForSymbol := Order{Symbol: "default"}
+	// 		for i, v := range orderContainer.ListOrders {
+	// 			if v.Symbol == symbol {
+	// 				fmt.Println("hit ")
+	// 				orderForSymbol = v
+	// 				break
+	// 			}
+	// 			i++
+	// 		}
+	// 		if orderForSymbol.Symbol == "default" {
+	// 			// queryCancelOrder()
+	// 			// holdingWisemen.OrderStatus
+	// 			postNeoBuyOrderResponse(holdingWisemen)
+	// 		}
+	// 		if orderForSymbol.Symbol != "default" {
+	// 			queryCancelOrder(orderForSymbol.SVI)
+	// 			postNeoBuyOrderResponse(holdingWisemen)
+	// 		}
+	// 	}
+	// 	iterateIntervalTradeMonitorDelimiter()
+	// }
 }
 
 func handleOverarchTopStock(params ...interface{}) {
@@ -1055,11 +1044,11 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 	return instanceStock
 }
 
-func handleDowWebscrape(params ...interface{}) {
+func handleDowWebscrape() string {
 	response := queryWebscrape()
-	fmt.Println("hit awesome")
 	currentDowValue := parseDowWebscrape(response)
-	insertDow(currentDowValue)
+	return currentDowValue
+	// insertDow(currentDowValue)
 }
 
 func twiWebscrape() []Stock {

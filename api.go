@@ -272,20 +272,20 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	// 	w.Write(js)
 	// }
 	//Trade execution
-	if requestType == "isBuyWisemen" {
-		dataList := databaseQuery.Data
-		fmt.Println("isBuyWisemen")
-		fmt.Println(dataList)
-		// insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
+	// if requestType == "isBuyWisemen" {
+	// 	dataList := databaseQuery.Data
+	// 	fmt.Println("isBuyWisemen")
+	// 	fmt.Println(dataList)
+	// 	// insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4])
 
-		js, err := json.Marshal("success")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// 	js, err := json.Marshal("success")
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 	if requestType == "selectOrderInformationWisemen" {
 		// dataList := databaseQuery.Data
 		fmt.Println("selectOrderInformationWisemen")
@@ -309,7 +309,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println(dataList)
 
 		//process trade.
-		// handleTradeWisemen(dataList[0], dataList[1])
+		handleTradeWisemen(dataList[0], dataList[1])
 		time.Sleep(time.Duration(10) * time.Second)
 
 		//Begin process monitoring for buy fulfilled.
@@ -321,9 +321,6 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		}
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
-		//Delay before monitor cycle
-		// time.Sleep(time.Duration(10) * time.Second)
-		// intiateMonitorTradeWisemon()
 	}
 
 	// if requestType == "initiateEarlySellWisemen" {
@@ -353,11 +350,12 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("postPriceSellDelimiterMetrics")
 		fmt.Println("dataList")
 		fmt.Println(dataList)
-		//process trade.
+		//sell at limit order submission.
 		//
+		handleSellLimitWisemen(dataList[0])
+		//handle monitor
 		processMonitorSell(dataList[0], dataList[1], dataList[2])
-		// processMonitorSell("20.20", "1430")
-		// handleTradeWisemen(dataList[0], dataList[1])
+
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -456,7 +454,33 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 
-	twiWebscrape()
+	// holdingWisemen := HoldingWisemen{Symbol: "symbol", Price: "v.Price", Qty: "v.Qty", OrderStatus: "pending eval"}
+	// insertHoldingWisemen(holdingWisemen)
+	// holdingWisemen1 := selectHoldingWisemen()
+	// fmt.Println(holdingWisemen1)
+
+	// dropHoldingWisemen()
+	// createHoldingWisemen()
+
+	// processCheckIsTradeBought("VICI")
+
+	// time.Sleep(time.Duration(15) * time.Second)
+	// fmt.Println("len(cycleMapPool)")
+	// fmt.Println(len(cycleMapPool))
+	// cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+	// fmt.Println("len(cycleMapPool)")
+	// fmt.Println(len(cycleMapPool))
+	// func processCheckIsTradeBought(symbol string) {
+	// 	// go handleCheckIsTradeBought()
+	// 	//THe idea is to check every 5 seconds, and if a trade evaluation is positive,
+	// 	//or if the time delimiter for checking is met, then cancle this cycle and record results in DB.
+	// 	createCycle(10, 100000, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
+	// 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
+	// 	go startCycle(operatingCycle)
+	// 	initialWhaleStockQueryPerformed = true
+	// }
+
+	// twiWebscrape()
 
 	// dataList := []string{"MTW"}
 	// handleCheckIsTradeBought()

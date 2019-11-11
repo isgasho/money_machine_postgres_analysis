@@ -1721,8 +1721,8 @@ func createDayTrackingRecord() {
 	fmt.Println(count)
 }
 
-//trade_entered_information
-func insertTradeEnteredInformation(tradeEnteredInformation TradeEnteredInformation) {
+//information_at_trade
+func insertInformationAtTrade(informationAtTrade InformationAtTrade) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -1730,29 +1730,21 @@ func insertTradeEnteredInformation(tradeEnteredInformation TradeEnteredInformati
 	if err != nil {
 		fmt.Println("Create Error 1")
 	}
-	// CREATE TABLE trade_entered_information
-	// (
-	//    id SERIAL PRIMARY KEY,
-	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    symbol VARCHAR,
-	//    price VARCHAR,
-	//    order_status VARCHAR
-	// );
 	defer db.Close()
 	sqlStatement := `
-		INSERT INTO trade_entered_information (symbol, price, order_status, qty, qty_bought)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO information_at_trade (symbol, hour, minute, dow, bid, ask, last)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)
 		RETURNING id
 		`
 	var id int
-	row := db.QueryRow(sqlStatement, tradeEnteredInformation.Symbol, tradeEnteredInformation.Price, tradeEnteredInformation.OrderStatus, tradeEnteredInformation.Qty, tradeEnteredInformation.QtyBought)
+	row := db.QueryRow(sqlStatement, informationAtTrade.Symbol, informationAtTrade.Hour, informationAtTrade.Minute, informationAtTrade.Dow, informationAtTrade.Bid, informationAtTrade.Ask, informationAtTrade.Last)
 	err1 := row.Scan(&id)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
 	}
 }
 
-func selectTradeEnteredInformation() []TradeEnteredInformation {
+func selectInformationAtTrade() []InformationAtTrade {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -1763,35 +1755,24 @@ func selectTradeEnteredInformation() []TradeEnteredInformation {
 	}
 	defer db.Close()
 
-	// 	CREATE TABLE trade_entered_information
-	// (
-	//    id SERIAL PRIMARY KEY,
-	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    symbol VARCHAR,
-	//    price VARCHAR,
-	//    qty VARCHAR,
-	//    qty_bought VARCHAR,
-	//    order_status VARCHAR
-	// );
-
-	rows, err1 := db.Query("SELECT created_at, symbol, price, order_status, qty, qty_bought FROM trade_entered_information")
+	rows, err1 := db.Query("SELECT created_at, symbol, hour, minute, dow, bid, ask, last FROM information_at_trade")
 	if err1 != nil {
 		fmt.Println(err1)
 	}
 	defer rows.Close()
-	tradeEnteredInformationList := make([]TradeEnteredInformation, 0)
+	informationAtTradeList := make([]InformationAtTrade, 0)
 
 	for rows.Next() {
-		var tradeEnteredInformation TradeEnteredInformation
-		if err2 := rows.Scan(&tradeEnteredInformation.CreatedAt, &tradeEnteredInformation.Symbol, &tradeEnteredInformation.Price, &tradeEnteredInformation.OrderStatus, &tradeEnteredInformation.Qty, &tradeEnteredInformation.QtyBought); err2 != nil {
+		var informationAtTrade InformationAtTrade
+		if err2 := rows.Scan(&informationAtTrade.CreatedAt, &informationAtTrade.Symbol, &informationAtTrade.Hour, &informationAtTrade.Minute, &informationAtTrade.Dow, &informationAtTrade.Bid, &informationAtTrade.Ask, &informationAtTrade.Last); err2 != nil {
 			fmt.Println("err2")
 		}
-		tradeEnteredInformationList = append(tradeEnteredInformationList, tradeEnteredInformation)
+		informationAtTradeList = append(informationAtTradeList, informationAtTrade)
 	}
-	return tradeEnteredInformationList
+	return informationAtTradeList
 }
 
-func dropTradeEnteredInformation() {
+func dropInformationAtTrade() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -1802,7 +1783,7 @@ func dropTradeEnteredInformation() {
 	}
 	defer db.Close()
 
-	res, err1 := db.Exec("drop table trade_entered_information")
+	res, err1 := db.Exec("drop table information_at_trade")
 	if err1 != nil {
 		fmt.Println("Delete Error 2")
 	}
@@ -1813,7 +1794,7 @@ func dropTradeEnteredInformation() {
 	fmt.Println(count)
 }
 
-func createTradeEnteredInformation() {
+func createInformationAtTrade() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
 		host, port, user, dbname)
@@ -1823,16 +1804,17 @@ func createTradeEnteredInformation() {
 		panic(err)
 	}
 	defer db.Close()
-
-	res, err1 := db.Exec(`CREATE TABLE trade_entered_information
-	( 
+	res, err1 := db.Exec(`CREATE TABLE information_at_trade
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	   symbol VARCHAR,
-	   price VARCHAR,
-	   order_status VARCHAR,
-	   qty VARCHAR,
-	   qty_bought VARCHAR
+	   hour VARCHAR,
+	   minute VARCHAR,
+	   dow VARCHAR,
+	   bid VARCHAR,
+	   ask VARCHAR,
+   	   last VARCHAR
 	);`)
 
 	if err1 != nil {
@@ -1845,27 +1827,27 @@ func createTradeEnteredInformation() {
 	fmt.Println(count)
 }
 
-func deleteTradeEnteredInformation(symbolToDel string) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
+// func deleteTradeEnteredInformation(symbolToDel string) {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
 
-	res, err1 := db.Exec("DELETE FROM trade_entered_information WHERE symbol=$1", symbolToDel)
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
+// 	res, err1 := db.Exec("DELETE FROM trade_entered_information WHERE symbol=$1", symbolToDel)
+// 	if err1 != nil {
+// 		fmt.Println("Delete Error 2")
+// 	}
+// 	count, err2 := res.RowsAffected()
+// 	if err2 != nil {
+// 		fmt.Println("Delete Error 3")
+// 	}
+// 	fmt.Println(count)
+// }
 
 //
 //trade_conditional_metrics
@@ -2054,18 +2036,13 @@ func insertHoldingWisemen(holdingWisemen HoldingWisemen) {
 
 	defer db.Close()
 	sqlStatement := `
-		INSERT INTO holding_wisemen (symbol, price, qty, qty_bought, order_status)
-		VALUES ($1, $2, $3, $4, $5)
+		INSERT INTO holding_wisemen (symbol, price, qty, order_status)
+		VALUES ($1, $2, $3, $4)
 		RETURNING id
 		`
 	var id int
-	// fmt.Println("holdingWisemen")
-	// fmt.Println(holdingWisemen.Symbol)
-	// fmt.Println(holdingWisemen.Price)
-	// fmt.Println(holdingWisemen.QtyBought)
-	// fmt.Println(holdingWisemen.OrderStatus)
 
-	row := db.QueryRow(sqlStatement, holdingWisemen.Symbol, holdingWisemen.Price, holdingWisemen.Qty, holdingWisemen.QtyBought, holdingWisemen.OrderStatus)
+	row := db.QueryRow(sqlStatement, holdingWisemen.Symbol, holdingWisemen.Price, holdingWisemen.Qty, holdingWisemen.OrderStatus)
 	err1 := row.Scan(&id)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -2094,7 +2071,7 @@ func selectHoldingWisemen() []HoldingWisemen {
 	//    order_status VARCHAR
 	// );
 
-	rows, err1 := db.Query("SELECT created_at, symbol, price, qty_bought, order_status FROM holding_wisemen")
+	rows, err1 := db.Query("SELECT created_at, symbol, price, qty, order_status FROM holding_wisemen")
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -2103,7 +2080,7 @@ func selectHoldingWisemen() []HoldingWisemen {
 
 	for rows.Next() {
 		var holdingWisemen HoldingWisemen
-		if err2 := rows.Scan(&holdingWisemen.CreatedAt, &holdingWisemen.Symbol, &holdingWisemen.Price, &holdingWisemen.QtyBought, &holdingWisemen.OrderStatus); err2 != nil {
+		if err2 := rows.Scan(&holdingWisemen.CreatedAt, &holdingWisemen.Symbol, &holdingWisemen.Price, &holdingWisemen.Qty, &holdingWisemen.OrderStatus); err2 != nil {
 			fmt.Println("err2")
 		}
 		holdingWisemenList = append(holdingWisemenList, holdingWisemen)
@@ -2173,7 +2150,6 @@ func createHoldingWisemen() {
 	   symbol VARCHAR,
 	   price VARCHAR,
 	   qty VARCHAR,
-	   qty_bought VARCHAR, 
 	   order_status VARCHAR
 	);`)
 
@@ -2243,7 +2219,7 @@ func createHoldingWisemen() {
 func postNeoBuyOrderResponse(holdingWisemen HoldingWisemen) string {
 	symbol := holdingWisemen.Symbol
 	buyPrice := holdingWisemen.Price
-	qty := holdingWisemen.QtyBought
+	qty := holdingWisemen.Qty
 	status := holdingWisemen.OrderStatus
 	json := `{
 		"requestType": "postNeoBuyOrderResponse",
