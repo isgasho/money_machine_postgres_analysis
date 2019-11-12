@@ -68,11 +68,9 @@ type News struct {
 }
 
 type Dow struct {
-	ID               string
-	CreatedAt        string
-	CurrentDowValue  string
-	PointsChanged    string
-	PercentageChange string
+	ID              string
+	CreatedAt       string
+	CurrentDowValue string
 }
 
 type Stock struct {
@@ -172,6 +170,7 @@ type MetricsWisemen struct {
 	TradeBuyMonitorDelaySeconds        string
 	TradeBuyMonitorDelayQuerySeconds   string
 	TradeBuyMonitorDelayIterationCount string
+	EndTradeTime                       string
 }
 
 type OrderInformationWisemen struct {
@@ -294,9 +293,10 @@ type TradeResultStore struct {
 	TimeEnd       string
 	TimeTradeBuy  string
 	TimeTradeSell string
-	DowStart      string
-	DowMid        string
-	DowEnd        string
+	Dow1          string
+	Dow2          string
+	Dow3          string
+	Dow4          string
 }
 
 type RecordSystemMonthContainer struct {

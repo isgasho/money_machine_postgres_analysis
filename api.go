@@ -445,9 +445,7 @@ func calculateIsResetDayRecord() {
 	fmt.Println(year)
 	fmt.Println(month)
 	fmt.Println(day)
-
 	//depending on cuurent month get number of days
-
 	//get record month and day of trade record.
 	//determine 7 days from that value
 	//if current day is greater thab that value reset.
@@ -468,8 +466,18 @@ func main() {
 	// transactionHistory := TransactionHistory{Symbol: "MTW"}
 	// calculateTransactionHistory(transactionHistory)
 	//
-	transactionHistory := TransactionHistory{Symbol: "MTW"}
-	wrapUpWisemenOutcome(transactionHistory)
+	// dropDow()
+	// createDow()
+	// insertDow("34000")
+	// insertDow("34000")
+	// insertDow("34000")
+	// insertDow("34000")
+
+	// dowList := selectDow()
+	// fmt.Println(dowList)
+	// transactionHistory := TransactionHistory{Symbol: "MTW"}
+	// wrapUpWisemenOutcome(transactionHistory)
+	// handleDowWebscrape
 	// listTradeResultStore := selectTradeResultStore("wisemen")
 	// fmt.Println(listTradeResultStore)
 	//

@@ -95,8 +95,6 @@ func insertDow(currentDowValue string) {
 	}
 	fmt.Println(dow.ID)
 }
-func setDow() {
-}
 func selectDow() []Dow {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
@@ -108,7 +106,7 @@ func selectDow() []Dow {
 	}
 	defer db.Close()
 
-	rows, err1 := db.Query("SELECT id, created_at, current_dow_value, points_changed, percentage_change FROM dow")
+	rows, err1 := db.Query("SELECT id, created_at, current_dow_value FROM dow")
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -118,12 +116,62 @@ func selectDow() []Dow {
 	for rows.Next() {
 		// var symbol string
 		var dowInstance Dow
-		if err2 := rows.Scan(&dowInstance.ID, &dowInstance.CreatedAt, &dowInstance.CurrentDowValue, &dowInstance.PointsChanged, &dowInstance.PercentageChange); err2 != nil {
+		if err2 := rows.Scan(&dowInstance.ID, &dowInstance.CreatedAt, &dowInstance.CurrentDowValue); err2 != nil {
 			fmt.Println("err2")
 		}
 		dowList = append(dowList, dowInstance)
 	}
 	return dowList
+}
+
+func dropDow() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table dow")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createDow() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE dow
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   current_dow_value VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
 }
 
 func deleteDow() {
@@ -924,13 +972,13 @@ func insertMetricsWisemen(desired_price_range_high string, desired_price_range_l
 	//    trade_buy_monitor_delay_iteration_count VARCHAR
 	// );
 	sqlStatement := `
-		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count, end_trade_time)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
 			RETURNING created_at
 		`
 	var metricsWisemen MetricsWisemen
 
-	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
+	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count, end_trade_time)
 	err1 := row.Scan(&metricsWisemen.CreatedAt)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -2259,7 +2307,7 @@ func insertTradeResultStore(tradeResultStore TradeResultStore) {
 	if err != nil {
 		fmt.Println("Create Error 1")
 	}
-	// CREATE TABLE trade_result_store
+	// 	CREATE TABLE trade_result_store
 	// (
 	//    id SERIAL PRIMARY KEY,
 	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -2271,18 +2319,19 @@ func insertTradeResultStore(tradeResultStore TradeResultStore) {
 	//    time_end VARCHAR,
 	//    time_trade_buy VARCHAR,
 	//    time_trade_sell VARCHAR,
-	//    dow_start VARCHAR,
-	//    dow_mid VARCHAR,
-	//    dow_end VARCHAR
+	//    dow1 VARCHAR,
+	//    dow2 VARCHAR,
+	//    dow3 VARCHAR,
+	//    dow4 VARCHAR
 	// );
 	defer db.Close()
 	sqlStatement := `
-		INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow_start, dow_mid, dow_end)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+		INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow1, dow2, dow3, dow4)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
 		RETURNING id
 		`
 	var id int
-	row := db.QueryRow(sqlStatement, tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.DowStart, tradeResultStore.DowMid, tradeResultStore.DowEnd)
+	row := db.QueryRow(sqlStatement, tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4)
 	err1 := row.Scan(&id)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -2298,7 +2347,7 @@ func selectTradeResultStore(algorithmUsed string) []TradeResultStore {
 		fmt.Println("Read Error 1")
 		panic(err)
 	}
-	// CREATE TABLE trade_result_store
+	// 	CREATE TABLE trade_result_store
 	// (
 	//    id SERIAL PRIMARY KEY,
 	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -2310,12 +2359,13 @@ func selectTradeResultStore(algorithmUsed string) []TradeResultStore {
 	//    time_end VARCHAR,
 	//    time_trade_buy VARCHAR,
 	//    time_trade_sell VARCHAR,
-	//    dow_start VARCHAR,
-	//    dow_mid VARCHAR,
-	//    dow_end VARCHAR
+	//    dow1 VARCHAR,
+	//    dow2 VARCHAR,
+	//    dow3 VARCHAR,
+	//    dow4 VARCHAR
 	// );
 	defer db.Close()
-	rows, err1 := db.Query("SELECT created_at, algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow_start, dow_mid, dow_end FROM trade_result_store") // WHERE symbol=$1", symbol)
+	rows, err1 := db.Query("SELECT created_at, algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow1, dow2, dow3, dow4 FROM trade_result_store") // WHERE symbol=$1", symbol)
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -2324,7 +2374,7 @@ func selectTradeResultStore(algorithmUsed string) []TradeResultStore {
 
 	for rows.Next() {
 		var tradeResultStore TradeResultStore
-		if err2 := rows.Scan(&tradeResultStore.CreatedAt, &tradeResultStore.AlgorithmUsed, &tradeResultStore.Result, &tradeResultStore.ChangeAmount, &tradeResultStore.StockSymbol, &tradeResultStore.TimeStart, &tradeResultStore.TimeEnd, &tradeResultStore.TimeTradeBuy, &tradeResultStore.TimeTradeSell, &tradeResultStore.DowStart, &tradeResultStore.DowMid, &tradeResultStore.DowEnd); err2 != nil {
+		if err2 := rows.Scan(&tradeResultStore.CreatedAt, &tradeResultStore.AlgorithmUsed, &tradeResultStore.Result, &tradeResultStore.ChangeAmount, &tradeResultStore.StockSymbol, &tradeResultStore.TimeStart, &tradeResultStore.TimeEnd, &tradeResultStore.TimeTradeBuy, &tradeResultStore.TimeTradeSell, &tradeResultStore.Dow1, &tradeResultStore.Dow2, &tradeResultStore.Dow3, &tradeResultStore.Dow4); err2 != nil {
 			fmt.Println("err2")
 		}
 		tradeResultStoreList = append(tradeResultStoreList, tradeResultStore)

@@ -177,12 +177,53 @@ func processCheckIsTradeBought(symbol string) {
 	initialWhaleStockQueryPerformed = true
 }
 
+func checkIsDowStore(currentHour int, currentMinute int) {
+	//point1
+	if currentHour == 7 {
+		if currentMinute == 45 {
+			dowValue := handleDowWebscrape()
+			insertDow(dowValue)
+		}
+	}
+	//point2
+	if currentHour == 8 {
+		if currentMinute == 30 {
+			dowValue := handleDowWebscrape()
+			insertDow(dowValue)
+		}
+	}
+	//point3
+	if currentHour == 9 {
+		if currentMinute == 45 {
+			dowValue := handleDowWebscrape()
+			insertDow(dowValue)
+		}
+	}
+	//point4
+	if currentHour == 12 {
+		if currentMinute == 0 {
+			dowValue := handleDowWebscrape()
+			insertDow(dowValue)
+		}
+	}
+}
+
 func handleTimelineConditionalTriggers(params ...interface{}) {
 	currentTime := time.Now()
 	fmt.Println(currentTime.Hour())
 	fmt.Println(currentTime.Minute())
 	fmt.Println(currentTime.Second())
 	fmt.Println(currentTime.Date())
+
+	//if time equals
+	//handle dow store conditional...
+	// if isTrade {
+
+	// }
+
+	checkIsDowStore(currentTime.Hour(), currentTime.Minute())
+
+	//reset dow conditional
 
 	//Conditional operate
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
@@ -414,6 +455,8 @@ func resetCyclePools() {
 	processTimelineStart()
 }
 func handleCheckIsTradeBought(params ...interface{}) {
+	//Support for non-static time delimiter.
+	stringTimeDelimiterHour := ""
 	listVal := reflect.ValueOf(params[0])
 	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
 	listSymbols := listSymbolsInterface.([]string)
@@ -442,6 +485,9 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		response := postNeoBuyOrderResponse(holdingWisemen)
 		fmt.Println(response)
 	}
+
+	//handle time delimiter where no buy is completed.
+
 	// if holdingWisemen.OrderStatus == "partial" {
 	// 	fmt.Println("partial hit")
 	// 	//in the impartial case it will iterate a global check variable,
@@ -1087,10 +1133,13 @@ func handleEndOfDayAnalyticsOperations() {
 
 func systemStartProcesses() {
 	//reset existing twi server
-	response := queryStopTwi()
-	fmt.Println(response)
-	response1 := queryStartTwi()
-	fmt.Println(response1)
+	queryStopTwi()
+	// fmt.Println(response)
+	queryStartTwi()
+	// fmt.Println(response1)
+	//reset dow
+	dropDow()
+	createDow()
 }
 
 // func resetTempSymbolHold() {
@@ -1149,7 +1198,6 @@ func setTimelineOperationsFalse() {
 func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//Post wisemen outcome.
 	//
-	//handle on wisemen metrics
 	metrics := selectMetricsWisemen()[0]
 	alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
 	//get insertInformationAtTrade for buy and sell
@@ -1163,7 +1211,6 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//Support for handle multiple InformationAtTrade during day...
 	//typically only would be two... but in case of two of more...
 	//Support for more than 2 trades
-
 	//if no trade occured...
 	if len(listMatchingSymbolInformationAtTrade) == 0 {
 		//no trade occured handle TradeResultStore
@@ -1176,12 +1223,6 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 
 	//if buy and sell exists...InformationAtTrade
 	if len(listMatchingSymbolInformationAtTrade) == 2 {
-		//calculate changeAmount
-		//handle on buy and sell
-		// changeAmount :=
-		// buyInformationAtTrade := listMatchingSymbolInformationAtTrade[0]
-		// sellInformationAtTrade := listMatchingSymbolInformationAtTrade[1]
-
 		buyHistoryValuePrice := alteredTransactionHistory.HistoryValueList[0].Price
 		sellHistoryValuePrice := alteredTransactionHistory.HistoryValueList[1].Price
 
@@ -1196,6 +1237,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		//calculate result
 		//if buy and sell, and if changeAmount meet delimiter,
 		changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
+		stringChangeAmount := fmt.Sprintf("%f", 123.456)
 
 		fmt.Println("changeAmount")
 		fmt.Println(changeAmount)
@@ -1207,38 +1249,49 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		}
 		optimal := floatBuyHistoryValuePrice + (floatBuyHistoryValuePrice * floatMetricsPriceHighPchg)
 
-		fmt.Println("floatMetricsPriceHighPchg")
-		fmt.Println(floatMetricsPriceHighPchg)
-		fmt.Println("floatBuyHistoryValuePrice")
-		fmt.Println(floatBuyHistoryValuePrice)
-		fmt.Println("optimal")
-		fmt.Println(optimal)
-		//TimeStart buy time...
+		result := "negative"
+		//if sell was less than optimal
+		// isAlgorithmProfitable := false
+		if floatSellHistoryValuePrice >= optimal {
+			result = "positive"
+		}
+		fmt.Println(stringChangeAmount)
+		fmt.Println(result)
 
-		// tradeResultStore := TradeResultStore{
-		// 	AlgorithmUsed: "wisemen",
-		// 	Result: ""
-		// }
+		fmt.Println("listMatchingSymbolInformationAtTrade")
+		fmt.Println(listMatchingSymbolInformationAtTrade[0])
 
-		//populate TRS
-		// type TradeResultStore struct {
-		// 	CreatedAt     string
-		// 	AlgorithmUsed string
-		// 	Result        string
-		// 	ChangeAmount  string
-		// 	StockSymbol   string
-		// 	TimeStart     string
-		// TimeTradeBuy     string
-		// TimeTradeSell     string
-		// 	TimeEnd       string
-		// 	DowStart      string
-		// 	DowMid        string
-		// 	DowEnd        string
-		// }
-		// insertTradeResultStore()
+		boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
+		sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
+
+		dowList := selectDow()
+		if len(dowList) == 4 {
+			tradeResultStore := TradeResultStore{
+				AlgorithmUsed: "wisemen",
+				Result:        result,
+				ChangeAmount:  stringChangeAmount,
+				StockSymbol:   alteredTransactionHistory.Symbol,
+				TimeTradeBuy:  boughtTime,
+				TimeTradeSell: sellTime,
+				Dow1:          dowList[0].CurrentDowValue,
+				Dow2:          dowList[1].CurrentDowValue,
+				Dow3:          dowList[2].CurrentDowValue,
+				Dow4:          dowList[3].CurrentDowValue,
+			}
+			fmt.Println(tradeResultStore)
+			insertTradeResultStore(tradeResultStore)
+		}
+		if len(dowList) != 4 {
+			tradeResultStore := TradeResultStore{
+				AlgorithmUsed: "wisemen",
+				Result:        result,
+				ChangeAmount:  stringChangeAmount,
+				StockSymbol:   alteredTransactionHistory.Symbol,
+				TimeTradeBuy:  boughtTime,
+				TimeTradeSell: sellTime,
+			}
+			fmt.Println(tradeResultStore)
+			insertTradeResultStore(tradeResultStore)
+		}
 	}
-
-	//store transactionHistoryOutcome
-	//Multi store for different algorithms.
-	//System for
 }
