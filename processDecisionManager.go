@@ -1149,55 +1149,94 @@ func setTimelineOperationsFalse() {
 func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//Post wisemen outcome.
 	//
-	//get handle on history
-	//handle on outcomes.
-	//record wisemen.
+	//handle on wisemen metrics
+	metrics := selectMetricsWisemen()[0]
 	alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
 	//get insertInformationAtTrade for buy and sell
-
 	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
 
-	// listInformationAtTrade := selectInformationAtTrade()
-	for i, v := range listMatchingSymbolInformationAtTrade {
-		if v.Symbol == alteredTransactionHistory.Symbol {
-			listMatchingSymbolInformationAtTrade = append(listMatchingSymbolInformationAtTrade, v)
-		}
-		i++
-	}
 	fmt.Println("alteredTransactionHistory")
 	fmt.Println(alteredTransactionHistory)
 	fmt.Println("listMatchingSymbolInformationAtTrade")
 	fmt.Println(listMatchingSymbolInformationAtTrade)
 
-	//handle multiple InformationAtTrade during day...
+	//Support for handle multiple InformationAtTrade during day...
 	//typically only would be two... but in case of two of more...
 	//Support for more than 2 trades
-	//get insert
-	// for i, v := range listMatchingSymbolInformationAtTrade {
-	// 	i++
-	// 	//get the latest two...
-	// 	if v.
-	// }
 
-	//get all
-	//
-	//populate TRS
+	//if no trade occured...
+	if len(listMatchingSymbolInformationAtTrade) == 0 {
+		//no trade occured handle TradeResultStore
+		tradeResultStore := TradeResultStore{
+			AlgorithmUsed: "wisemen",
+			Result:        "No trade",
+		}
+		insertTradeResultStore(tradeResultStore)
+	}
 
-	//handle if buy and sell completed...
-	//if same day buy and sell recorded....
-	// in calculateTransactionHistory
+	//if buy and sell exists...InformationAtTrade
+	if len(listMatchingSymbolInformationAtTrade) == 2 {
+		//calculate changeAmount
+		//handle on buy and sell
+		// changeAmount :=
+		// buyInformationAtTrade := listMatchingSymbolInformationAtTrade[0]
+		// sellInformationAtTrade := listMatchingSymbolInformationAtTrade[1]
 
-	// for i, v := range listMatchingSymbol {
-	// 	if len(listMatchingSymbol) > 3{
-	// 		if i < (len(listMatchingSymbol) - 2){
+		buyHistoryValuePrice := alteredTransactionHistory.HistoryValueList[0].Price
+		sellHistoryValuePrice := alteredTransactionHistory.HistoryValueList[1].Price
 
-	// 		}
-	// 	}
-	// 	if len(listMatchingSymbol) == 3{
-	// 		if i < len(listMatchingSymbol) - )
-	// 	}
-	// }
-	// fmt.Println(alteredTransactionHistory.HistoryValueList)
+		floatBuyHistoryValuePrice := 0.0
+		floatSellHistoryValuePrice := 0.0
+		if s, err := strconv.ParseFloat(buyHistoryValuePrice, 64); err == nil {
+			floatBuyHistoryValuePrice = s
+		}
+		if s1, err := strconv.ParseFloat(sellHistoryValuePrice, 64); err == nil {
+			floatSellHistoryValuePrice = s1
+		}
+		//calculate result
+		//if buy and sell, and if changeAmount meet delimiter,
+		changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
+
+		fmt.Println("changeAmount")
+		fmt.Println(changeAmount)
+		//handle on metrics delimiter...
+		metricsPriceHighPchg := metrics.PriceHighPchg
+		floatMetricsPriceHighPchg := 0.0
+		if s2, err := strconv.ParseFloat(metricsPriceHighPchg, 64); err == nil {
+			floatMetricsPriceHighPchg = s2
+		}
+		optimal := floatBuyHistoryValuePrice + (floatBuyHistoryValuePrice * floatMetricsPriceHighPchg)
+
+		fmt.Println("floatMetricsPriceHighPchg")
+		fmt.Println(floatMetricsPriceHighPchg)
+		fmt.Println("floatBuyHistoryValuePrice")
+		fmt.Println(floatBuyHistoryValuePrice)
+		fmt.Println("optimal")
+		fmt.Println(optimal)
+		//TimeStart buy time...
+
+		// tradeResultStore := TradeResultStore{
+		// 	AlgorithmUsed: "wisemen",
+		// 	Result: ""
+		// }
+
+		//populate TRS
+		// type TradeResultStore struct {
+		// 	CreatedAt     string
+		// 	AlgorithmUsed string
+		// 	Result        string
+		// 	ChangeAmount  string
+		// 	StockSymbol   string
+		// 	TimeStart     string
+		// TimeTradeBuy     string
+		// TimeTradeSell     string
+		// 	TimeEnd       string
+		// 	DowStart      string
+		// 	DowMid        string
+		// 	DowEnd        string
+		// }
+		// insertTradeResultStore()
+	}
 
 	//store transactionHistoryOutcome
 	//Multi store for different algorithms.

@@ -292,6 +292,8 @@ type TradeResultStore struct {
 	StockSymbol   string
 	TimeStart     string
 	TimeEnd       string
+	TimeTradeBuy  string
+	TimeTradeSell string
 	DowStart      string
 	DowMid        string
 	DowEnd        string

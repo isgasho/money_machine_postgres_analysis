@@ -342,13 +342,13 @@ func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTr
 		if err != nil {
 			fmt.Println(err)
 		}
-		//get trades done today...
+		//get trades completed this day
 		if intYear == yearCurrent {
 			if intMonth == monthCurrent {
 				if intDay == dayCurrent {
 					if v.Symbol == symbol {
-						fmt.Println("values in")
-						fmt.Println(v)
+						// fmt.Println("values in")
+						// fmt.Println(v)
 						listMatchingSymbolInformationAtTrade = append(listMatchingSymbolInformationAtTrade, v)
 					}
 				}
@@ -374,8 +374,10 @@ func calculateTransactionHistory(transactionHistory TransactionHistory) Transact
 		buySellList = append(buySellList, v)
 	}
 	//future support for multiple trade in same day of algorithm.
-	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[0])
-	alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[1])
+	if len(buySellList) != 0 {
+		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[0])
+		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[1])
+	}
 	return alteredTransactionHistory
 }
 

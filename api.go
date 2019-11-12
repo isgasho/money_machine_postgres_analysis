@@ -456,18 +456,24 @@ func main() {
 	go handleRequests()
 	// insertDow("boom")
 
+	// dropMetricsWisemen()
+	// createMetricsWisemen()
 	// informationAtTrade := InformationAtTrade{}
 	// insertInformationAtTrade(informationAtTrade)
+	// handleInsertInformationAtTrade("MTW")
 	// handleInsertInformationAtTrade("MTW")
 	//Create artificial or go with bad metrics... in this case bad metrics is fine.
 
 	// handleHistoryDayListArbitration()
 	// transactionHistory := TransactionHistory{Symbol: "MTW"}
 	// calculateTransactionHistory(transactionHistory)
-	// transactionHistory := TransactionHistory{Symbol: "MTW"}
-	// wrapUpWisemenOutcome(transactionHistory)
-
-	handleInformationAtTradeDayListArbitration("MTW")
+	//
+	transactionHistory := TransactionHistory{Symbol: "MTW"}
+	wrapUpWisemenOutcome(transactionHistory)
+	// listTradeResultStore := selectTradeResultStore("wisemen")
+	// fmt.Println(listTradeResultStore)
+	//
+	// handleInformationAtTradeDayListArbitration("MTW")
 
 	// holdingWisemen := HoldingWisemen{Symbol: "symbol", Price: "v.Price", Qty: "v.Qty", OrderStatus: "pending eval"}
 	// insertHoldingWisemen(holdingWisemen)

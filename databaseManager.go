@@ -1020,6 +1020,8 @@ func createMetricsWisemen() {
 	( 
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   desired_price_range_high VARCHAR, 
+	   desired_price_range_low VARCHAR,
 	   price_high_pchg VARCHAR,
 	   price_low_pchg VARCHAR,
 	   desired_pchg_variance_value VARCHAR,
@@ -2257,8 +2259,7 @@ func insertTradeResultStore(tradeResultStore TradeResultStore) {
 	if err != nil {
 		fmt.Println("Create Error 1")
 	}
-
-	// 	CREATE TABLE trade_result_store
+	// CREATE TABLE trade_result_store
 	// (
 	//    id SERIAL PRIMARY KEY,
 	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -2268,30 +2269,20 @@ func insertTradeResultStore(tradeResultStore TradeResultStore) {
 	//    stock_symbol VARCHAR,
 	//    time_start VARCHAR,
 	//    time_end VARCHAR,
+	//    time_trade_buy VARCHAR,
+	//    time_trade_sell VARCHAR,
 	//    dow_start VARCHAR,
 	//    dow_mid VARCHAR,
 	//    dow_end VARCHAR
 	// );
-
-	// type TradeResultStore struct {
-	// 	AlgorithmUsed string
-	// 	Result        string
-	// 	ChangeAmount  string
-	// 	StockSymbol   string
-	// 	TimeStart    string
-	// 	TimeEnd      string
-	// 	DowStart      string
-	// 	DowMid        string
-	// 	DowEnd        string
-	//  }
 	defer db.Close()
 	sqlStatement := `
-		INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, dow_start, dow_mid, dow_end)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+		INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow_start, dow_mid, dow_end)
+		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
 		RETURNING id
 		`
 	var id int
-	row := db.QueryRow(sqlStatement, tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.DowStart, tradeResultStore.DowMid, tradeResultStore.DowEnd)
+	row := db.QueryRow(sqlStatement, tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.DowStart, tradeResultStore.DowMid, tradeResultStore.DowEnd)
 	err1 := row.Scan(&id)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -2307,20 +2298,24 @@ func selectTradeResultStore(algorithmUsed string) []TradeResultStore {
 		fmt.Println("Read Error 1")
 		panic(err)
 	}
-	// type TradeResultStore struct {
-	// 	CreatedAt     string
-	// 	AlgorithmUsed string
-	// 	Result        string
-	// 	ChangeAmount  string
-	// 	StockSymbol   string
-	// 	TimeStart     string
-	// 	TimeEnd       string
-	// 	DowStart      string
-	// 	DowMid        string
-	// 	DowEnd        string
-	// }
+	// CREATE TABLE trade_result_store
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    algorithm_used VARCHAR,
+	//    result VARCHAR,
+	//    change_amount VARCHAR,
+	//    stock_symbol VARCHAR,
+	//    time_start VARCHAR,
+	//    time_end VARCHAR,
+	//    time_trade_buy VARCHAR,
+	//    time_trade_sell VARCHAR,
+	//    dow_start VARCHAR,
+	//    dow_mid VARCHAR,
+	//    dow_end VARCHAR
+	// );
 	defer db.Close()
-	rows, err1 := db.Query("SELECT created_at, algorithm_used, result, change_amount, stock_symbol, time_start, time_end, dow_start, dow_mid, dow_end FROM trade_result_store") // WHERE symbol=$1", symbol)
+	rows, err1 := db.Query("SELECT created_at, algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow_start, dow_mid, dow_end FROM trade_result_store") // WHERE symbol=$1", symbol)
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -2329,7 +2324,7 @@ func selectTradeResultStore(algorithmUsed string) []TradeResultStore {
 
 	for rows.Next() {
 		var tradeResultStore TradeResultStore
-		if err2 := rows.Scan(&tradeResultStore.CreatedAt, &tradeResultStore.AlgorithmUsed, &tradeResultStore.Result, &tradeResultStore.ChangeAmount, &tradeResultStore.StockSymbol, &tradeResultStore.TimeStart, &tradeResultStore.TimeEnd, &tradeResultStore.DowStart, &tradeResultStore.DowMid, &tradeResultStore.DowEnd); err2 != nil {
+		if err2 := rows.Scan(&tradeResultStore.CreatedAt, &tradeResultStore.AlgorithmUsed, &tradeResultStore.Result, &tradeResultStore.ChangeAmount, &tradeResultStore.StockSymbol, &tradeResultStore.TimeStart, &tradeResultStore.TimeEnd, &tradeResultStore.TimeTradeBuy, &tradeResultStore.TimeTradeSell, &tradeResultStore.DowStart, &tradeResultStore.DowMid, &tradeResultStore.DowEnd); err2 != nil {
 			fmt.Println("err2")
 		}
 		tradeResultStoreList = append(tradeResultStoreList, tradeResultStore)
