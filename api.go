@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 )
 
 var isTimeMonitoringLoop bool
@@ -308,12 +307,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("dataList")
 		fmt.Println(dataList)
 
-		//process trade.
-		handleTradeWisemen(dataList[0], dataList[1])
-		time.Sleep(time.Duration(10) * time.Second)
-
-		//Begin process monitoring for buy fulfilled.
-		processCheckIsTradeBought(dataList[0])
+		overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -389,6 +383,40 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 
+	if requestType == "altIntervalBuyWisemen" {
+		dataList := databaseQuery.Data
+		fmt.Println("altIntervalBuyWisemen")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
+		js, err := json.Marshal(listAltIntervalBuyWisemen[0].IsAltIntervalOperation)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
+	if requestType == "postNoBuyWisemen" {
+		dataList := databaseQuery.Data
+		fmt.Println("postNoBuyWisemen")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		// listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
+
+		//TransactionHistory reason for failure append to model.
+		// transactionHistory := TransactionHistory{Symbol: symbol}
+		wrapUpWisemenOutcomeNoBuy()
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
 	//
 
 	// if requestType == "selectMetricsWisemen" {
@@ -450,8 +478,13 @@ func calculateIsResetDayRecord() {
 	//determine 7 days from that value
 	//if current day is greater thab that value reset.
 }
+
 func main() {
 	go handleRequests()
+
+	// wrapUpWisemenOutcome(transactionHistory)
+	// createAltIntervalBuyWisemen()
+	// dropAltIntervalBuyWisemen()
 
 	// detectDownDay()
 	// handleCalculateDownDay()

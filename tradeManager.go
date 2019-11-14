@@ -794,3 +794,27 @@ func removeElementInt(listEntered []int, val int) []int {
 	}
 	return listAltered
 }
+
+func overarchTradeWisemen(dataList []string) {
+	isTradeDay := false // overarchIsTradeDay()
+	fmt.Println(dataList)
+	if isTradeDay {
+		//process trade.
+		fmt.Println("internal overarchTradeWisemen")
+		// handleTradeWisemen(dataList[0], dataList[1])
+		// time.Sleep(time.Duration(10) * time.Second)
+		// //Begin process monitoring for buy fulfilled.
+		// processCheckIsTradeBought(dataList[0])
+	}
+	//handle if not isTradeDay
+	if isTradeDay == false {
+		//Handle insert postNeoTradeDayResult
+		//insert AltIntervalBuyWisemen
+
+		//Support for isTradeDay in returned response, for multi cancelation scenarios.
+		altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true"}
+		insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+		//Post to neo, neo handle and prepare second reaction.
+		postNeoTradeDayResult("false")
+	}
+}

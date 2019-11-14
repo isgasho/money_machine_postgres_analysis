@@ -97,7 +97,7 @@ var initialWhaleStockQueryPerformed = false
 
 func processTimelineStart() {
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(5, 10000000000000, handleTimelineConditionalTriggers, "handleTimelineConditionalTriggers")
+	createCycle(5, 1000000000, handleTimelineConditionalTriggers, "handleTimelineConditionalTriggers")
 	operatingCycle := cycleMapPool["handleTimelineConditionalTriggers"]
 	go startCycle(operatingCycle)
 }
@@ -106,7 +106,7 @@ func processMonitorSell(symbol string, dropLoss string, timeToSell string) {
 	//Metrics from sell
 	// create cycle for
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(10, 10000000000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
+	createCycle(10, 100000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
 	operatingCycle := cycleMapPool["monitorSell"]
 	go startCycle(operatingCycle)
 }
@@ -1321,4 +1321,119 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 			insertTradeResultStore(tradeResultStore)
 		}
 	}
+}
+
+func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
+	//Post wisemen outcome.
+	//
+	// metrics := selectMetricsWisemen()[0]
+	// alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
+	// //get insertInformationAtTrade for buy and sell
+	// listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
+
+	// fmt.Println("alteredTransactionHistory")
+	// fmt.Println(alteredTransactionHistory)
+	// fmt.Println("listMatchingSymbolInformationAtTrade")
+	// fmt.Println(listMatchingSymbolInformationAtTrade)
+
+	// //Support for handle multiple InformationAtTrade during day...
+	// //typically only would be two... but in case of two of more...
+	// //Support for more than 2 trades
+	// //if no trade occured...
+
+	// dowList := selectDow()
+	// if len(listMatchingSymbolInformationAtTrade) == 0 {
+	// 	//no trade occured handle TradeResultStore
+	// 	if len(dowList) == 0 {
+	// 		tradeResultStore := TradeResultStore{
+	// 			AlgorithmUsed: "wisemen",
+	// 			Result:        "No trade",
+	// 		}
+	// 		insertTradeResultStore(tradeResultStore)
+	// 	}
+	// 	if len(dowList) == 4 {
+	// 		tradeResultStore := TradeResultStore{
+	// 			AlgorithmUsed: "wisemen",
+	// 			Result:        "No trade",
+	// 			Dow1:          dowList[0].CurrentDowValue,
+	// 			Dow2:          dowList[1].CurrentDowValue,
+	// 			Dow3:          dowList[2].CurrentDowValue,
+	// 			Dow4:          dowList[3].CurrentDowValue,
+	// 		}
+	// 		insertTradeResultStore(tradeResultStore)
+	// 	}
+	// }
+
+	// //if buy and sell exists...InformationAtTrade
+	// if len(listMatchingSymbolInformationAtTrade) == 2 {
+	// 	buyHistoryValuePrice := alteredTransactionHistory.HistoryValueList[0].Price
+	// 	sellHistoryValuePrice := alteredTransactionHistory.HistoryValueList[1].Price
+
+	// 	floatBuyHistoryValuePrice := 0.0
+	// 	floatSellHistoryValuePrice := 0.0
+	// 	if s, err := strconv.ParseFloat(buyHistoryValuePrice, 64); err == nil {
+	// 		floatBuyHistoryValuePrice = s
+	// 	}
+	// 	if s1, err := strconv.ParseFloat(sellHistoryValuePrice, 64); err == nil {
+	// 		floatSellHistoryValuePrice = s1
+	// 	}
+	// 	//calculate result
+	// 	//if buy and sell, and if changeAmount meet delimiter,
+	// 	changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
+	// 	stringChangeAmount := fmt.Sprintf("%f", 123.456)
+
+	// 	fmt.Println("changeAmount")
+	// 	fmt.Println(changeAmount)
+	// 	//handle on metrics delimiter...
+	// 	metricsPriceHighPchg := metrics.PriceHighPchg
+	// 	floatMetricsPriceHighPchg := 0.0
+	// 	if s2, err := strconv.ParseFloat(metricsPriceHighPchg, 64); err == nil {
+	// 		floatMetricsPriceHighPchg = s2
+	// 	}
+	// 	optimal := floatBuyHistoryValuePrice + (floatBuyHistoryValuePrice * floatMetricsPriceHighPchg)
+
+	// 	result := "negative"
+	// 	//if sell was less than optimal
+	// 	// isAlgorithmProfitable := false
+	// 	if floatSellHistoryValuePrice >= optimal {
+	// 		result = "positive"
+	// 	}
+	// 	fmt.Println(stringChangeAmount)
+	// 	fmt.Println(result)
+
+	// 	fmt.Println("listMatchingSymbolInformationAtTrade")
+	// 	fmt.Println(listMatchingSymbolInformationAtTrade[0])
+
+	// 	boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
+	// 	sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
+
+	// 	if len(dowList) == 4 {
+	// 		tradeResultStore := TradeResultStore{
+	// 			AlgorithmUsed: "wisemen",
+	// 			Result:        result,
+	// 			ChangeAmount:  stringChangeAmount,
+	// 			StockSymbol:   alteredTransactionHistory.Symbol,
+	// 			TimeTradeBuy:  boughtTime,
+	// 			TimeTradeSell: sellTime,
+	// 			Dow1:          dowList[0].CurrentDowValue,
+	// 			Dow2:          dowList[1].CurrentDowValue,
+	// 			Dow3:          dowList[2].CurrentDowValue,
+	// 			Dow4:          dowList[3].CurrentDowValue,
+	// 		}
+	// 		fmt.Println(tradeResultStore)
+	// 		insertTradeResultStore(tradeResultStore)
+	// 	}
+	// 	if len(dowList) != 4 {
+	// 		tradeResultStore := TradeResultStore{
+	// 			AlgorithmUsed: "wisemen",
+	// 			Result:        result,
+	// 			ChangeAmount:  stringChangeAmount,
+	// 			StockSymbol:   alteredTransactionHistory.Symbol,
+	// 			TimeTradeBuy:  boughtTime,
+	// 			TimeTradeSell: sellTime,
+	// 		}
+	// 		fmt.Println(tradeResultStore)
+	// 		insertTradeResultStore(tradeResultStore)
+	// 	}
+	// }
 }

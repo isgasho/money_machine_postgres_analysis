@@ -53,6 +53,9 @@ type DatabaseMetricsWisemenResponse struct {
 type DatabaseOrderInformationWisemenResponse struct {
 	OrderInformationWisemen []OrderInformationWisemen
 }
+type DatabaseAltIntervalBuyWisemen struct {
+	AltIntervalBuyWisemen []AltIntervalBuyWisemen
+}
 
 type Day struct {
 	ID        string
@@ -169,6 +172,20 @@ type DownDayEvaluation struct {
 type CashDayEvaluation struct {
 	CreatedAt        string
 	IsUnsettledFunds string
+}
+
+// CREATE TABLE alt_interval_buy_wisemen
+// (
+//    id SERIAL PRIMARY KEY,
+//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+//    symbol VARCHAR,
+//    is_alt_interval_operation VARCHAR
+// );
+
+type AltIntervalBuyWisemen struct {
+	CreatedAt              string
+	Symbol                 string
+	IsAltIntervalOperation string
 }
 
 type MetricsWhale struct {
