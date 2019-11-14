@@ -972,13 +972,13 @@ func insertMetricsWisemen(desired_price_range_high string, desired_price_range_l
 	//    trade_buy_monitor_delay_iteration_count VARCHAR
 	// );
 	sqlStatement := `
-		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count, end_trade_time)
-			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10)
+		INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
+			VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
 			RETURNING created_at
 		`
 	var metricsWisemen MetricsWisemen
 
-	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count, end_trade_time)
+	row := db.QueryRow(sqlStatement, desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count)
 	err1 := row.Scan(&metricsWisemen.CreatedAt)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -2201,6 +2201,122 @@ func createHoldingWisemen() {
 	   price VARCHAR,
 	   qty VARCHAR,
 	   order_status VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//
+//holdingsWisemen
+func insertDownDayEvaluation(downDayEvaluation DownDayEvaluation) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	// 	CREATE TABLE down_day_evaluation
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    is_down_day VARCHAR
+	// );
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO down_day_evaluation (is_down_day)
+		VALUES ($1)
+		RETURNING id
+		`
+	var id int
+
+	row := db.QueryRow(sqlStatement, downDayEvaluation.IsDownDay)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectDownDayEvaluation() []DownDayEvaluation {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// 	CREATE TABLE down_day_evaluation
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    is_down_day VARCHAR
+	// );
+
+	rows, err1 := db.Query("SELECT created_at, is_down_day FROM down_day_evaluation")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	downDayEvaluationList := make([]DownDayEvaluation, 0)
+
+	for rows.Next() {
+		var downDayEvaluation DownDayEvaluation
+		if err2 := rows.Scan(&downDayEvaluation.CreatedAt, &downDayEvaluation.IsDownDay); err2 != nil {
+			fmt.Println("err2")
+		}
+		downDayEvaluationList = append(downDayEvaluationList, downDayEvaluation)
+	}
+	return downDayEvaluationList
+}
+
+func dropDownDayEvaluation() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table down_day_evaluation")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createDownDayEvaluation() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE down_day_evaluation
+	(
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   is_down_day VARCHAR
 	);`)
 
 	if err1 != nil {

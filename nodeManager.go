@@ -1330,6 +1330,17 @@ func queryHolding() string {
 	return response
 }
 
+func queryAccountBrokerage() string {
+	json := `
+	{
+		"request_type": "accountBrokerage"
+	}
+	`
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryOrders() string {
 	json := `{
 		"request_type": "orders",

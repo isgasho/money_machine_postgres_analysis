@@ -150,6 +150,15 @@ type BrokerageQuery struct {
 	request_type string
 	Name         string
 }
+type AccountBrokerage struct {
+	Total          string
+	CashAvailable  string
+	UnsettledFunds string
+}
+type DownDayEvaluation struct {
+	CreatedAt string
+	IsDownDay string
+}
 
 type MetricsWhale struct {
 	CreatedAt                      string

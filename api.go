@@ -452,7 +452,17 @@ func calculateIsResetDayRecord() {
 }
 func main() {
 	go handleRequests()
-	// insertDow("boom")
+
+	// detectDownDay()
+	handleCalculateDownDay()
+
+	// dropDow()
+	// createDow()
+	// insertDow("23000")
+	// insertDow("23000")
+	// insertDow("23000")
+	// insertDow("23000")
+	// cashAccountCheckUnsettledFunds()
 
 	// dropMetricsWisemen()
 	// createMetricsWisemen()

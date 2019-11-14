@@ -17,7 +17,8 @@ var conditionOneHour = 11
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
 
-var conditionThreeMinute = 30
+//Wisemen early TSP pull before 8:30, 8:29 engage
+var conditionThreeMinute = 29
 var conditionThreeHour = 8
 
 var conditionFourMinute = 0
@@ -266,8 +267,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
 		fmt.Println("hit3")
 		boolOperate3 = false
-		processTSPRefresh()
-		processDowWebscrape()
+		// processTSPRefresh()
+		// processDowWebscrape()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
@@ -456,7 +457,7 @@ func resetCyclePools() {
 }
 func handleCheckIsTradeBought(params ...interface{}) {
 	//Support for non-static time delimiter.
-	stringTimeDelimiterHour := ""
+	// stringTimeDelimiterHour := ""
 	listVal := reflect.ValueOf(params[0])
 	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
 	listSymbols := listSymbolsInterface.([]string)
@@ -487,6 +488,8 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	}
 
 	//handle time delimiter where no buy is completed.
+	//
+	//
 
 	// if holdingWisemen.OrderStatus == "partial" {
 	// 	fmt.Println("partial hit")
@@ -756,6 +759,12 @@ func healthCheck() {
 }
 func purchaseUpdateSystem() {
 
+}
+func getLatestTradeResultStore() TradeResultStore {
+	tradeResultStoreList := selectTradeResultStore("wisemen")
+	//get latest tradeResultStore
+	tradeResultStore := tradeResultStoreList[len(tradeResultStoreList)-1]
+	return tradeResultStore
 }
 
 // //Store of symbols will affect both wisemen and whale.
@@ -1212,13 +1221,28 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//typically only would be two... but in case of two of more...
 	//Support for more than 2 trades
 	//if no trade occured...
+
+	dowList := selectDow()
 	if len(listMatchingSymbolInformationAtTrade) == 0 {
 		//no trade occured handle TradeResultStore
-		tradeResultStore := TradeResultStore{
-			AlgorithmUsed: "wisemen",
-			Result:        "No trade",
+		if len(dowList) == 0 {
+			tradeResultStore := TradeResultStore{
+				AlgorithmUsed: "wisemen",
+				Result:        "No trade",
+			}
+			insertTradeResultStore(tradeResultStore)
 		}
-		insertTradeResultStore(tradeResultStore)
+		if len(dowList) == 4 {
+			tradeResultStore := TradeResultStore{
+				AlgorithmUsed: "wisemen",
+				Result:        "No trade",
+				Dow1:          dowList[0].CurrentDowValue,
+				Dow2:          dowList[1].CurrentDowValue,
+				Dow3:          dowList[2].CurrentDowValue,
+				Dow4:          dowList[3].CurrentDowValue,
+			}
+			insertTradeResultStore(tradeResultStore)
+		}
 	}
 
 	//if buy and sell exists...InformationAtTrade
@@ -1264,7 +1288,6 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
 		sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
 
-		dowList := selectDow()
 		if len(dowList) == 4 {
 			tradeResultStore := TradeResultStore{
 				AlgorithmUsed: "wisemen",

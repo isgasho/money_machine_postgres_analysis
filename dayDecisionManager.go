@@ -124,3 +124,96 @@ func Abs(x int64) int64 {
 	}
 	return x
 }
+
+func handleOverarchUnsettledFunds() {
+	isUnsettledFunds := isCashAccountCheckUnsettledFunds()
+	if isUnsettledFunds == false {
+		//no unsettled funds
+	}
+}
+func isCashAccountCheckUnsettledFunds() bool {
+	isUnsettledFunds := true
+	//query account
+	response := queryAccountBrokerage()
+	// fmt.Println(response)
+	accountBrokerage := parseAccountBrokerage(response)
+	// fmt.Println(accountBrokerage)
+	//handle on unsettled funds
+	// unsettledFunds := ""
+	if accountBrokerage.UnsettledFunds == "0" {
+		isUnsettledFunds = false
+	}
+	return isUnsettledFunds
+}
+
+func handleCalculateDownDay() {
+	//Reset dow day eval store before calculation
+	dropDownDayEvaluation()
+	createDownDayEvaluation()
+	isDownDay := "true"
+	isDowDown := false
+	isTopStockAbovePchgDelimiter := false
+	//is dow in the red
+	//handle on dow...
+	dowValue := handleDowWebscrape()
+
+	// pchgFromPreviousDay...pull from TRS dow4
+	//query trs from previous day...
+	tradeResultStore := getLatestTradeResultStore()
+	if dowValue < tradeResultStore.Dow4 {
+		isDowDown = true
+	}
+	// //query highest pchg, is pchg greater than delmiter...
+	// //do TSP, doesn't matter if it's recurrent,
+	// //TSP get topstock...
+	wisemenSymbolList := selectWisemenSymbolHold()
+	response := queryMultiStockPull(wisemenSymbolList)
+	stockList := parseStockSetQuery(response)
+	// //sort for highest...
+	highestStockIndex := 0
+	for indexStock, stock := range stockList {
+		if indexStock == 0 {
+			highestStockIndex = indexStock
+			continue
+		}
+		floatHighest := 0.0
+		floatCurrent := 0.0
+		if s, err := strconv.ParseFloat(stockList[highestStockIndex].Pchg, 64); err == nil {
+			floatHighest = s
+		}
+		if s1, err := strconv.ParseFloat(stock.Pchg, 64); err == nil {
+			floatCurrent = s1
+		}
+		if floatCurrent > floatHighest {
+			highestStockIndex = indexStock
+		}
+	}
+	//if topStop greater than delmiter.
+	// topStock
+	//
+	floatTopStockPchg := 0.0
+	if s, err := strconv.ParseFloat(stockList[highestStockIndex].Pchg, 64); err == nil {
+		floatTopStockPchg = s
+	}
+	//static wismenDownDayDelimiter 10
+	wismenDownDayDelimiter := 10.00
+	//support for dynamic delimiter store
+	//is highest pchg greater than delmiter.
+	if floatTopStockPchg >= wismenDownDayDelimiter {
+		isTopStockAbovePchgDelimiter = true
+	}
+	if isTopStockAbovePchgDelimiter {
+		if isDowDown == false {
+			isDownDay = "false"
+		}
+	}
+	// fmt.Println("isDowDown")
+	// fmt.Println(isDowDown)
+	// fmt.Println("isTopStockAbovePchgDelimiter")
+	// fmt.Println(isTopStockAbovePchgDelimiter)
+	// fmt.Println("isDownDay")
+	// fmt.Println(isDownDay)
+	//store results in DB
+	downDayEvaluation := DownDayEvaluation{IsDownDay: isDownDay}
+	insertDownDayEvaluation(downDayEvaluation)
+}

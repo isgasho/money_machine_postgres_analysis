@@ -598,8 +598,6 @@ func parseDowWebscrape(queryString string) string {
 		}
 	}
 	stringClosestMatch := calculateIndexMatchClosestToDelimiter(listSpanClasses, listIndexPossibleMatches)
-	// fmt.Println("stringClosestMatch")
-	// fmt.Println(stringClosestMatch)
 
 	currentDowValueQuery1 := strings.Split(stringClosestMatch, "</span>")[0]
 	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "\">")[1]
@@ -702,6 +700,22 @@ func parseBalance(queryString string) string {
 	// balance := strings.Split(splitDataQuery2, "</quotes>")[0]
 	// balance := ""
 	return balance
+}
+func parseAccountBrokerage(queryString string) AccountBrokerage {
+	accountBrokerage := AccountBrokerage{}
+	splitDataQuery1 := strings.Split(queryString, "<unsettledfunds>")[1]
+	unsettledfunds := strings.Split(splitDataQuery1, "</unsettledfunds>")[0]
+	accountBrokerage.UnsettledFunds = unsettledfunds
+
+	splitDataQuery2 := strings.Split(queryString, "<cashavailable>")[1]
+	cashavailable := strings.Split(splitDataQuery2, "</cashavailable>")[0]
+	accountBrokerage.CashAvailable = cashavailable
+
+	splitDataQuery3 := strings.Split(queryString, "<total>")[1]
+	total := strings.Split(splitDataQuery3, "</total>")[0]
+	accountBrokerage.Total = total
+
+	return accountBrokerage
 }
 
 func parseHistory(queryString string) []string {
