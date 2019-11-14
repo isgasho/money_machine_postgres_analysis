@@ -454,8 +454,21 @@ func main() {
 	go handleRequests()
 
 	// detectDownDay()
-	handleCalculateDownDay()
+	// handleCalculateDownDay()
+	// handleCalculateCashDay()
 
+	// resetTempSymbolHold()
+	// resetStockWisemenSymbolHold()
+	// resetStockWisemen()
+
+	// queryStopTwi()
+	// queryStartTwi()
+	// processOverarchTopStock()
+	// processWisemenQueryStockSet()
+
+	//before operation query
+	// isBool := overarchIsTradeDay()
+	// fmt.Println(isBool)
 	// dropDow()
 	// createDow()
 	// insertDow("23000")

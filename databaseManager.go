@@ -228,6 +228,79 @@ func selectAllStockWisemen() []Stock {
 	return stockList
 }
 
+func dropStockWisemen() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table stock_wisemen")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createStockWisemen() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE stock_wisemen
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   symbol VARCHAR,
+	   bid VARCHAR,
+	   ask VARCHAR,
+	   last VARCHAR,
+	   pchg VARCHAR,
+	   pcls VARCHAR,
+	   opn VARCHAR,
+	   vl VARCHAR,
+	   pvol VARCHAR,
+	   volatility12 VARCHAR,
+	   wk52hi VARCHAR,
+	   wk52hidate VARCHAR,
+	   wk52lo VARCHAR,
+	   wk52lodate VARCHAR,
+	   hi VARCHAR,
+	   lo VARCHAR,
+	   pr_adp_50 VARCHAR,
+	   pr_adp_100 VARCHAR,
+	   prchg VARCHAR,
+	   adp_50 VARCHAR,
+	   adp_100 VARCHAR,
+	   adv_30 VARCHAR,
+	   adv_90 VARCHAR,
+	   is_current_price_higher_than_previous_close VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
 // func deleteStock(symbolToDel string) {
 // 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 // 		"dbname=%s sslmode=disable",
@@ -2214,7 +2287,121 @@ func createHoldingWisemen() {
 }
 
 //
-//holdingsWisemen
+//CashDay
+func insertCashDayEvaluation(cashDayEvaluation CashDayEvaluation) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	// 	CREATE TABLE cash_day_evaluation
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    is_unsettled_funds VARCHAR
+	// );
+	defer db.Close()
+	sqlStatement := `
+		INSERT INTO cash_day_evaluation (is_unsettled_funds)
+		VALUES ($1)
+		RETURNING id
+		`
+	var id int
+
+	row := db.QueryRow(sqlStatement, cashDayEvaluation.IsUnsettledFunds)
+	err1 := row.Scan(&id)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
+}
+
+func selectCashDayEvaluation() []CashDayEvaluation {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// 	CREATE TABLE cash_day_evaluation
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    is_unsettled_funds VARCHAR
+	// );
+	rows, err1 := db.Query("SELECT created_at, is_unsettled_funds FROM cash_day_evaluation")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	cashDayEvaluationList := make([]CashDayEvaluation, 0)
+
+	for rows.Next() {
+		var cashDayEvaluation CashDayEvaluation
+		if err2 := rows.Scan(&cashDayEvaluation.CreatedAt, &cashDayEvaluation.IsUnsettledFunds); err2 != nil {
+			fmt.Println("err2")
+		}
+		cashDayEvaluationList = append(cashDayEvaluationList, cashDayEvaluation)
+	}
+	return cashDayEvaluationList
+}
+
+func dropCashDayEvaluation() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table cash_day_evaluation")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createCashDayEvaluation() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE cash_day_evaluation
+	(
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   is_unsettled_funds VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//DownDayEvaluation
 func insertDownDayEvaluation(downDayEvaluation DownDayEvaluation) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"dbname=%s sslmode=disable",
@@ -2227,17 +2414,20 @@ func insertDownDayEvaluation(downDayEvaluation DownDayEvaluation) {
 	// (
 	//    id SERIAL PRIMARY KEY,
 	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    is_down_day VARCHAR
+	//    is_down_day VARCHAR,
+	//    dow VARCHAR,
+	//    previous_dow VARCHAR,
+	//    greatest_pchg VARCHAR
 	// );
 	defer db.Close()
 	sqlStatement := `
-		INSERT INTO down_day_evaluation (is_down_day)
-		VALUES ($1)
+		INSERT INTO down_day_evaluation (is_down_day, dow, previous_dow, greatest_pchg)
+		VALUES ($1,$2,$3,$4)
 		RETURNING id
 		`
 	var id int
 
-	row := db.QueryRow(sqlStatement, downDayEvaluation.IsDownDay)
+	row := db.QueryRow(sqlStatement, downDayEvaluation.IsDownDay, downDayEvaluation.Dow, downDayEvaluation.PreviousDow, downDayEvaluation.GreatestPchg)
 	err1 := row.Scan(&id)
 	if err1 != nil {
 		fmt.Println("Create Error 2")
@@ -2254,15 +2444,7 @@ func selectDownDayEvaluation() []DownDayEvaluation {
 		panic(err)
 	}
 	defer db.Close()
-
-	// 	CREATE TABLE down_day_evaluation
-	// (
-	//    id SERIAL PRIMARY KEY,
-	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    is_down_day VARCHAR
-	// );
-
-	rows, err1 := db.Query("SELECT created_at, is_down_day FROM down_day_evaluation")
+	rows, err1 := db.Query("SELECT created_at, is_down_day, dow, previous_dow, greatest_pchg FROM down_day_evaluation")
 	if err1 != nil {
 		fmt.Println(err1)
 	}
@@ -2271,7 +2453,7 @@ func selectDownDayEvaluation() []DownDayEvaluation {
 
 	for rows.Next() {
 		var downDayEvaluation DownDayEvaluation
-		if err2 := rows.Scan(&downDayEvaluation.CreatedAt, &downDayEvaluation.IsDownDay); err2 != nil {
+		if err2 := rows.Scan(&downDayEvaluation.CreatedAt, &downDayEvaluation.IsDownDay, &downDayEvaluation.Dow, &downDayEvaluation.PreviousDow, &downDayEvaluation.GreatestPchg); err2 != nil {
 			fmt.Println("err2")
 		}
 		downDayEvaluationList = append(downDayEvaluationList, downDayEvaluation)
@@ -2316,7 +2498,10 @@ func createDownDayEvaluation() {
 	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   is_down_day VARCHAR
+	   is_down_day VARCHAR,
+	   dow VARCHAR,
+	   previous_dow VARCHAR,
+	   greatest_pchg VARCHAR
 	);`)
 
 	if err1 != nil {

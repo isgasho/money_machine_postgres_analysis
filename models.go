@@ -155,9 +155,20 @@ type AccountBrokerage struct {
 	CashAvailable  string
 	UnsettledFunds string
 }
+
+//down_day_evaluation
 type DownDayEvaluation struct {
-	CreatedAt string
-	IsDownDay string
+	CreatedAt    string
+	IsDownDay    string
+	Dow          string
+	PreviousDow  string
+	GreatestPchg string
+}
+
+//cash_day_evaluation
+type CashDayEvaluation struct {
+	CreatedAt        string
+	IsUnsettledFunds string
 }
 
 type MetricsWhale struct {

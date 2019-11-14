@@ -112,7 +112,7 @@ func processMonitorSell(symbol string, dropLoss string, timeToSell string) {
 }
 
 func processWisemenQueryStockSet() {
-	createCycle(3, 1000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
+	createCycle(3, 100000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
 	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
 	go startCycle(operatingCycle)
 }
@@ -1151,13 +1151,17 @@ func systemStartProcesses() {
 	createDow()
 }
 
-// func resetTempSymbolHold() {
-// 	dropTempSymbolHold()
-// 	createTempSymbolHold()
-// }
+func resetTempSymbolHold() {
+	dropTempSymbolHoldHigh()
+	createTempSymbolHoldHigh()
+}
 func resetStockWisemenSymbolHold() {
 	dropWisemenSymbolHold()
 	createWisemenSymbolHold()
+}
+func resetStockWisemen() {
+	dropStockWisemen()
+	createStockWisemen()
 }
 
 func handleDayReset() {
