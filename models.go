@@ -344,3 +344,8 @@ type RecordSystemMonth struct {
 	IntMonthOfYear  int
 	IntNumberOfDays int
 }
+
+type MarketOpenAnalysis struct {
+	CreatedAt      string
+	IsMarketClosed string
+}

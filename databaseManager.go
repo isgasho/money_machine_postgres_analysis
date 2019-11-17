@@ -174,8 +174,115 @@ func createDow() {
 	fmt.Println(count)
 }
 
-func deleteDow() {
+//
+func insertMarketOpenAnalysis(marketOpenAnalysis MarketOpenAnalysis) {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Create Error 1")
+	}
+	defer db.Close()
+
+	sqlStatement := `
+		INSERT INTO market_open_analysis (is_market_closed)
+		VALUES ($1)
+		RETURNING id
+		`
+	var dow Dow
+	row := db.QueryRow(sqlStatement, marketOpenAnalysis.IsMarketClosed)
+	err1 := row.Scan(&dow.ID)
+	if err1 != nil {
+		fmt.Println("Create Error 2")
+	}
 }
+func selectMarketOpenAnalysis() []MarketOpenAnalysis {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	// 	CREATE TABLE market_open_analysis
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    is_market_closed VARCHAR
+	// );
+	rows, err1 := db.Query("SELECT created_at, is_market_closed FROM market_open_analysis")
+	if err1 != nil {
+		fmt.Println(err1)
+	}
+	defer rows.Close()
+	marketOpenAnalysisList := make([]MarketOpenAnalysis, 0)
+
+	for rows.Next() {
+		// var symbol string
+		var marketOpenAnalysis MarketOpenAnalysis
+		if err2 := rows.Scan(&marketOpenAnalysis.CreatedAt, &marketOpenAnalysis.IsMarketClosed); err2 != nil {
+			fmt.Println("err2")
+		}
+		marketOpenAnalysisList = append(marketOpenAnalysisList, marketOpenAnalysis)
+	}
+	return marketOpenAnalysisList
+}
+
+func dropMarketOpenAnalysis() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec("drop table market_open_analysis")
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+func createMarketOpenAnalysis() {
+	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+		"dbname=%s sslmode=disable",
+		host, port, user, dbname)
+	db, err := sql.Open("postgres", psqlInfo)
+	if err != nil {
+		fmt.Println("Read Error 1")
+		panic(err)
+	}
+	defer db.Close()
+
+	res, err1 := db.Exec(`CREATE TABLE market_open_analysis
+	( 
+	   id SERIAL PRIMARY KEY,
+	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	   is_market_closed VARCHAR
+	);`)
+
+	if err1 != nil {
+		fmt.Println("Delete Error 2")
+	}
+	count, err2 := res.RowsAffected()
+	if err2 != nil {
+		fmt.Println("Delete Error 3")
+	}
+	fmt.Println(count)
+}
+
+//
 
 func insertStockWisemen(stockEntry Stock) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -1503,28 +1610,108 @@ func selectTradeInfo() {
 func deleteTradeInfo() {
 }
 
-func insertEndOfDayAnalyticsOperations(marketClosed bool, day string) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
+// func insertEndOfDayAnalyticsOperations(endOfDayAnalyticsOperations EndOfDayAnalyticsOperations) {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Create Error 1")
+// 	}
+// 	defer db.Close()
 
-	sqlStatement := `
-		INSERT INTO end_of_day_analytics_operations (market_closed, day_of_week)
-		VALUES ($1, $2)
-		RETURNING id
-		`
-	var dow Dow
-	row := db.QueryRow(sqlStatement, marketClosed, day)
-	err1 := row.Scan(&dow.ID)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-}
+// 	sqlStatement := `
+// 		INSERT INTO end_of_day_analytics_operations (market_closed, day_of_week)
+// 		VALUES ($1, $2)
+// 		RETURNING id
+// 		`
+// 	var dow Dow
+// 	row := db.QueryRow(sqlStatement, marketClosed, day)
+// 	err1 := row.Scan(&dow.ID)
+// 	if err1 != nil {
+// 		fmt.Println("Create Error 2")
+// 	}
+// }
+
+// func selectEvalResultsWhale() []string {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
+
+// 	rows, err1 := db.Query("SELECT symbol FROM eval_results_whale")
+// 	if err1 != nil {
+// 		fmt.Println(err1)
+// 	}
+// 	defer rows.Close()
+// 	symbolList := make([]string, 0)
+
+// 	for rows.Next() {
+// 		var symbol string
+// 		if err2 := rows.Scan(&symbol); err2 != nil {
+// 			fmt.Println("err2")
+// 		}
+// 		symbolList = append(symbolList, symbol)
+// 	}
+// 	return symbolList
+// }
+
+// func dropEvalResultsWhale() {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
+
+// 	res, err1 := db.Exec("drop table eval_results_whale")
+// 	if err1 != nil {
+// 		fmt.Println("Delete Error 2")
+// 	}
+// 	count, err2 := res.RowsAffected()
+// 	if err2 != nil {
+// 		fmt.Println("Delete Error 3")
+// 	}
+// 	fmt.Println(count)
+// }
+
+// func createEvalResultsWhale() {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
+
+// 	res, err1 := db.Exec(`CREATE TABLE eval_results_whale
+// 	(
+// 		id SERIAL PRIMARY KEY,
+// 		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+// 		symbol VARCHAR,
+// 		is_breach_worthy VARCHAR,
+// 		is_pattern_met VARCHAR
+// 	 );`)
+
+// 	if err1 != nil {
+// 		fmt.Println("Delete Error 2")
+// 	}
+// 	count, err2 := res.RowsAffected()
+// 	if err2 != nil {
+// 		fmt.Println("Delete Error 3")
+// 	}
+// 	fmt.Println(count)
+// }
 
 func insertEvalResultsWhale(evalResult EvalResultsWhale) {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -2715,11 +2902,12 @@ func postNeoHealthCheck() string {
 	return response
 }
 
-func postNeoTradeDayResult(tradeDayResult string) string {
+func postNeoTradeDayResult(symbol string, tradeDayResult string) string {
 	json := `{
 		"requestType": "tradeDayResult",
 		"data": [
 			`
+	json += "\"" + symbol + "\","
 	json += "\"" + tradeDayResult + "\""
 	json = json + `]}`
 

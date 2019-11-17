@@ -10,7 +10,6 @@ import (
 // var holidayMap = make(map[string]bool) {}
 var holidayMap = map[string]string{"New Years": "12 31", "MLK": "1 20", "Presidents": "2 17", "Good Friday": "4 10", "Memorial": "5 25", "Independence": "7 3", "Labor": "9 2", "Thanksgiving": "11 26", "Christmas": "12 25"}
 var shortDayMap = map[string]string{"Pre Independence day": "7 2", "Post Thanksgiving Black Friday": "11 27", "Pre Christmas": "12 24"}
-var isMarketClosed = false
 
 func checkIfHoliday() {
 	//Check holiday list if case match, return true
@@ -29,26 +28,34 @@ func checkIfHoliday() {
 	// fmt.Println("map:", n)
 }
 
+// handleOverarchTopStock
 func checKIsBrokerageResponding() {
 	//Multi-stock query simulation
 	response := queryIsBrokerageResponding()
 	askTime := parseAskTimeQuery(response)
+	isMarketClosed := false
 	fmt.Println("asktime is:", askTime)
 	//Conditional if Ask time set to 0
-	checkConditionalIsAskTime(askTime)
+	isMarketClosed = checkConditionalIsAskTime(askTime)
 	if isMarketClosed == false {
 		fmt.Println("isMarketClosed is false")
+		marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "false"}
+		insertMarketOpenAnalysis(marketOpenAnalysis)
 	}
 	if isMarketClosed == true {
 		fmt.Println("marketClosed is true")
+		marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "true"}
+		insertMarketOpenAnalysis(marketOpenAnalysis)
 	}
 }
 
-func checkConditionalIsAskTime(askTime string) {
+func checkConditionalIsAskTime(askTime string) bool {
+	boolReturned := false
 	fmt.Println(askTime)
 	if askTime == "00:00" {
-		isMarketClosed = true
+		boolReturned = true
 	}
+	return boolReturned
 }
 
 func getDate() (int, int, int) {

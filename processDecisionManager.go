@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 24
-var checkIsMarketOpenHour = 11
+var checkIsMarketOpenMinute = 49
+var checkIsMarketOpenHour = 7
 
-var conditionOneMinute = 25
-var conditionOneHour = 11
+var conditionOneMinute = 50
+var conditionOneHour = 7
 
 var conditionTwoMinute = 0
 var conditionTwoHour = 8
 
-//Wisemen early TSP pull before 8:30, 8:29 engage
-var conditionThreeMinute = 29
-var conditionThreeHour = 8
+//conditionMinuteHandleCalculateDownDay1 8:29 engage
+var conditionMinuteHandleCalculateDownDay1 = 29
+var conditionHourHandleCalculateDownDay1 = 8
 
 var conditionFourMinute = 0
 var conditionFourHour = 9
@@ -70,9 +70,11 @@ var conditionNineteenMinute = 26
 var conditionNineteenHour = 11
 
 var checkIsMarketOpenBool = true
-var checkIsMarketOpenFollowUpBool = true
+
+// var checkIsMarketOpenFollowUpBool = true
 var boolOperate1 = true
 var boolOperate2 = true
+var boolOperateHandleCalculateDownDay1 = true
 var boolOperate3 = true
 var boolOperate4 = true
 var boolOperate5 = true
@@ -179,32 +181,74 @@ func processCheckIsTradeBought(symbol string) {
 }
 
 func checkIsDowStore(currentHour int, currentMinute int) {
+	isStore := true
 	//point1
-	if currentHour == 7 {
-		if currentMinute == 45 {
-			dowValue := handleDowWebscrape()
-			insertDow(dowValue)
+	if isStore {
+		if currentHour == 7 {
+			if currentMinute == 49 {
+				dowValue := handleDowWebscrape()
+				insertDow(dowValue)
+				isStore = false
+			}
+		}
+	}
+	if isStore == false {
+		if currentHour == 7 {
+			if currentMinute == 50 {
+				isStore = true
+			}
 		}
 	}
 	//point2
-	if currentHour == 8 {
-		if currentMinute == 30 {
-			dowValue := handleDowWebscrape()
-			insertDow(dowValue)
+	if isStore {
+		if currentHour == 8 {
+			if currentMinute == 30 {
+				dowValue := handleDowWebscrape()
+				insertDow(dowValue)
+				isStore = false
+			}
+		}
+	}
+	if isStore == false {
+		if currentHour == 8 {
+			if currentMinute == 31 {
+				isStore = true
+			}
 		}
 	}
 	//point3
-	if currentHour == 9 {
-		if currentMinute == 45 {
-			dowValue := handleDowWebscrape()
-			insertDow(dowValue)
+	if isStore {
+		if currentHour == 9 {
+			if currentMinute == 45 {
+				dowValue := handleDowWebscrape()
+				insertDow(dowValue)
+				isStore = false
+			}
 		}
 	}
+	if isStore == false {
+		if currentHour == 9 {
+			if currentMinute == 46 {
+				isStore = true
+			}
+		}
+	}
+
 	//point4
-	if currentHour == 12 {
-		if currentMinute == 0 {
-			dowValue := handleDowWebscrape()
-			insertDow(dowValue)
+	if isStore {
+		if currentHour == 12 {
+			if currentMinute == 0 {
+				dowValue := handleDowWebscrape()
+				insertDow(dowValue)
+				isStore = false
+			}
+		}
+	}
+	if isStore == false {
+		if currentHour == 12 {
+			if currentMinute == 1 {
+				isStore = true
+			}
 		}
 	}
 }
@@ -216,59 +260,43 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	fmt.Println(currentTime.Second())
 	fmt.Println(currentTime.Date())
 
-	//if time equals
-	//handle dow store conditional...
-	// if isTrade {
-
-	// }
-
-	checkIsDowStore(currentTime.Hour(), currentTime.Minute())
-
-	//reset dow conditional
-
 	//Conditional operate
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
 		systemStartProcesses()
 		checKIsBrokerageResponding()
 		//Wisemen algorithm same day calculation
 		// handleDayRotation()
-		if isMarketClosed {
+		conditionMarketClosed := selectMarketOpenAnalysis()
+		if conditionMarketClosed[0].IsMarketClosed == "true" {
 			setTimelineOperationsFalse()
 		}
 		checkIsMarketOpenBool = false
 		boolOperate19 = true
 	}
+
+	//dow store periodic
+	checkIsDowStore(currentTime.Hour(), currentTime.Minute())
+
 	//Initiate monitoring pool query on cycle
 	//Periodic TSP refresh
 	if currentTime.Minute() == conditionOneMinute && currentTime.Hour() == conditionOneHour && boolOperate1 {
-		fmt.Println("hit1 init operations")
+		fmt.Println("hit1")
 		boolOperate1 = false
-		// processTSPRefresh()
-		// handleTSPRefresh()
-		processDowWebscrape()
+		handleOverarchTopStock()
 		processWisemenQueryStockSet()
 		processWhaleQueryStockSet()
 	}
-	// if currentTime.Minute() == testOneMinute && currentTime.Hour() == testOneHour && boolOperate1 {
-	// 	fmt.Println("hit1 init operations")
-	// 	queryCycle.BooleanOperate = true
-	// 	boolOperate1 = false
-	// 	boolOperate19 = true
-	// 	handleTSPRefresh()
-	// 	processQueryStockSet()
-	// 	initialOperationPerformed = true
-	// }
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
 		boolOperate2 = false
 		processTSPRefresh()
-		processDowWebscrape()
 	}
-	if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
-		fmt.Println("hit3")
-		boolOperate3 = false
-		// processTSPRefresh()
-		// processDowWebscrape()
+	if currentTime.Minute() == conditionMinuteHandleCalculateDownDay1 && currentTime.Hour() == conditionHourHandleCalculateDownDay1 && boolOperateHandleCalculateDownDay1 {
+		fmt.Println("handleCalculateDownDay1")
+		boolOperateHandleCalculateDownDay1 = false
+		//handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
+		handleCalculateCashDay()
+		handleCalculateDownDay()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
@@ -363,88 +391,10 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
 		boolOperate19 = false
-
-		handleWisemenQueryStockListCycle := cycleMapPool["handleWisemenQueryStockList"]
-		if handleWisemenQueryStockListCycle.BooleanOperate {
-			cancelCycle(handleWisemenQueryStockListCycle)
-		}
-
-		handleWhaleQueryStockListCycle := cycleMapPool["handleWhaleQueryStockList"]
-		if handleWhaleQueryStockListCycle.BooleanOperate {
-			cancelCycle(handleWhaleQueryStockListCycle)
-		}
-
 		//At some point in this hour reset the pools, and reset the timeline.
 		resetCyclePools()
-
-		// resetTempSymbolHold()
-		// resetStockWisemenSymbolHold()
-		// handleEndOfDayAnalyticsOperations()
-		// handleDayReset()
+		handleDayReset()
 	}
-
-	//Conditional operate
-	// if currentTime.Minute() == conditionThreeMinute && currentTime.Hour() == conditionThreeHour && boolOperate3 {
-	// 	checKIsBrokerageResponding()
-
-	// 	if isMarketClosed {
-	// 		setTimelineOperationsFalse()
-	// 	}
-	// 	boolOperate3 = false
-	// 	boolOperate19 = true
-	// }
-	// //Initiate monitoring pool query on cycle
-	// //Periodic TSP refresh
-	// if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
-	// 	fmt.Println("hit1 init operations")
-	// 	boolOperate4 = false
-	// 	// processTSPRefresh()
-	// 	// processDowWebscrape()
-	// 	processQueryStockSet()
-	// }
-
-	// if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate19 {
-	// 	fmt.Println("hit19")
-	// 	boolOperate19 = false
-	// 	if queryCycle.BooleanOperate {
-	// 		queryCycle.BooleanOperate = false
-	// 	}
-	// 	handleEndOfDayAnalyticsOperations()
-	// 	handleDayReset()
-	// }
-
-	// //
-
-	// //Conditional operate
-	// if currentTime.Minute() == conditionSixMinute && currentTime.Hour() == conditionSixHour && boolOperate6 {
-	// 	checKIsBrokerageResponding()
-
-	// 	if isMarketClosed {
-	// 		setTimelineOperationsFalse()
-	// 	}
-	// 	boolOperate6 = false
-	// 	boolOperate19 = true
-	// }
-	// //Initiate monitoring pool query on cycle
-	// //Periodic TSP refresh
-	// if currentTime.Minute() == conditionSevenMinute && currentTime.Hour() == conditionSevenHour && boolOperate7 {
-	// 	fmt.Println("hit1 init operations")
-	// 	boolOperate7 = false
-	// 	processTSPRefresh()
-	// 	processDowWebscrape()
-	// 	processQueryStockSet()
-	// }
-
-	// if currentTime.Minute() == conditionEightMinute && currentTime.Hour() == conditionEightHour && boolOperate19 {
-	// 	fmt.Println("hit19")
-	// 	boolOperate19 = false
-	// 	if queryCycle.BooleanOperate {
-	// 		queryCycle.BooleanOperate = false
-	// 	}
-	// 	handleEndOfDayAnalyticsOperations()
-	// 	handleDayReset()
-	// }
-
 }
 
 func resetCyclePools() {
@@ -522,7 +472,8 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	// }
 }
 
-func handleOverarchTopStock(params ...interface{}) {
+// func handleOverarchTopStock(params ...interface{}) {
+func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
 	// twiStockList := []Stock{}
 	//High process for wisemen and whale
@@ -533,8 +484,6 @@ func handleOverarchTopStock(params ...interface{}) {
 func highTransferanceProcess(twiStockList []Stock) {
 	//TSP
 	topStockPullStockList := topStockPull()
-	//[]Stock{Stock{Symbol: "test1", Pchg: "3.00"}, Stock{Symbol: "test2", Pchg: "6.00"}, Stock{Symbol: "test3", Pchg: "5.00"}}
-	//Twi
 
 	for i, v := range topStockPullStockList {
 		fmt.Println(v.Symbol)
@@ -542,7 +491,6 @@ func highTransferanceProcess(twiStockList []Stock) {
 		i++
 	}
 
-	// twiTSPList := twiStockList
 	listTempDuplicantFiltered := []Stock{}
 	positiveTwiTSPList := []Stock{}
 	positiveTwiStockList := []Stock{}
@@ -556,12 +504,6 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		i++
 	}
-
-	// for i, v := range positiveTwiStockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
 
 	// //No duplicates in lists
 	for indexTsp, tsp := range topStockPullStockList {
@@ -578,20 +520,9 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		indexTsp++
 	}
-
-	// for i, v := range positiveTwiTSPList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
-
 	// //Query temp
 	tempSymbolHold := selectTempSymbolHoldHigh()
 	// //Find duplicants in temp and appendedList
-
-	// // fmt.Println("twiTSPList")
-	// // fmt.Println(twiTSPList)
-
 	for indexTwiTSP, twiTSP := range positiveTwiTSPList {
 		isDuplicateTemp = false
 		for indexTemp, temp := range tempSymbolHold {
@@ -629,14 +560,7 @@ func highTransferanceProcess(twiStockList []Stock) {
 			}
 
 			if floatCurrent > floatHighest {
-				// fmt.Println("previousHighest")
-				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
 				highestStockIndex = indexTempDuplicantFiltered
-				// fmt.Println("index")
-				// fmt.Println(i)
-				// fmt.Println("listTempDuplicantFiltered[highestStockIndex].Pchg")
-				// fmt.Println(listTempDuplicantFiltered[highestStockIndex].Pchg)
-				// fmt.Println(tempDuplicantFiltered.Pchg)
 			}
 		}
 		topStockList = append(topStockList, listTempDuplicantFiltered[highestStockIndex])
@@ -753,12 +677,10 @@ func healthCheck() {
 		isNeoResponse = "true"
 	}
 	postHealthCheckNode(isNeoResponse)
-
 	//res from check
 	//nodemail
 }
 func purchaseUpdateSystem() {
-
 }
 func getLatestTradeResultStore() TradeResultStore {
 	tradeResultStoreList := selectTradeResultStore("wisemen")
@@ -767,64 +689,7 @@ func getLatestTradeResultStore() TradeResultStore {
 	return tradeResultStore
 }
 
-// //Store of symbols will affect both wisemen and whale.
-// //Temp,
-// //if symbols do not exist in set add to monitorSymbol
-// for indexStock, stock := range stockList {
-// 	if len(topRankList) < 3 {
-// 		if strings.Contains(stock.Symbol, ".") == false {
-// 			//compare price, proceed to add until met...
-// 			//pull wisemen metrics, price delimiter,
-// 			metricsWisemen := selectMetricsWisemen()[0]
-// 			if stock.Last >= metricsWisemen.DesiredPriceRangeLow && stock.Last <= metricsWisemen.DesiredPriceRangeHigh {
-// 				topRankList = append(topRankList, stock)
-// 			}
-// 		}
-// 	}
-// 	indexStock++
-// }
-
-// //Store for monitorList, handle temp hold and
-// //Query monitorSymbol
-// monitorList := selectTempSymbolHold()
-// if len(monitorList) == 0 {
-// 	for i, v := range topRankList {
-// 		insertTempSymbolHold(v.Symbol, false)
-// 		i++
-// 	}
-// }
-// if len(monitorList) != 0 {
-// 	boolStockMonitorMap := make(map[string]bool)
-// 	// for i, v := range topRankList {
-// 	for i, v := range topRankList {
-// 		for i1, v1 := range monitorList {
-// 			if v.Symbol == v1 {
-// 				fmt.Println(v.Symbol)
-// 				boolStockMonitorMap[v.Symbol] = true
-// 				break
-// 			}
-// 			if i1 == (len(monitorList) - 1) {
-// 				// fmt.Println("last symbol ", v.Symbol)
-// 				boolStockMonitorMap[v.Symbol] = false
-// 			}
-// 		}
-// 		i++
-// 	}
-
-// 	//if symbol is not present
-// 	for k, v := range boolStockMonitorMap {
-// 		// fmt.Printf("key[%s] value[%s]\n", k, v)
-// 		if v == false {
-// 			returningStockList = append(returningStockList, k)
-// 			insertTempSymbolHold(k, false)
-// 		}
-// 	}
-// }
-// return returningStockList
-// }
-
 // func handleFillHolds(params ...interface{}) {
-
 func handleWisemenFillHold() {
 	tempSymbolHoldList := selectTempSymbolHoldHigh()
 	// whaleDelimiterMet := checkWhaleDelimiterMet()
@@ -1134,21 +999,26 @@ func twiWebscrape() []Stock {
 	return stockList
 }
 
-func handleEndOfDayAnalyticsOperations() {
-	day := getDayOfWeek()
-	//insert into table conditional
-	insertEndOfDayAnalyticsOperations(isMarketClosed, day.String())
-}
+// func handleEndOfDayAnalyticsOperations() {
+// 	day := getDayOfWeek()
+// 	//insert into table conditional
+// }
 
 func systemStartProcesses() {
 	//reset existing twi server
 	queryStopTwi()
-	// fmt.Println(response)
 	queryStartTwi()
-	// fmt.Println(response1)
 	//reset dow
 	dropDow()
 	createDow()
+	//
+	resetTempSymbolHold()
+	//
+	resetStockWisemenSymbolHold()
+	//
+	resetStockWisemen()
+	//
+	resetAltIntervalBuyWisemen()
 }
 
 func resetTempSymbolHold() {
@@ -1162,6 +1032,11 @@ func resetStockWisemenSymbolHold() {
 func resetStockWisemen() {
 	dropStockWisemen()
 	createStockWisemen()
+}
+
+func resetAltIntervalBuyWisemen() {
+	dropAltIntervalBuyWisemen()
+	createAltIntervalBuyWisemen()
 }
 
 func handleDayReset() {
@@ -1184,7 +1059,6 @@ func handleDayReset() {
 	boolOperate17 = true
 	boolOperate18 = true
 	checkIsMarketOpenBool = true
-	isMarketClosed = false
 }
 
 func setTimelineOperationsFalse() {
@@ -1206,6 +1080,7 @@ func setTimelineOperationsFalse() {
 	boolOperate16 = false
 	boolOperate17 = false
 	boolOperate18 = false
+	boolOperateHandleCalculateDownDay1 = false
 }
 
 func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
@@ -1324,116 +1199,45 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 }
 
 func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
-	//Post wisemen outcome.
-	//
-	// metrics := selectMetricsWisemen()[0]
-	// alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
-	// //get insertInformationAtTrade for buy and sell
-	// listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
+	downDayEvaluationList := selectDownDayEvaluation()
+	cashDayEvaluationList := selectCashDayEvaluation()
 
-	// fmt.Println("alteredTransactionHistory")
-	// fmt.Println(alteredTransactionHistory)
-	// fmt.Println("listMatchingSymbolInformationAtTrade")
-	// fmt.Println(listMatchingSymbolInformationAtTrade)
+	downDayEval := downDayEvaluationList[len(downDayEvaluationList)-1]
+	dow := 0.0
+	dowPrevious := 0.0
+	dowPchg := 0.0
 
-	// //Support for handle multiple InformationAtTrade during day...
-	// //typically only would be two... but in case of two of more...
-	// //Support for more than 2 trades
-	// //if no trade occured...
+	if s, err := strconv.ParseFloat(downDayEval.Dow, 64); err == nil {
+		dow = s
+	}
+	if s1, err := strconv.ParseFloat(downDayEval.PreviousDow, 64); err == nil {
+		dowPrevious = s1
+	}
+	if s2, err := strconv.ParseFloat(downDayEval.GreatestPchg, 64); err == nil {
+		dowPchg = s2
+	}
 
-	// dowList := selectDow()
-	// if len(listMatchingSymbolInformationAtTrade) == 0 {
-	// 	//no trade occured handle TradeResultStore
-	// 	if len(dowList) == 0 {
-	// 		tradeResultStore := TradeResultStore{
-	// 			AlgorithmUsed: "wisemen",
-	// 			Result:        "No trade",
-	// 		}
-	// 		insertTradeResultStore(tradeResultStore)
-	// 	}
-	// 	if len(dowList) == 4 {
-	// 		tradeResultStore := TradeResultStore{
-	// 			AlgorithmUsed: "wisemen",
-	// 			Result:        "No trade",
-	// 			Dow1:          dowList[0].CurrentDowValue,
-	// 			Dow2:          dowList[1].CurrentDowValue,
-	// 			Dow3:          dowList[2].CurrentDowValue,
-	// 			Dow4:          dowList[3].CurrentDowValue,
-	// 		}
-	// 		insertTradeResultStore(tradeResultStore)
-	// 	}
-	// }
+	reason := "No purchase "
+	if dow < dowPrevious {
+		reason += "Dow is less than previous day close dow: " + downDayEval.Dow + " < " + downDayEval.PreviousDow + " "
+	}
+	if dowPchg < 10.00 {
+		reason += "Greatest stock pchg does not meet delimiter required: " + downDayEval.GreatestPchg + " < " + "10.00 "
+	}
 
-	// //if buy and sell exists...InformationAtTrade
-	// if len(listMatchingSymbolInformationAtTrade) == 2 {
-	// 	buyHistoryValuePrice := alteredTransactionHistory.HistoryValueList[0].Price
-	// 	sellHistoryValuePrice := alteredTransactionHistory.HistoryValueList[1].Price
+	if cashDayEvaluationList[0].IsUnsettledFunds == "true" {
+		reason += "Unsettled funds present"
+	}
 
-	// 	floatBuyHistoryValuePrice := 0.0
-	// 	floatSellHistoryValuePrice := 0.0
-	// 	if s, err := strconv.ParseFloat(buyHistoryValuePrice, 64); err == nil {
-	// 		floatBuyHistoryValuePrice = s
-	// 	}
-	// 	if s1, err := strconv.ParseFloat(sellHistoryValuePrice, 64); err == nil {
-	// 		floatSellHistoryValuePrice = s1
-	// 	}
-	// 	//calculate result
-	// 	//if buy and sell, and if changeAmount meet delimiter,
-	// 	changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
-	// 	stringChangeAmount := fmt.Sprintf("%f", 123.456)
-
-	// 	fmt.Println("changeAmount")
-	// 	fmt.Println(changeAmount)
-	// 	//handle on metrics delimiter...
-	// 	metricsPriceHighPchg := metrics.PriceHighPchg
-	// 	floatMetricsPriceHighPchg := 0.0
-	// 	if s2, err := strconv.ParseFloat(metricsPriceHighPchg, 64); err == nil {
-	// 		floatMetricsPriceHighPchg = s2
-	// 	}
-	// 	optimal := floatBuyHistoryValuePrice + (floatBuyHistoryValuePrice * floatMetricsPriceHighPchg)
-
-	// 	result := "negative"
-	// 	//if sell was less than optimal
-	// 	// isAlgorithmProfitable := false
-	// 	if floatSellHistoryValuePrice >= optimal {
-	// 		result = "positive"
-	// 	}
-	// 	fmt.Println(stringChangeAmount)
-	// 	fmt.Println(result)
-
-	// 	fmt.Println("listMatchingSymbolInformationAtTrade")
-	// 	fmt.Println(listMatchingSymbolInformationAtTrade[0])
-
-	// 	boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
-	// 	sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
-
-	// 	if len(dowList) == 4 {
-	// 		tradeResultStore := TradeResultStore{
-	// 			AlgorithmUsed: "wisemen",
-	// 			Result:        result,
-	// 			ChangeAmount:  stringChangeAmount,
-	// 			StockSymbol:   alteredTransactionHistory.Symbol,
-	// 			TimeTradeBuy:  boughtTime,
-	// 			TimeTradeSell: sellTime,
-	// 			Dow1:          dowList[0].CurrentDowValue,
-	// 			Dow2:          dowList[1].CurrentDowValue,
-	// 			Dow3:          dowList[2].CurrentDowValue,
-	// 			Dow4:          dowList[3].CurrentDowValue,
-	// 		}
-	// 		fmt.Println(tradeResultStore)
-	// 		insertTradeResultStore(tradeResultStore)
-	// 	}
-	// 	if len(dowList) != 4 {
-	// 		tradeResultStore := TradeResultStore{
-	// 			AlgorithmUsed: "wisemen",
-	// 			Result:        result,
-	// 			ChangeAmount:  stringChangeAmount,
-	// 			StockSymbol:   alteredTransactionHistory.Symbol,
-	// 			TimeTradeBuy:  boughtTime,
-	// 			TimeTradeSell: sellTime,
-	// 		}
-	// 		fmt.Println(tradeResultStore)
-	// 		insertTradeResultStore(tradeResultStore)
-	// 	}
-	// }
+	//store time
+	dowList := selectDow()
+	tradeResultStore := TradeResultStore{
+		AlgorithmUsed: "wisemen",
+		Result:        reason,
+		Dow1:          dowList[0].CurrentDowValue,
+		Dow2:          dowList[1].CurrentDowValue,
+		Dow3:          dowList[2].CurrentDowValue,
+		Dow4:          dowList[3].CurrentDowValue,
+	}
+	insertTradeResultStore(tradeResultStore)
 }

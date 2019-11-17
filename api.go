@@ -306,7 +306,6 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("tradeBuyWisemen")
 		fmt.Println("dataList")
 		fmt.Println(dataList)
-
 		overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -316,6 +315,40 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
+
+	if requestType == "altIntervalBuyWisemen" {
+		dataList := databaseQuery.Data
+		fmt.Println("altIntervalBuyWisemen")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
+		js, err := json.Marshal(listAltIntervalBuyWisemen[0].IsAltIntervalOperation)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
+	// if requestType == "postNoBuyWisemen" {
+	// 	dataList := databaseQuery.Data
+	// 	fmt.Println("postNoBuyWisemen")
+	// 	fmt.Println("dataList")
+	// 	fmt.Println(dataList)
+	// 	// listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
+
+	// 	//TransactionHistory reason for failure append to model.
+	// 	transactionHistory := TransactionHistory{Symbol: dataList[0]}
+	// 	wrapUpWisemenOutcomeNoBuy(transactionHistory)
+	// 	js, err := json.Marshal("success")
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 
 	// if requestType == "initiateEarlySellWisemen" {
 	// 	dataList := databaseQuery.Data
@@ -374,40 +407,6 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		// processMonitorSell(dataList[0], dataList[1], dataList[2])
 		// processMonitorSell("20.20", "1430")
 		// handleTradeWisemen(dataList[0], dataList[1])
-		js, err := json.Marshal("success")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-
-	if requestType == "altIntervalBuyWisemen" {
-		dataList := databaseQuery.Data
-		fmt.Println("altIntervalBuyWisemen")
-		fmt.Println("dataList")
-		fmt.Println(dataList)
-		listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
-		js, err := json.Marshal(listAltIntervalBuyWisemen[0].IsAltIntervalOperation)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-
-	if requestType == "postNoBuyWisemen" {
-		dataList := databaseQuery.Data
-		fmt.Println("postNoBuyWisemen")
-		fmt.Println("dataList")
-		fmt.Println(dataList)
-		// listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
-
-		//TransactionHistory reason for failure append to model.
-		// transactionHistory := TransactionHistory{Symbol: symbol}
-		wrapUpWisemenOutcomeNoBuy()
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -482,11 +481,23 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 
+	// dropMarketOpenAnalysis()
+	// createMarketOpenAnalysis()
+	// checKIsBrokerageResponding()
+	// isBool := selectMarketOpenAnalysis()
+	// fmt.Println(isBool[0].IsMarketClosed)
+	// resetAltIntervalBuyWisemen()
+	// marketOpenAnalysis := MarketOpenAnalysis{IsMarketTradeDay: "false"}
+	// insertMarketOpenAnalysis(marketOpenAnalysis)
+
+	// dropMarketOpenAnalysis()
+	// createMarketOpenAnalysis()
+	// test := selectMarketOpenAnalysis()
+	// fmt.Println(test)
 	// wrapUpWisemenOutcome(transactionHistory)
 	// createAltIntervalBuyWisemen()
 	// dropAltIntervalBuyWisemen()
 
-	// detectDownDay()
 	// handleCalculateDownDay()
 	// handleCalculateCashDay()
 
@@ -795,7 +806,6 @@ func main() {
 
 	//initial insert whale metrics.
 
-	//Begin processTimeline upon condition isMarketClosed == false
 	// insertMetricsWhale("hey", "hey1", "hey2", "hey3", "hey4")
 
 	// response := selectMetricsWhale()
