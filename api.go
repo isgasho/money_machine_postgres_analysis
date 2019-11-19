@@ -416,6 +416,23 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 
+	if requestType == "pullMarketOpenAnaylsis" {
+		dataList := databaseQuery.Data
+		fmt.Println("pullMarketOpenAnaylsis")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		//process trade.
+		//
+		marketOpenAnaylsisIsMarketClosed := selectMarketOpenAnalysis()[0].IsMarketClosed
+		js, err := json.Marshal(marketOpenAnaylsisIsMarketClosed)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
 	//
 
 	// if requestType == "selectMetricsWisemen" {
@@ -480,6 +497,27 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	fmt.Println("hey there")
+
+	// altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: "VICI", IsAltIntervalOperation: "true"}
+	// insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+
+	selectAltIntervalBuyWisemen()
+	// handleTradeWisemen("VICI", "12.90")
+	// orderList := getAllOrders()
+	// fmt.Println("len(orderList.ListOrders)")
+	// fmt.Println(len(orderList.ListOrders))
+	// order := Order{}
+	// for i, v := range orderList.ListOrders {
+	// 	fmt.Println(v.SVI)
+	// 	if v.Symbol == "VICI" {
+	// 		order = v
+	// 	}
+	// 	i++
+	// }
+	// fmt.Println(order.SVI)
+
+	// queryCancelOrder(order.SVI)
 
 	// dropMarketOpenAnalysis()
 	// createMarketOpenAnalysis()

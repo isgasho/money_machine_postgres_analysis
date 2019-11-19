@@ -92,6 +92,19 @@ func monitorSell(params ...interface{}) {
 			fmt.Println(v)
 			i++
 		}
+		orderList := getAllOrders()
+		fmt.Println("len(orderList.ListOrders)")
+		fmt.Println(len(orderList.ListOrders))
+		order := Order{}
+		for i, v := range orderList.ListOrders {
+			if v.Symbol == symbol {
+				order = v
+			}
+			i++
+		}
+		queryCancelOrder(order.SVI)
+		//cancel order, pause 10 seconds
+		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
@@ -113,6 +126,19 @@ func monitorSell(params ...interface{}) {
 			fmt.Println(v)
 			i++
 		}
+		orderList := getAllOrders()
+		fmt.Println("len(orderList.ListOrders)")
+		fmt.Println(len(orderList.ListOrders))
+		order := Order{}
+		for i, v := range orderList.ListOrders {
+			if v.Symbol == symbol {
+				order = v
+			}
+			i++
+		}
+		queryCancelOrder(order.SVI)
+		//cancel order, pause 10 seconds
+		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
@@ -798,18 +824,16 @@ func removeElementInt(listEntered []int, val int) []int {
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
 	fmt.Println(dataList)
-	// isOperate := true
 	if isTradeDay {
 		//process trade.
 		fmt.Println("internal overarchTradeWisemen")
-		// handleTradeWisemen(dataList[0], dataList[1])
-		// time.Sleep(time.Duration(10) * time.Second)
+		handleTradeWisemen(dataList[0], dataList[1])
+		time.Sleep(time.Duration(10) * time.Second)
 		// //Begin process monitoring for buy fulfilled.
-		// processCheckIsTradeBought(dataList[0])
+		processCheckIsTradeBought(dataList[0])
 	}
 	//handle if not isTradeDay
 	if isTradeDay == false {
-		//Handle insert postNeoTradeDayResult
 		//insert AltIntervalBuyWisemen
 		//interval 1
 		altIntervalList := selectAltIntervalBuyWisemen()

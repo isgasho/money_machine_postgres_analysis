@@ -2705,67 +2705,79 @@ func createDownDayEvaluation() {
 
 //DownDayEvaluation
 func insertAltIntervalBuyWisemen(altIntervalBuyWisemen AltIntervalBuyWisemen) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	// type AltIntervalBuyWisemen struct {
-	// 	CreatedAt              string
-	// 	Symbol                 string
-	// 	IsAltIntervalOperation string
-	//  }
 
-	// 	CREATE TABLE alt_interval_buy_wisemen
-	// (
-	//    id SERIAL PRIMARY KEY,
-	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    symbol VARCHAR,
-	//    is_alt_interval_operation VARCHAR
-	// );
-	defer db.Close()
-	sqlStatement := `
-		INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation)
-		VALUES ($1,$2)
-		RETURNING id
-		`
-	var id int
+	listValues := []string{altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation}
+	postCommandDBInsert("INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation) VALUES (", listValues)
+	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+	// 	"dbname=%s sslmode=disable",
+	// 	host, port, user, dbname)
+	// db, err := sql.Open("postgres", psqlInfo)
+	// if err != nil {
+	// 	fmt.Println("Create Error 1")
+	// }
+	// // type AltIntervalBuyWisemen struct {
+	// // 	CreatedAt              string
+	// // 	Symbol                 string
+	// // 	IsAltIntervalOperation string
+	// //  }
 
-	row := db.QueryRow(sqlStatement, altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation)
-	err1 := row.Scan(&id)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
+	// // 	CREATE TABLE alt_interval_buy_wisemen
+	// // (
+	// //    id SERIAL PRIMARY KEY,
+	// //    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	// //    symbol VARCHAR,
+	// //    is_alt_interval_operation VARCHAR
+	// // );
+	// defer db.Close()
+	// sqlStatement := `
+	// INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation)
+	// VALUES ($1,$2)
+	// 	RETURNING id
+	// 	`
+	// var id int
+
+	// row := db.QueryRow(sqlStatement, altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation)
+	// err1 := row.Scan(&id)
+	// if err1 != nil {
+	// 	fmt.Println("Create Error 2")
+	// }
 }
 
 func selectAltIntervalBuyWisemen() []AltIntervalBuyWisemen {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-	rows, err1 := db.Query("SELECT created_at, symbol, is_alt_interval_operation FROM alt_interval_buy_wisemen")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	defer rows.Close()
-	altIntervalBuyWisemenList := make([]AltIntervalBuyWisemen, 0)
-
-	for rows.Next() {
-		var altIntervalBuyWisemen AltIntervalBuyWisemen
-		if err2 := rows.Scan(&altIntervalBuyWisemen.CreatedAt, &altIntervalBuyWisemen.Symbol, &altIntervalBuyWisemen.IsAltIntervalOperation); err2 != nil {
-			fmt.Println("err2")
-		}
-		altIntervalBuyWisemenList = append(altIntervalBuyWisemenList, altIntervalBuyWisemen)
-	}
-	return altIntervalBuyWisemenList
+	response := postCommandDBSelect("SELECT symbol, is_alt_interval_operation FROM alt_interval_buy_wisemen")
+	fmt.Println("response")
+	fmt.Println(response)
+	altIntervalBuyWisemen := []AltIntervalBuyWisemen{}
+	return altIntervalBuyWisemen
 }
+
+//parse response needed
+
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
+// 	rows, err1 := db.Query("SELECT created_at, symbol, is_alt_interval_operation FROM alt_interval_buy_wisemen")
+// 	if err1 != nil {
+// 		fmt.Println(err1)
+// 	}
+// 	defer rows.Close()
+// 	altIntervalBuyWisemenList := make([]AltIntervalBuyWisemen, 0)
+
+// 	for rows.Next() {
+// 		var altIntervalBuyWisemen AltIntervalBuyWisemen
+// 		if err2 := rows.Scan(&altIntervalBuyWisemen.CreatedAt, &altIntervalBuyWisemen.Symbol, &altIntervalBuyWisemen.IsAltIntervalOperation); err2 != nil {
+// 			fmt.Println("err2")
+// 		}
+// 		altIntervalBuyWisemenList = append(altIntervalBuyWisemenList, altIntervalBuyWisemen)
+// 	}
+// 	return altIntervalBuyWisemenList
+// }
 
 func dropAltIntervalBuyWisemen() {
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+

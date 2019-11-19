@@ -691,6 +691,28 @@ func queryMultiStockPull(symbolList []string) string {
 	return response
 }
 
+func postCommandDBInsert(commandQuery string, values []string) string {
+	json := "{ \"requestType\": \"dbInsert\",\"cmd\": \"" + commandQuery
+	for i, v := range values {
+		json += "'" + v + "'"
+		if i != (len(values) - 1) {
+			json += ","
+		}
+	}
+	json = json + ")\"}"
+	url := "http://0.0.0.0:4440/api"
+	response := post(url, json)
+	return response
+}
+func postCommandDBSelect(commandQuery string) string {
+	json := "{ \"requestType\": \"dbSelect\",\"cmd\": \"" + commandQuery + "\"}"
+	// fmt.Println(json)
+	url := "http://0.0.0.0:4440/api"
+	response := post(url, json)
+	// response := ""
+	return response
+}
+
 // func queryStoreQueryMonitored(params ...interface{}) {
 
 // 	response := `<?xml version="1.0" encoding="UTF-8"?><response id="2d8f6fce-8ac2-459c-b3cd-6d32775d7792"><elapsedtime>0</elapsedtime>
