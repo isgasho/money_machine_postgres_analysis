@@ -194,6 +194,47 @@ func parseStockSetQuery(queryString string) []Stock {
 	}
 	return stockList
 }
+func parseDBResponse(response string) DBResponseContainer {
+	fmt.Println("begin")
+	instanceDBResponseContainer := DBResponseContainer{}
+	listObjectString := strings.Split(response, "\"")[1]
+	listParsedString := strings.Split(listObjectString, "|")
+	fmt.Println(listParsedString)
+	fmt.Println("len(listParsedString)")
+	fmt.Println(len(listParsedString))
+	copyList := listParsedString
+	fmt.Println("len(copyList)")
+	fmt.Println(len(copyList))
+	for i, v := range listParsedString {
+		fmt.Println(v)
+		if len(v) == 0 {
+			copyList = removeElementFromListAtIndex(copyList, i)
+		}
+	}
+	// fmt.Println("without")
+	fmt.Println("len(copyList)")
+	fmt.Println(len(copyList))
+
+	for i, v := range copyList {
+		listValues := strings.Split(v, ",")
+		fmt.Println("listValues")
+		if len(listValues) != 0 {
+			stringResponse := StringResponse{ListString: listValues}
+			instanceDBResponseContainer.ListStringFromDB = append(instanceDBResponseContainer.ListStringFromDB, stringResponse)
+		}
+		fmt.Println("listIn")
+		fmt.Println(len(listValues))
+		fmt.Println(listValues)
+		i++
+	}
+	return instanceDBResponseContainer
+}
+func removeElementFromListAtIndex(listEntered []string, val int) []string {
+	// var i int
+	listAltered := listEntered
+	listAltered = listAltered[:val+copy(listAltered[val:], listAltered[val+1:])]
+	return listAltered
+}
 
 func createStockTimeStamp() string {
 	// currentTime := time.Now()

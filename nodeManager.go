@@ -706,10 +706,24 @@ func postCommandDBInsert(commandQuery string, values []string) string {
 }
 func postCommandDBSelect(commandQuery string) string {
 	json := "{ \"requestType\": \"dbSelect\",\"cmd\": \"" + commandQuery + "\"}"
-	// fmt.Println(json)
 	url := "http://0.0.0.0:4440/api"
 	response := post(url, json)
-	// response := ""
+	// instanceDBResponseContainer := parseDBResponse(response)
+	// fmt.Println("inside")
+	// fmt.Println(len(instanceDBResponseContainer.ListStringFromDB))
+	// for i, v := range instanceDBResponseContainer.ListStringFromDB {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
+	// fmt.Println("response")
+	fmt.Println(response)
+	return response
+}
+
+func postCommandDBTruncate(commandQuery string) string {
+	json := "{ \"requestType\": \"dbTruncate\",\"cmd\": \"" + commandQuery + "\"}"
+	url := "http://0.0.0.0:4440/api"
+	response := post(url, json)
 	return response
 }
 

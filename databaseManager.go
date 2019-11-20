@@ -3,6 +3,7 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 )
 
 const (
@@ -12,401 +13,119 @@ const (
 	dbname = "money_machine"
 )
 
-func insertDay(dayOfWeek string) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
+// func insertDay(dayOfWeek string) {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Create Error 1")
+// 	}
+// 	defer db.Close()
 
-	sqlStatement := `
-		INSERT INTO day (day_of_Week)
-		VALUES ($1)
-		RETURNING id, created_at, day_of_Week
-		`
-	var day Day
-	row := db.QueryRow(sqlStatement, dayOfWeek)
-	err1 := row.Scan(&day.ID, &day.CreatedAt, &day.DayOfWeek)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-	fmt.Println(day.ID, day.DayOfWeek, day.CreatedAt)
-}
-func setDay() {
-}
-func selectDay() {
-}
-func deleteDay() {
-}
+// 	sqlStatement := `
+// 		INSERT INTO day (day_of_Week)
+// 		VALUES ($1)
+// 		RETURNING id, created_at, day_of_Week
+// 		`
+// 	var day Day
+// 	row := db.QueryRow(sqlStatement, dayOfWeek)
+// 	err1 := row.Scan(&day.ID, &day.CreatedAt, &day.DayOfWeek)
+// 	if err1 != nil {
+// 		fmt.Println("Create Error 2")
+// 	}
+// 	fmt.Println(day.ID, day.DayOfWeek, day.CreatedAt)
+// }
+// func setDay() {
+// }
+// func selectDay() {
+// }
+// func deleteDay() {
+// }
 
-func insertNews(newsEntry News) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
+// func insertNews(newsEntry News) {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Create Error 1")
+// 	}
+// 	defer db.Close()
 
-	sqlStatement := `
-		INSERT INTO news (day_id, news_info)
-		VALUES ($1, $2)
-		RETURNING id, day_id, created_at, news_info
-		`
-	var news News
-	row := db.QueryRow(sqlStatement, newsEntry.DayID, newsEntry.NewsInfo)
-	err1 := row.Scan(&news.ID, &news.DayID, &news.CreatedAt, &news.NewsInfo)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-	fmt.Println(news.ID, news.DayID, news.CreatedAt, news.NewsInfo)
-}
-func setNews() {
-}
-func selectNews() {
-}
-func deleteNews() {
-}
+// 	sqlStatement := `
+// 		INSERT INTO news (day_id, news_info)
+// 		VALUES ($1, $2)
+// 		RETURNING id, day_id, created_at, news_info
+// 		`
+// 	var news News
+// 	row := db.QueryRow(sqlStatement, newsEntry.DayID, newsEntry.NewsInfo)
+// 	err1 := row.Scan(&news.ID, &news.DayID, &news.CreatedAt, &news.NewsInfo)
+// 	if err1 != nil {
+// 		fmt.Println("Create Error 2")
+// 	}
+// 	fmt.Println(news.ID, news.DayID, news.CreatedAt, news.NewsInfo)
+// }
+// func setNews() {
+// }
+// func selectNews() {
+// }
+// func deleteNews() {
+// }
 
-func insertDow(currentDowValue string) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
+// func dropDow() {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
 
-	sqlStatement := `
-		INSERT INTO dow (current_dow_value)
-		VALUES ($1)
-		RETURNING id
-		`
-	var dow Dow
-	row := db.QueryRow(sqlStatement, currentDowValue)
-	err1 := row.Scan(&dow.ID)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-	fmt.Println(dow.ID)
-}
-func selectDow() []Dow {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
+// 	res, err1 := db.Exec("drop table dow")
+// 	if err1 != nil {
+// 		fmt.Println("Delete Error 2")
+// 	}
+// 	count, err2 := res.RowsAffected()
+// 	if err2 != nil {
+// 		fmt.Println("Delete Error 3")
+// 	}
+// 	fmt.Println(count)
+// }
 
-	rows, err1 := db.Query("SELECT id, created_at, current_dow_value FROM dow")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	defer rows.Close()
-	dowList := make([]Dow, 0)
+// func createDow() {
+// 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 		"dbname=%s sslmode=disable",
+// 		host, port, user, dbname)
+// 	db, err := sql.Open("postgres", psqlInfo)
+// 	if err != nil {
+// 		fmt.Println("Read Error 1")
+// 		panic(err)
+// 	}
+// 	defer db.Close()
 
-	for rows.Next() {
-		// var symbol string
-		var dowInstance Dow
-		if err2 := rows.Scan(&dowInstance.ID, &dowInstance.CreatedAt, &dowInstance.CurrentDowValue); err2 != nil {
-			fmt.Println("err2")
-		}
-		dowList = append(dowList, dowInstance)
-	}
-	return dowList
-}
+// 	res, err1 := db.Exec(`CREATE TABLE dow
+// 	(
+// 	   id SERIAL PRIMARY KEY,
+// 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+// 	   current_dow_value VARCHAR
+// 	);`)
 
-func dropDow() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec("drop table dow")
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
-
-func createDow() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec(`CREATE TABLE dow
-	( 
-	   id SERIAL PRIMARY KEY,
-	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   current_dow_value VARCHAR
-	);`)
-
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
-
-//
-func insertMarketOpenAnalysis(marketOpenAnalysis MarketOpenAnalysis) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
-
-	sqlStatement := `
-		INSERT INTO market_open_analysis (is_market_closed)
-		VALUES ($1)
-		RETURNING id
-		`
-	var dow Dow
-	row := db.QueryRow(sqlStatement, marketOpenAnalysis.IsMarketClosed)
-	err1 := row.Scan(&dow.ID)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-}
-func selectMarketOpenAnalysis() []MarketOpenAnalysis {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	// 	CREATE TABLE market_open_analysis
-	// (
-	//    id SERIAL PRIMARY KEY,
-	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	//    is_market_closed VARCHAR
-	// );
-	rows, err1 := db.Query("SELECT created_at, is_market_closed FROM market_open_analysis")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	defer rows.Close()
-	marketOpenAnalysisList := make([]MarketOpenAnalysis, 0)
-
-	for rows.Next() {
-		// var symbol string
-		var marketOpenAnalysis MarketOpenAnalysis
-		if err2 := rows.Scan(&marketOpenAnalysis.CreatedAt, &marketOpenAnalysis.IsMarketClosed); err2 != nil {
-			fmt.Println("err2")
-		}
-		marketOpenAnalysisList = append(marketOpenAnalysisList, marketOpenAnalysis)
-	}
-	return marketOpenAnalysisList
-}
-
-func dropMarketOpenAnalysis() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec("drop table market_open_analysis")
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
-
-func createMarketOpenAnalysis() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec(`CREATE TABLE market_open_analysis
-	( 
-	   id SERIAL PRIMARY KEY,
-	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   is_market_closed VARCHAR
-	);`)
-
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
+// 	if err1 != nil {
+// 		fmt.Println("Delete Error 2")
+// 	}
+// 	count, err2 := res.RowsAffected()
+// 	if err2 != nil {
+// 		fmt.Println("Delete Error 3")
+// 	}
+// 	fmt.Println(count)
+// }
 
 //
 
-func insertStockWisemen(stockEntry Stock) {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Create Error 1")
-	}
-	defer db.Close()
-
-	sqlStatement := `
-		INSERT INTO stock_wisemen (symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90)
-		VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $20, $21, $22, $23)
-		RETURNING id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90
-		`
-	var stock Stock
-
-	row := db.QueryRow(sqlStatement, stockEntry.Symbol, stockEntry.Bid, stockEntry.Ask, stockEntry.Last, stockEntry.Pchg, stockEntry.Pcls, stockEntry.Opn, stockEntry.Vl, stockEntry.Pvol, stockEntry.Volatility12, stockEntry.Wk52hi, stockEntry.Wk52hidate, stockEntry.Wk52lo, stockEntry.Wk52lodate, stockEntry.Hi, stockEntry.Lo, stockEntry.PrAdp50, stockEntry.PrAdp100, stockEntry.Prchg, stockEntry.Adp50, stockEntry.Adp100, stockEntry.Adv30, stockEntry.Adv90)
-	err1 := row.Scan(&stock.ID, &stock.CreatedAt, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90)
-	if err1 != nil {
-		fmt.Println("Create Error 2")
-	}
-}
-func selectAllStockWisemen() []Stock {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	rows, err1 := db.Query("SELECT id, created_at, symbol, bid, ask, last, pchg, pcls, opn, vl, pvol, volatility12, wk52hi, wk52hidate, wk52lo, wk52lodate, hi, lo, pr_adp_50, pr_adp_100, prchg, adp_50, adp_100, adv_30, adv_90 FROM stock_wisemen")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	defer rows.Close()
-	stockList := make([]Stock, 0)
-
-	for rows.Next() {
-		var stock Stock
-		if err2 := rows.Scan(&stock.ID, &stock.CreatedAt, &stock.Symbol, &stock.Bid, &stock.Ask, &stock.Last, &stock.Pchg, &stock.Pcls, &stock.Opn, &stock.Vl, &stock.Pvol, &stock.Volatility12, &stock.Wk52hi, &stock.Wk52hidate, &stock.Wk52lo, &stock.Wk52lodate, &stock.Hi, &stock.Lo, &stock.PrAdp50, &stock.PrAdp100, &stock.Prchg, &stock.Adp50, &stock.Adp100, &stock.Adv30, &stock.Adv90); err2 != nil {
-			fmt.Println("err2")
-		}
-		stockList = append(stockList, stock)
-	}
-	return stockList
-}
-
-func dropStockWisemen() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec("drop table stock_wisemen")
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
-
-func createStockWisemen() {
-	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-		"dbname=%s sslmode=disable",
-		host, port, user, dbname)
-	db, err := sql.Open("postgres", psqlInfo)
-	if err != nil {
-		fmt.Println("Read Error 1")
-		panic(err)
-	}
-	defer db.Close()
-
-	res, err1 := db.Exec(`CREATE TABLE stock_wisemen
-	( 
-	   id SERIAL PRIMARY KEY,
-	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   symbol VARCHAR,
-	   bid VARCHAR,
-	   ask VARCHAR,
-	   last VARCHAR,
-	   pchg VARCHAR,
-	   pcls VARCHAR,
-	   opn VARCHAR,
-	   vl VARCHAR,
-	   pvol VARCHAR,
-	   volatility12 VARCHAR,
-	   wk52hi VARCHAR,
-	   wk52hidate VARCHAR,
-	   wk52lo VARCHAR,
-	   wk52lodate VARCHAR,
-	   hi VARCHAR,
-	   lo VARCHAR,
-	   pr_adp_50 VARCHAR,
-	   pr_adp_100 VARCHAR,
-	   prchg VARCHAR,
-	   adp_50 VARCHAR,
-	   adp_100 VARCHAR,
-	   adv_30 VARCHAR,
-	   adv_90 VARCHAR,
-	   is_current_price_higher_than_previous_close VARCHAR
-	);`)
-
-	if err1 != nil {
-		fmt.Println("Delete Error 2")
-	}
-	count, err2 := res.RowsAffected()
-	if err2 != nil {
-		fmt.Println("Delete Error 3")
-	}
-	fmt.Println(count)
-}
+//
 
 // func deleteStock(symbolToDel string) {
 // 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
@@ -875,7 +594,7 @@ func createTempSymbolHoldHigh() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold_high
-	( 
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	   symbol VARCHAR,
@@ -1000,7 +719,7 @@ func createTempSymbolHoldLow() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE temp_symbol_hold_low
-	( 
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	   symbol VARCHAR,
@@ -1106,7 +825,7 @@ func createMetricsWhale() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE metrics_whale
-	( 
+	(
 		id SERIAL PRIMARY KEY,
 		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 		desired_price_range_high VARCHAR,
@@ -1245,10 +964,10 @@ func createMetricsWisemen() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE metrics_wisemen
-	( 
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	   desired_price_range_high VARCHAR, 
+	   desired_price_range_high VARCHAR,
 	   desired_price_range_low VARCHAR,
 	   price_high_pchg VARCHAR,
 	   price_low_pchg VARCHAR,
@@ -1380,7 +1099,7 @@ func createWisemenSymbolHold() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE wisemen_symbol_hold
-	( 
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	   symbol VARCHAR,
@@ -1798,7 +1517,7 @@ func createEvalResultsWhale() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE eval_results_whale
-	( 
+	(
 		id SERIAL PRIMARY KEY,
 		created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 		symbol VARCHAR,
@@ -2010,7 +1729,7 @@ func createDayTrackingRecord() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE same_day_trade_tracking_record
-	( 
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	   symbol VARCHAR,
@@ -2454,7 +2173,7 @@ func createHoldingWisemen() {
 	defer db.Close()
 
 	res, err1 := db.Exec(`CREATE TABLE holding_wisemen
-	( 
+	(
 	   id SERIAL PRIMARY KEY,
 	   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
 	   symbol VARCHAR,
@@ -2703,53 +2422,225 @@ func createDownDayEvaluation() {
 
 //
 
-//DownDayEvaluation
+// insertAltIntervalBuyWisemen
 func insertAltIntervalBuyWisemen(altIntervalBuyWisemen AltIntervalBuyWisemen) {
-
 	listValues := []string{altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation}
 	postCommandDBInsert("INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation) VALUES (", listValues)
-	// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
-	// 	"dbname=%s sslmode=disable",
-	// 	host, port, user, dbname)
-	// db, err := sql.Open("postgres", psqlInfo)
-	// if err != nil {
-	// 	fmt.Println("Create Error 1")
-	// }
-	// // type AltIntervalBuyWisemen struct {
-	// // 	CreatedAt              string
-	// // 	Symbol                 string
-	// // 	IsAltIntervalOperation string
-	// //  }
-
-	// // 	CREATE TABLE alt_interval_buy_wisemen
-	// // (
-	// //    id SERIAL PRIMARY KEY,
-	// //    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-	// //    symbol VARCHAR,
-	// //    is_alt_interval_operation VARCHAR
-	// // );
-	// defer db.Close()
-	// sqlStatement := `
-	// INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation)
-	// VALUES ($1,$2)
-	// 	RETURNING id
-	// 	`
-	// var id int
-
-	// row := db.QueryRow(sqlStatement, altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation)
-	// err1 := row.Scan(&id)
-	// if err1 != nil {
-	// 	fmt.Println("Create Error 2")
-	// }
 }
-
 func selectAltIntervalBuyWisemen() []AltIntervalBuyWisemen {
+	listAltIntervalBuyWisemen := []AltIntervalBuyWisemen{}
 	response := postCommandDBSelect("SELECT symbol, is_alt_interval_operation FROM alt_interval_buy_wisemen")
-	fmt.Println("response")
-	fmt.Println(response)
-	altIntervalBuyWisemen := []AltIntervalBuyWisemen{}
-	return altIntervalBuyWisemen
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		stringToStrip := v.ListString[0]
+		strippedString := strings.Join(strings.Fields(stringToStrip), "")
+		altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: strippedString, IsAltIntervalOperation: v.ListString[1]}
+		listAltIntervalBuyWisemen = append(listAltIntervalBuyWisemen, altIntervalBuyWisemen)
+		i++
+	}
+	return listAltIntervalBuyWisemen
 }
+
+func truncateAltIntervalBuyWisemen() {
+	postCommandDBTruncate("TRUNCATE table alt_interval_buy_wisemen")
+}
+
+//day
+func insertDay(dayOfWeek string) {
+	listValues := []string{dayOfWeek}
+	// 		INSERT INTO day (day_of_Week)
+	// 		VALUES ($1)
+	// 		RETURNING id, created_at, day_of_Week
+	postCommandDBInsert("INSERT INTO day (day_of_Week) VALUES (", listValues)
+}
+func selectDay() []Day {
+	listDay := []Day{}
+	response := postCommandDBSelect("SELECT day_of_Week FROM day")
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		stringToStrip := v.ListString[0]
+		strippedString := strings.Join(strings.Fields(stringToStrip), "")
+		day := Day{DayOfWeek: strippedString}
+		listDay = append(listDay, day)
+		i++
+	}
+	return listDay
+}
+func truncateDay() {
+	postCommandDBTruncate("TRUNCATE table day")
+}
+
+//news
+func insertNews(news_info string) {
+	listValues := []string{news_info}
+	// INSERT INTO news (day_id, news_info)
+	// 	VALUES ($1, $2)
+	// 	RETURNING id, day_id, created_at, news_info
+	postCommandDBInsert("INSERT INTO news (news_info) VALUES (", listValues)
+}
+func selectNews() []News {
+	listNews := []News{}
+	response := postCommandDBSelect("SELECT news_info FROM news")
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		stringToStrip := v.ListString[0]
+		strippedString := strings.Join(strings.Fields(stringToStrip), "")
+		news := News{NewsInfo: strippedString}
+		listNews = append(listNews, news)
+		i++
+	}
+	return listNews
+}
+func truncateNews() {
+	postCommandDBTruncate("TRUNCATE table news")
+}
+
+//dow
+func insertDow(current_dow_value string) {
+	listValues := []string{current_dow_value}
+	// INSERT INTO news (day_id, news_info)
+	// 	VALUES ($1, $2)
+	// 	RETURNING id, day_id, created_at, news_info
+	postCommandDBInsert("INSERT INTO dow (current_dow_value) VALUES (", listValues)
+}
+func selectDow() []Dow {
+	listDow := []Dow{}
+	response := postCommandDBSelect("SELECT current_dow_value FROM dow")
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		stringToStrip := v.ListString[0]
+		strippedString := strings.Join(strings.Fields(stringToStrip), "")
+		dow := Dow{CurrentDowValue: strippedString}
+		listDow = append(listDow, dow)
+		i++
+	}
+	return listDow
+}
+func truncateDow() {
+	postCommandDBTruncate("TRUNCATE table dow")
+}
+
+//MarketOpenAnalysis
+func insertMarketOpenAnalysis(marketOpenAnalysis MarketOpenAnalysis) {
+	listValues := []string{marketOpenAnalysis.IsMarketClosed}
+	// 	CREATE TABLE market_open_analysis
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    is_market_closed VARCHAR
+	// );
+	postCommandDBInsert("INSERT INTO market_open_analysis (is_market_closed) VALUES (", listValues)
+}
+func selectMarketOpenAnalysis() []MarketOpenAnalysis {
+	listMarketOpenAnalysis := []MarketOpenAnalysis{}
+	response := postCommandDBSelect("SELECT is_market_closed FROM market_open_analysis")
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		// stringToStrip := v.ListString[0]
+		// strippedString := strings.Join(strings.Fields(stringToStrip), "")
+		// stringToStrip1 := v.ListString[1]
+		// strippedString1 := strings.Join(strings.Fields(stringToStrip1), "")
+		marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: v.ListString[0]}
+		listMarketOpenAnalysis = append(listMarketOpenAnalysis, marketOpenAnalysis)
+		i++
+	}
+	return listMarketOpenAnalysis
+}
+func truncateMarketOpenAnalysis() {
+	postCommandDBTruncate("TRUNCATE table market_open_analysis")
+}
+
+//MarketOpenAnalysis
+func insertStockWisemen(stock Stock) {
+	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl}
+	postCommandDBInsert("INSERT INTO stock_wisemen (symbol, bid, ask, last, pchg, pcls, opn, vl) VALUES (", listValues)
+}
+func selectStockWisemen() []Stock {
+	listStock := []Stock{}
+	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl FROM stock_wisemen")
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7]}
+		listStock = append(listStock, stock)
+		i++
+	}
+	return listStock
+}
+func truncateStockWisemen() {
+	postCommandDBTruncate("TRUNCATE table stock_wisemen")
+}
+
+// sqlStatement := `
+// INSERT INTO dow (current_dow_value)
+// VALUES ($1)
+// RETURNING id
+// `
+// var dow Dow
+// row := db.QueryRow(sqlStatement, currentDowValue)
+// err1 := row.Scan(&dow.ID)
+// if err1 != nil {
+// fmt.Println("Create Error 2")
+// }
+// fmt.Println(dow.ID)
+// }
+// func selectDow() []Dow {
+// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// "dbname=%s sslmode=disable",
+// host, port, user, dbname)
+// db, err := sql.Open("postgres", psqlInfo)
+// if err != nil {
+// fmt.Println("Read Error 1")
+// panic(err)
+// }
+// defer db.Close()
+
+// rows, err1 := db.Query("SELECT id, created_at, current_dow_value FROM dow")
+
+// psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
+// 	"dbname=%s sslmode=disable",
+// 	host, port, user, dbname)
+// db, err := sql.Open("postgres", psqlInfo)
+// if err != nil {
+// 	fmt.Println("Create Error 1")
+// }
+// // type AltIntervalBuyWisemen struct {
+// // 	CreatedAt              string
+// // 	Symbol                 string
+// // 	IsAltIntervalOperation string
+// //  }
+
+// // 	CREATE TABLE alt_interval_buy_wisemen
+// // (
+// //    id SERIAL PRIMARY KEY,
+// //    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+// //    symbol VARCHAR,
+// //    is_alt_interval_operation VARCHAR
+// // );
+// defer db.Close()
+// sqlStatement := `
+// INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation)
+// VALUES ($1,$2)
+// 	RETURNING id
+// 	`
+// var id int
+
+// row := db.QueryRow(sqlStatement, altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation)
+// err1 := row.Scan(&id)
+// if err1 != nil {
+// 	fmt.Println("Create Error 2")
+// }
 
 //parse response needed
 

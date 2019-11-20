@@ -129,17 +129,17 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	// 	w.Write(js)
 	// }
 
-	if requestType == "selectAllStockWisemen" {
-		stockList := selectAllStockWisemen()
-		stockListResponse := DatabaseStockListResponse{stockList}
-		js, err := json.Marshal(stockListResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// if requestType == "selectAllStockWisemen" {
+	// 	stockList := selectAllStockWisemen()
+	// 	stockListResponse := DatabaseStockListResponse{stockList}
+	// 	js, err := json.Marshal(stockListResponse)
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 
 	//Whale operations
 	// if requestType == "selectAllStockWhale" {
@@ -499,10 +499,44 @@ func main() {
 	go handleRequests()
 	fmt.Println("hey there")
 
+	// stock := Stock{Symbol: "CAT", Bid: "2.4", Ask: "2.5", Last: "3.6", Pchg: "3.2", Pcls: "2.2", Opn: "2.5", Vl: "6.5"}
+	// insertStockWisemen(stock)
+
+	// 	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl}
+
+	// marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "true"}
+	// insertMarketOpenAnalysis(marketOpenAnalysis)
+	// dowList := selectStockWisemen()
+
+	// fmt.Println(dowList)
+
+	// fmt.Println(dayList[0].DayOfWeek)
+	// truncateStockWisemen()
+
+	// truncateAltIntervalBuyWisemen()
+
 	// altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: "VICI", IsAltIntervalOperation: "true"}
 	// insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
 
-	selectAltIntervalBuyWisemen()
+	// listAlt := selectAltIntervalBuyWisemen()
+	// fmt.Println(listAlt)
+	// fmt.Println(listAlt[0].Symbol)
+	// fmt.Println(listAlt[0].IsAltIntervalOperation)
+
+	// dbInsert
+
+	// s := "Hello There"
+	// fHasSpace := s.Contains(" ")
+
+	// fmt.Println()
+
+	// "sossjjs sskkk".Contains(" ")
+
+	// s := "\t Hello, World\n "
+	// fmt.Printf("%d %q\n", len(s), s)
+	// t := strings.TrimSpace(s)
+	// fmt.Printf("%d %q\n", len(t), t)
+
 	// handleTradeWisemen("VICI", "12.90")
 	// orderList := getAllOrders()
 	// fmt.Println("len(orderList.ListOrders)")

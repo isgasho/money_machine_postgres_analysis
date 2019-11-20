@@ -895,8 +895,9 @@ func systemStartProcesses() {
 	queryStopTwi()
 	queryStartTwi()
 	//reset dow
-	dropDow()
-	createDow()
+	// dropDow()
+	// createDow()
+	truncateDow()
 	//
 	resetTempSymbolHold()
 	//
@@ -916,8 +917,9 @@ func resetStockWisemenSymbolHold() {
 	createWisemenSymbolHold()
 }
 func resetStockWisemen() {
-	dropStockWisemen()
-	createStockWisemen()
+	// dropStockWisemen()
+	// createStockWisemen()
+	truncateStockWisemen()
 }
 
 func resetAltIntervalBuyWisemen() {

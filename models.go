@@ -349,3 +349,10 @@ type MarketOpenAnalysis struct {
 	CreatedAt      string
 	IsMarketClosed string
 }
+
+type DBResponseContainer struct {
+	ListStringFromDB []StringResponse
+}
+type StringResponse struct {
+	ListString []string
+}
