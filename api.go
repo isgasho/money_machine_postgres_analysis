@@ -47,8 +47,8 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	// fmt.Println(rangeForData)
 
 	if requestType == "postEvalResultsWhale" {
-		dropEvalResultsWhale()
-		createEvalResultsWhale()
+		// dropEvalResultsWhale()
+		// createEvalResultsWhale()
 
 		fmt.Println("hit")
 		fmt.Println(len(data))
@@ -74,10 +74,10 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		}
 		// fmt.Println(evalList)
 
-		for indexEvalResult, evalResult := range evalList {
-			insertEvalResultsWhale(evalResult)
-			indexEvalResult++
-		}
+		// for indexEvalResult, evalResult := range evalList {
+		// 	// insertEvalResultsWhale(evalResult)
+		// 	indexEvalResult++
+		// }
 		// storeResponse := DatabaseStockListResponse{}
 		// js, err := json.Marshal(storeResponse)
 		// if err != nil {
@@ -183,20 +183,10 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.Write(js)
 	}
-	if requestType == "dropMetricsWhale" {
-		dropMetricsWhale()
+	if requestType == "truncateMetricsWhale" {
+		truncateMetricsWhale()
 		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
 		// stockListResponse := DatabaseStockListResponse{stockList}
-		js, err := json.Marshal("success")
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
-	if requestType == "createMetricsWhale" {
-		createMetricsWhale()
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -234,7 +224,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 	if requestType == "dropMetricsWisemen" {
-		dropMetricsWisemen()
+		// dropMetricsWisemen()
 		// stockMatchList := filterStockEntriesWithinTimeset(stockList, range1, range2)
 		// stockListResponse := DatabaseStockListResponse{stockList}
 		js, err := json.Marshal("success")
@@ -246,7 +236,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 	if requestType == "createMetricsWisemen" {
-		createMetricsWisemen()
+		// createMetricsWisemen()
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -285,21 +275,21 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	// 	w.Header().Set("Content-Type", "application/json")
 	// 	w.Write(js)
 	// }
-	if requestType == "selectOrderInformationWisemen" {
-		// dataList := databaseQuery.Data
-		fmt.Println("selectOrderInformationWisemen")
-		// fmt.Println(dataList)
-		dataList := selectOrderInformationWisemen()
+	// if requestType == "selectOrderInformationWisemen" {
+	// 	// dataList := databaseQuery.Data
+	// 	fmt.Println("selectOrderInformationWisemen")
+	// 	// fmt.Println(dataList)
+	// 	dataList := selectOrderInformationWisemen()
 
-		databaseOrderInformationWisemenResponse := DatabaseOrderInformationWisemenResponse{OrderInformationWisemen: dataList}
-		js, err := json.Marshal(databaseOrderInformationWisemenResponse)
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-		w.Header().Set("Content-Type", "application/json")
-		w.Write(js)
-	}
+	// 	databaseOrderInformationWisemenResponse := DatabaseOrderInformationWisemenResponse{OrderInformationWisemen: dataList}
+	// 	js, err := json.Marshal(databaseOrderInformationWisemenResponse)
+	// 	if err != nil {
+	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+	// 		return
+	// 	}
+	// 	w.Header().Set("Content-Type", "application/json")
+	// 	w.Write(js)
+	// }
 
 	if requestType == "tradeBuyWisemen" {
 		dataList := databaseQuery.Data
@@ -499,21 +489,33 @@ func main() {
 	go handleRequests()
 	fmt.Println("hey there")
 
+	// truncateCashDayEvaluation()
+	// insertDownDayEvaluation()
+	// downDayEvaluation := CashDayEvaluation{IsUnsettledFunds: "102"}
+	// insertCashDayEvaluation(downDayEvaluation)
+	// // // insertTempSymbolHoldLow("symbol")
+	// dowList := selectCashDayEvaluation()
+	// fmt.Println(dowList)
+
+	// truncateDownDayEvaluation()
+	// truncateTempSymbolHoldLow()
+
+	// truncateTempSymbolHoldHigh()
+
+	// insertWisemenSymbolHold("symbol")
 	// stock := Stock{Symbol: "CAT", Bid: "2.4", Ask: "2.5", Last: "3.6", Pchg: "3.2", Pcls: "2.2", Opn: "2.5", Vl: "6.5"}
-	// insertStockWisemen(stock)
-
+	// // // insertStockWhaleHigh(stock)
+	// insertStockWhaleLow(stock)
 	// 	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl}
-
 	// marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "true"}
 	// insertMarketOpenAnalysis(marketOpenAnalysis)
-	// dowList := selectStockWisemen()
-
+	// dowList := selectWisemenSymbolHold()
 	// fmt.Println(dowList)
 
 	// fmt.Println(dayList[0].DayOfWeek)
 	// truncateStockWisemen()
 
-	// truncateAltIntervalBuyWisemen()
+	// truncateWisemenSymbolHold()
 
 	// altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: "VICI", IsAltIntervalOperation: "true"}
 	// insertAltIntervalBuyWisemen(altIntervalBuyWisemen)

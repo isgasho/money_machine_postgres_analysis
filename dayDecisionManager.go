@@ -88,8 +88,9 @@ func handleDayRotation() {
 	if len(listDayTrackingRecord) != 0 {
 		dayTrackingRecord := listDayTrackingRecord[0]
 		if strings.Contains(dayTrackingRecord.IsWeekPassed, "true") {
-			dropDayTrackingRecord()
-			createDayTrackingRecord()
+			// dropDayTrackingRecord()
+			// createDayTrackingRecord()
+			truncateDayTrackingRecord()
 		}
 		if strings.Contains(dayTrackingRecord.IsWeekPassed, "false") {
 			currentDayOfWeek := getDayOfWeek().String()
@@ -104,8 +105,9 @@ func handleDayRotation() {
 			if intCurrentDayOfWeek == intLastDayOfWeekDayUpdate {
 				instanceDayTrackingRecord := dayTrackingRecord
 				instanceDayTrackingRecord.IsWeekPassed = "true"
-				dropDayTrackingRecord()
-				createDayTrackingRecord()
+				// dropDayTrackingRecord()
+				// createDayTrackingRecord()
+				truncateDayTrackingRecord()
 				insertDayTrackingRecord(instanceDayTrackingRecord)
 			}
 		}
@@ -119,8 +121,9 @@ func processInsertDayTrackingRecord(symbol string) {
 	}
 	//if list is not empty update day record
 	if len(listDayTrackingRecord) != 0 {
-		dropDayTrackingRecord()
-		createDayTrackingRecord()
+		// dropDayTrackingRecord()
+		// createDayTrackingRecord()
+		truncateDayTrackingRecord()
 		updateDayTrackingRecordSystem(symbol)
 	}
 }
@@ -143,8 +146,9 @@ func Abs(x int64) int64 {
 // isCashAccountCheckUnsettledFunds
 func handleCalculateCashDay() {
 	//Reset dow day eval store before calculation
-	dropCashDayEvaluation()
-	createCashDayEvaluation()
+	// dropCashDayEvaluation()
+	// createCashDayEvaluation()
+	truncateCashDayEvaluation()
 	isUnsettledFunds := "true"
 	//query account
 	response := queryAccountBrokerage()
@@ -158,8 +162,7 @@ func handleCalculateCashDay() {
 
 func handleCalculateDownDay() {
 	//Reset dow day eval store before calculation
-	dropDownDayEvaluation()
-	createDownDayEvaluation()
+	truncateDownDayEvaluation()
 	isDownDay := "true"
 	isDowDown := false
 	isTopStockAbovePchgDelimiter := false

@@ -702,31 +702,33 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	}
 	return holdingWisemen
 }
-func calculateIsTradeBoughtSuccessful(symbol string) {
-	isSuccessful := detectIsTradeBoughtSuccessful(symbol)
-	if isSuccessful {
-		updateDayTrackingRecordSystem(symbol)
-	}
-	return
-}
+
+// func calculateIsTradeBoughtSuccessful(symbol string) {
+// 	isSuccessful := detectIsTradeBoughtSuccessful(symbol)
+// 	if isSuccessful {
+// 		updateDayTrackingRecordSystem(symbol)
+// 	}
+// 	return
+// }
 func updateDayTrackingRecordSystem(symbol string) {
 	dayOfWeek := getDayOfWeek()
 	//create record
 	dayTrackingRecord := DayTrackingRecord{Symbol: symbol, DayOfWeekCreated: dayOfWeek.String(), DayOfWeekDayIteration: "0", LastDayOfWeekDayUpdate: getDayOfWeek().String(), AmountOfTrades: "0", IsWeekPassed: "false"}
 	insertDayTrackingRecord(dayTrackingRecord)
 }
-func detectIsTradeBoughtSuccessful(symbol string) bool {
-	isSuccessful := false
-	entryList := selectTradeBoughtEvaluation()
-	//Support for multiple stream operations of trading.
-	for i, v := range entryList {
-		if v.Symbol == symbol {
-			isSuccessful = true
-		}
-		i++
-	}
-	return isSuccessful
-}
+
+// func detectIsTradeBoughtSuccessful(symbol string) bool {
+// 	isSuccessful := false
+// 	entryList := selectTradeBoughtEvaluation()
+// 	//Support for multiple stream operations of trading.
+// 	for i, v := range entryList {
+// 		if v.Symbol == symbol {
+// 			isSuccessful = true
+// 		}
+// 		i++
+// 	}
+// 	return isSuccessful
+// }
 
 func roundDown(floatValue float64) int {
 	stringValue := fmt.Sprintf("%f", floatValue)

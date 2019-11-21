@@ -458,7 +458,7 @@ func highTransferanceProcess(twiStockList []Stock) {
 	fmt.Println("topStockList")
 	fmt.Println(topStockList)
 	for i, v := range topStockList {
-		insertTempSymbolHoldHigh(v.Symbol, false)
+		insertTempSymbolHoldHigh(v.Symbol)
 		i++
 	}
 	// //fill algorithm symbol holds
@@ -506,7 +506,7 @@ func lowTransferanceProcess(twiStockList []Stock) {
 	fmt.Println(negativeTwiStockList)
 
 	for i, v := range negativeTwiStockList {
-		insertTempSymbolHoldLow(v.Symbol, false)
+		insertTempSymbolHoldLow(v.Symbol)
 		i++
 	}
 
@@ -593,7 +593,7 @@ func handleWisemenFillHold() {
 			indexWisemenSymbol++
 		}
 		if isSymbolExistsInWisemen == false {
-			insertWisemenSymbolHold(tempSymbol, false)
+			insertWisemenSymbolHold(tempSymbol)
 		}
 		i++
 	}
@@ -615,7 +615,7 @@ func handleWhaleFillHoldHigh() {
 		if isSymbolExistsInWhale == false {
 			//check process for whale delimiter
 			if whaleDelimiterMet == false {
-				insertWhaleSymbolHoldHigh(tempSymbol, false)
+				insertWhaleSymbolHoldHigh(tempSymbol)
 			}
 		}
 		i++
@@ -638,7 +638,7 @@ func handleWhaleFillHoldLow() {
 		if isSymbolExistsInWhale == false {
 			//check process for whale delimiter
 			if whaleDelimiterMet == false {
-				insertWhaleSymbolHoldLow(tempSymbol, false)
+				insertWhaleSymbolHoldLow(tempSymbol)
 			}
 		}
 		i++
@@ -909,12 +909,10 @@ func systemStartProcesses() {
 }
 
 func resetTempSymbolHold() {
-	dropTempSymbolHoldHigh()
-	createTempSymbolHoldHigh()
+	truncateTempSymbolHoldHigh()
 }
 func resetStockWisemenSymbolHold() {
-	dropWisemenSymbolHold()
-	createWisemenSymbolHold()
+	truncateWisemenSymbolHold()
 }
 func resetStockWisemen() {
 	// dropStockWisemen()
@@ -923,8 +921,9 @@ func resetStockWisemen() {
 }
 
 func resetAltIntervalBuyWisemen() {
-	dropAltIntervalBuyWisemen()
-	createAltIntervalBuyWisemen()
+	// dropAltIntervalBuyWisemen()
+	// createAltIntervalBuyWisemen()
+	truncateAltIntervalBuyWisemen()
 }
 
 func handleDayReset() {
