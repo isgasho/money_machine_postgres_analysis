@@ -129,17 +129,17 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	// 	w.Write(js)
 	// }
 
-	// if requestType == "selectAllStockWisemen" {
-	// 	stockList := selectAllStockWisemen()
-	// 	stockListResponse := DatabaseStockListResponse{stockList}
-	// 	js, err := json.Marshal(stockListResponse)
-	// 	if err != nil {
-	// 		http.Error(w, err.Error(), http.StatusInternalServerError)
-	// 		return
-	// 	}
-	// 	w.Header().Set("Content-Type", "application/json")
-	// 	w.Write(js)
-	// }
+	if requestType == "selectStockWisemen" {
+		stockList := selectStockWisemen()
+		stockListResponse := DatabaseStockListResponse{stockList}
+		js, err := json.Marshal(stockListResponse)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
 
 	//Whale operations
 	// if requestType == "selectAllStockWhale" {
@@ -487,8 +487,10 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	fmt.Println("hey there")
-
+	fmt.Println("Init")
+	processTimelineStart()
+	// systemStartProcesses()
+	// handleOverarchTopStock()
 	// truncateCashDayEvaluation()
 	// insertDownDayEvaluation()
 	// downDayEvaluation := CashDayEvaluation{IsUnsettledFunds: "102"}

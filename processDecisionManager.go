@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 49
-var checkIsMarketOpenHour = 7
+var checkIsMarketOpenMinute = 8
+var checkIsMarketOpenHour = 9
 
-var conditionOneMinute = 50
-var conditionOneHour = 7
+var conditionOneMinute = 9
+var conditionOneHour = 9
 
-var conditionTwoMinute = 0
-var conditionTwoHour = 8
+var conditionTwoMinute = 10
+var conditionTwoHour = 9
 
 //conditionMinuteHandleCalculateDownDay1 8:29 engage
-var conditionMinuteHandleCalculateDownDay1 = 29
-var conditionHourHandleCalculateDownDay1 = 8
+var conditionMinuteHandleCalculateDownDay1 = 11
+var conditionHourHandleCalculateDownDay1 = 9
 
 var conditionFourMinute = 0
 var conditionFourHour = 9
@@ -33,6 +33,7 @@ var conditionSixHour = 44
 var conditionNineteenMinute = 30
 var conditionNineteenHour = 13
 
+var isDowStore = true
 var checkIsMarketOpenBool = true
 var boolOperate1 = true
 var boolOperate2 = true
@@ -130,73 +131,72 @@ func processCheckIsTradeBought(symbol string) {
 }
 
 func checkIsDowStore(currentHour int, currentMinute int) {
-	isStore := true
 	//point1
-	if isStore {
+	if isDowStore {
 		if currentHour == 7 {
 			if currentMinute == 49 {
 				dowValue := handleDowWebscrape()
 				insertDow(dowValue)
-				isStore = false
+				isDowStore = false
 			}
 		}
 	}
-	if isStore == false {
+	if isDowStore == false {
 		if currentHour == 7 {
 			if currentMinute == 50 {
-				isStore = true
+				isDowStore = true
 			}
 		}
 	}
 	//point2
-	if isStore {
+	if isDowStore {
 		if currentHour == 8 {
 			if currentMinute == 30 {
 				dowValue := handleDowWebscrape()
 				insertDow(dowValue)
-				isStore = false
+				isDowStore = false
 			}
 		}
 	}
-	if isStore == false {
+	if isDowStore == false {
 		if currentHour == 8 {
 			if currentMinute == 31 {
-				isStore = true
+				isDowStore = true
 			}
 		}
 	}
 	//point3
-	if isStore {
+	if isDowStore {
 		if currentHour == 9 {
 			if currentMinute == 45 {
 				dowValue := handleDowWebscrape()
 				insertDow(dowValue)
-				isStore = false
+				isDowStore = false
 			}
 		}
 	}
-	if isStore == false {
+	if isDowStore == false {
 		if currentHour == 9 {
 			if currentMinute == 46 {
-				isStore = true
+				isDowStore = true
 			}
 		}
 	}
 
 	//point4
-	if isStore {
+	if isDowStore {
 		if currentHour == 12 {
 			if currentMinute == 0 {
 				dowValue := handleDowWebscrape()
 				insertDow(dowValue)
-				isStore = false
+				isDowStore = false
 			}
 		}
 	}
-	if isStore == false {
+	if isDowStore == false {
 		if currentHour == 12 {
 			if currentMinute == 1 {
-				isStore = true
+				isDowStore = true
 			}
 		}
 	}
@@ -233,7 +233,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		boolOperate1 = false
 		handleOverarchTopStock()
 		processWisemenQueryStockSet()
-		processWhaleQueryStockSet()
+		// processWhaleQueryStockSet()
 	}
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
 		fmt.Println("hit2")
@@ -568,11 +568,10 @@ func healthCheck() {
 }
 func purchaseUpdateSystem() {
 }
-func getLatestTradeResultStore() TradeResultStore {
+func getTradeResultStoreList() []TradeResultStore {
 	tradeResultStoreList := selectTradeResultStore("wisemen")
 	//get latest tradeResultStore
-	tradeResultStore := tradeResultStoreList[len(tradeResultStoreList)-1]
-	return tradeResultStore
+	return tradeResultStoreList
 }
 
 // func handleFillHolds(params ...interface{}) {
@@ -988,6 +987,46 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//Support for more than 2 trades
 	//if no trade occured...
 
+	//query stocks
+	stockList := selectStockWisemen()
+
+	highestLastIndex := 0
+	highestLast := 0.0
+	//iterate through pchg list, find highest
+	for i, stock := range stockList {
+		floatLast, err := strconv.ParseFloat(stock.Last, 64)
+		fmt.Println(err)
+		if i == 0 {
+			highestLast = floatLast
+			continue
+		}
+		if floatLast > highestLast {
+			highestLast = floatLast
+			highestLastIndex = i
+		}
+	}
+	highestStock := stockList[highestLastIndex]
+	timeCreatedHigh := highestStock.TimeCreated
+
+	lowestLastIndex := 0
+	lowestLast := 0.0
+	//iterate through pchg list, find highest
+	for i, stock := range stockList {
+		floatLast, err := strconv.ParseFloat(stock.Last, 64)
+		fmt.Println(err)
+		if i == 0 {
+			lowestLast = floatLast
+			continue
+		}
+		if floatLast < lowestLast {
+			lowestLast = floatLast
+			lowestLastIndex = i
+		}
+	}
+	lowestStock := stockList[lowestLastIndex]
+	timeCreatedLow := lowestStock.TimeCreated
+	//
+
 	dowList := selectDow()
 	if len(listMatchingSymbolInformationAtTrade) == 0 {
 		//no trade occured handle TradeResultStore
@@ -1056,28 +1095,36 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 
 		if len(dowList) == 4 {
 			tradeResultStore := TradeResultStore{
-				AlgorithmUsed: "wisemen",
-				Result:        result,
-				ChangeAmount:  stringChangeAmount,
-				StockSymbol:   alteredTransactionHistory.Symbol,
-				TimeTradeBuy:  boughtTime,
-				TimeTradeSell: sellTime,
-				Dow1:          dowList[0].CurrentDowValue,
-				Dow2:          dowList[1].CurrentDowValue,
-				Dow3:          dowList[2].CurrentDowValue,
-				Dow4:          dowList[3].CurrentDowValue,
+				AlgorithmUsed:           "wisemen",
+				Result:                  result,
+				ChangeAmount:            stringChangeAmount,
+				StockSymbol:             alteredTransactionHistory.Symbol,
+				TimeTradeBuy:            boughtTime,
+				TimeTradeSell:           sellTime,
+				HighestPricePointForDay: highestStock.Last,
+				TimeHighestPricePoint:   timeCreatedHigh,
+				LowestPricePointForDay:  lowestStock.Last,
+				TimeLowestPricePoint:    timeCreatedLow,
+				Dow1:                    dowList[0].CurrentDowValue,
+				Dow2:                    dowList[1].CurrentDowValue,
+				Dow3:                    dowList[2].CurrentDowValue,
+				Dow4:                    dowList[3].CurrentDowValue,
 			}
 			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 		}
 		if len(dowList) != 4 {
 			tradeResultStore := TradeResultStore{
-				AlgorithmUsed: "wisemen",
-				Result:        result,
-				ChangeAmount:  stringChangeAmount,
-				StockSymbol:   alteredTransactionHistory.Symbol,
-				TimeTradeBuy:  boughtTime,
-				TimeTradeSell: sellTime,
+				AlgorithmUsed:           "wisemen",
+				Result:                  result,
+				ChangeAmount:            stringChangeAmount,
+				StockSymbol:             alteredTransactionHistory.Symbol,
+				TimeTradeBuy:            boughtTime,
+				TimeTradeSell:           sellTime,
+				HighestPricePointForDay: highestStock.Last,
+				TimeHighestPricePoint:   timeCreatedHigh,
+				LowestPricePointForDay:  lowestStock.Last,
+				TimeLowestPricePoint:    timeCreatedLow,
 			}
 			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
@@ -1093,6 +1140,9 @@ func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
 	dow := 0.0
 	dowPrevious := 0.0
 	dowPchg := 0.0
+
+	//handle where does not pass neo...
+	//query Neo no handle
 
 	if s, err := strconv.ParseFloat(downDayEval.Dow, 64); err == nil {
 		dow = s
@@ -1127,4 +1177,8 @@ func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
 		Dow4:          dowList[3].CurrentDowValue,
 	}
 	insertTradeResultStore(tradeResultStore)
+}
+
+func calculateHighestStock() {
+
 }

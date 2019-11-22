@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -436,17 +437,22 @@ func truncateMarketOpenAnalysis() {
 
 //MarketOpenAnalysis
 func insertStockWisemen(stock Stock) {
-	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl}
-	postCommandDBInsert("INSERT INTO stock_wisemen (symbol, bid, ask, last, pchg, pcls, opn, vl) VALUES (", listValues)
+	hour := getCurrentHour()
+	minute := getCurrentMinute()
+	stringHour := strconv.Itoa(hour)
+	stringMinute := strconv.Itoa(minute)
+	timeCreated := stringHour + " " + stringMinute
+	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl, timeCreated}
+	postCommandDBInsert("INSERT INTO stock_wisemen (symbol, bid, ask, last, pchg, pcls, opn, vl, time_created) VALUES (", listValues)
 }
 func selectStockWisemen() []Stock {
 	listStock := []Stock{}
-	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl FROM stock_wisemen")
+	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl, time_created FROM stock_wisemen")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7]}
+		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7], TimeCreated: v.ListString[8]}
 		listStock = append(listStock, stock)
 		i++
 	}
@@ -458,17 +464,22 @@ func truncateStockWisemen() {
 
 //StockWhale High
 func insertStockWhaleHigh(stock Stock) {
-	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl}
-	postCommandDBInsert("INSERT INTO stock_whale_high (symbol, bid, ask, last, pchg, pcls, opn, vl) VALUES (", listValues)
+	hour := getCurrentHour()
+	minute := getCurrentMinute()
+	stringHour := strconv.Itoa(hour)
+	stringMinute := strconv.Itoa(minute)
+	timeCreated := stringHour + " " + stringMinute
+	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl, timeCreated}
+	postCommandDBInsert("INSERT INTO stock_whale_high (symbol, bid, ask, last, pchg, pcls, opn, vl, time_created) VALUES (", listValues)
 }
 func selectStockWhaleHigh(symbol string) []Stock {
 	listStock := []Stock{}
-	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl FROM stock_whale_high")
+	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl, time_created FROM stock_whale_high")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7]}
+		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7], TimeCreated: v.ListString[8]}
 		listStock = append(listStock, stock)
 		i++
 	}
@@ -480,17 +491,22 @@ func truncateStockWhaleHigh() {
 
 //StockWhale Low
 func insertStockWhaleLow(stock Stock) {
-	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl}
-	postCommandDBInsert("INSERT INTO stock_whale_low (symbol, bid, ask, last, pchg, pcls, opn, vl) VALUES (", listValues)
+	hour := getCurrentHour()
+	minute := getCurrentMinute()
+	stringHour := strconv.Itoa(hour)
+	stringMinute := strconv.Itoa(minute)
+	timeCreated := stringHour + " " + stringMinute
+	listValues := []string{stock.Symbol, stock.Bid, stock.Ask, stock.Last, stock.Pchg, stock.Pcls, stock.Opn, stock.Vl, timeCreated}
+	postCommandDBInsert("INSERT INTO stock_whale_low (symbol, bid, ask, last, pchg, pcls, opn, vl, time_created) VALUES (", listValues)
 }
 func selectStockWhaleLow(symbol string) []Stock {
 	listStock := []Stock{}
-	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl FROM stock_whale_low")
+	response := postCommandDBSelect("SELECT symbol, bid, ask, last, pchg, pcls, opn, vl, time_created FROM stock_whale_low")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7]}
+		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7], TimeCreated: v.ListString[8]}
 		listStock = append(listStock, stock)
 		i++
 	}
@@ -699,17 +715,17 @@ func truncateMetricsWisemen() {
 //crit
 //insertTradeResultStore
 func insertTradeResultStore(tradeResultStore TradeResultStore) {
-	listValues := []string{tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4}
-	postCommandDBInsert("INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow1, dow2, dow3, dow4) VALUES (", listValues)
+	listValues := []string{tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.HighestPricePointForDay, tradeResultStore.TimeHighestPricePoint, tradeResultStore.LowestPricePointForDay, tradeResultStore.TimeLowestPricePoint, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4}
+	postCommandDBInsert("INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4) VALUES (", listValues)
 }
 func selectTradeResultStore(symbol string) []TradeResultStore {
 	tradeResultStoreList := []TradeResultStore{}
-	response := postCommandDBSelect("SELECT algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, dow1, dow2, dow3, dow4 FROM trade_result_store")
+	response := postCommandDBSelect("SELECT algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4 FROM trade_result_store")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		tradeResultStore := TradeResultStore{AlgorithmUsed: v.ListString[0], Result: v.ListString[1], ChangeAmount: v.ListString[2], StockSymbol: v.ListString[3], TimeStart: v.ListString[4], TimeEnd: v.ListString[5], TimeTradeBuy: v.ListString[6], TimeTradeSell: v.ListString[7], Dow1: v.ListString[8], Dow2: v.ListString[9], Dow3: v.ListString[10], Dow4: v.ListString[11]}
+		tradeResultStore := TradeResultStore{AlgorithmUsed: v.ListString[0], Result: v.ListString[1], ChangeAmount: v.ListString[2], StockSymbol: v.ListString[3], TimeStart: v.ListString[4], TimeEnd: v.ListString[5], TimeTradeBuy: v.ListString[6], TimeTradeSell: v.ListString[7], HighestPricePointForDay: v.ListString[8], TimeHighestPricePoint: v.ListString[9], LowestPricePointForDay: v.ListString[10], TimeLowestPricePoint: v.ListString[11], Dow1: v.ListString[12], Dow2: v.ListString[13], Dow3: v.ListString[14], Dow4: v.ListString[15]}
 		tradeResultStoreList = append(tradeResultStoreList, tradeResultStore)
 		i++
 	}

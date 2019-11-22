@@ -91,6 +91,7 @@ type Stock struct {
 	Pcls                                  string
 	Opn                                   string
 	Vl                                    string
+	TimeCreated                           string
 	Pvol                                  string
 	Volatility12                          string
 	Wk52hi                                string
@@ -321,19 +322,23 @@ type TransactionHistory struct {
 }
 
 type TradeResultStore struct {
-	CreatedAt     string
-	AlgorithmUsed string
-	Result        string
-	ChangeAmount  string
-	StockSymbol   string
-	TimeStart     string
-	TimeEnd       string
-	TimeTradeBuy  string
-	TimeTradeSell string
-	Dow1          string
-	Dow2          string
-	Dow3          string
-	Dow4          string
+	CreatedAt               string
+	AlgorithmUsed           string
+	Result                  string
+	ChangeAmount            string
+	StockSymbol             string
+	TimeStart               string
+	TimeEnd                 string
+	TimeTradeBuy            string
+	TimeTradeSell           string
+	HighestPricePointForDay string
+	TimeHighestPricePoint   string
+	LowestPricePointForDay  string
+	TimeLowestPricePoint    string
+	Dow1                    string
+	Dow2                    string
+	Dow3                    string
+	Dow4                    string
 }
 
 type RecordSystemMonthContainer struct {

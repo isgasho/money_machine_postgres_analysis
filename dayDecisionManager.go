@@ -146,16 +146,15 @@ func Abs(x int64) int64 {
 // isCashAccountCheckUnsettledFunds
 func handleCalculateCashDay() {
 	//Reset dow day eval store before calculation
-	// dropCashDayEvaluation()
-	// createCashDayEvaluation()
 	truncateCashDayEvaluation()
 	isUnsettledFunds := "true"
 	//query account
-	response := queryAccountBrokerage()
-	accountBrokerage := parseAccountBrokerage(response)
-	if accountBrokerage.UnsettledFunds == "0" {
-		isUnsettledFunds = "false"
-	}
+	// response := queryAccountBrokerage()
+	// accountBrokerage := parseAccountBrokerage(response)
+	//set negative for trade qty 1 testing
+	// if accountBrokerage.UnsettledFunds == "0" {
+	isUnsettledFunds = "false"
+	// }
 	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds}
 	insertCashDayEvaluation(cashDayEvaluation)
 }
@@ -170,12 +169,15 @@ func handleCalculateDownDay() {
 	//handle on dow...
 	dowValue := handleDowWebscrape()
 
-	// pchgFromPreviousDay...pull from TRS dow4
-	//query trs from previous day...
-	tradeResultStore := getLatestTradeResultStore()
-	if dowValue < tradeResultStore.Dow4 {
-		isDowDown = true
+	tradeResultStoreList := getTradeResultStoreList()
+	tradeResultStore := TradeResultStore{}
+	if len(tradeResultStoreList) != 0 {
+		tradeResultStore = tradeResultStoreList[len(tradeResultStoreList)-1]
+		if dowValue < tradeResultStore.Dow4 {
+			isDowDown = true
+		}
 	}
+
 	// //query highest pchg, is pchg greater than delmiter...
 	// //do TSP, doesn't matter if it's recurrent,
 	// //TSP get topstock...
@@ -231,22 +233,28 @@ func handleCalculateDownDay() {
 	fmt.Println("stockList[highestStockIndex].Pchg")
 	fmt.Println(stockList[highestStockIndex].Pchg)
 
+	downDayEvaluation := DownDayEvaluation{}
+	if len(tradeResultStoreList) == 0 {
+		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, GreatestPchg: stockList[highestStockIndex].Pchg}
+	}
+	if len(tradeResultStoreList) != 0 {
+		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: tradeResultStore.Dow4, GreatestPchg: stockList[highestStockIndex].Pchg}
+	}
 	//store results in DB
-	downDayEvaluation := DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: tradeResultStore.Dow4, GreatestPchg: stockList[highestStockIndex].Pchg}
 	insertDownDayEvaluation(downDayEvaluation)
 }
 
 func overarchIsTradeDay() bool {
 	isTradeDay := false
 	//query down day eval
-	downDayEvalList := selectDownDayEvaluation()
-	//query cash day eval
-	cashDayEvalList := selectCashDayEvaluation()
-	if downDayEvalList[0].IsDownDay == "false" {
-		if cashDayEvalList[0].IsUnsettledFunds == "false" {
-			isTradeDay = true
-		}
-	}
+	// downDayEvalList := selectDownDayEvaluation()
+	// //query cash day eval
+	// cashDayEvalList := selectCashDayEvaluation()
+	// if downDayEvalList[0].IsDownDay == "false" {
+	// if cashDayEvalList[0].IsUnsettledFunds == "false" {
+	isTradeDay = true
+	// }
+	// }
 	return isTradeDay
 }
 
