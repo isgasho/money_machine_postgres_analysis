@@ -253,6 +253,7 @@ type InformationAtTrade struct {
 	CreatedAt string
 	Symbol    string
 	TypeTrade string
+	Qty       string
 	Hour      string
 	Minute    string
 	Dow       string

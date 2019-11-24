@@ -1426,6 +1426,9 @@ func queryTradeSellLimit(symbol string, limitPrice string, qty string) string {
 
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
+	// fmt.Println("json")
+	// fmt.Println(json)
+	// response := ""
 	return response
 }
 

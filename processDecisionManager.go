@@ -310,36 +310,40 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	}
 	fmt.Println("holdingWisemen.Symbol")
 	fmt.Println(holdingWisemen.Symbol)
-
 	holdingWisemen = calculateHoldingStatus(holdingWisemen)
-	// if holdingWisemen.OrderStatus == "order not placed" {
-	// 	cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-	// 	postNeoBuyOrderResponse(holdingWisemen)
-	// }
-	// //Handle conditions for holding incomplete
-	// if holdingWisemen.OrderStatus == "completedFull" {
-	// 	fmt.Println("completedFull hit")
-	// 	//End cycle for monitoring
-	// 	handleInsertInformationAtTrade(symbol, "limit")
-	// 	cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-	// 	response := postNeoBuyOrderResponse(holdingWisemen)
-	// 	fmt.Println(response)
-	// }
+	fmt.Println("holdingWisemen")
+	fmt.Println(holdingWisemen)
+	//Handle conditions for holding incomplete
+	if holdingWisemen.OrderStatus == "completedFull" {
+		fmt.Println("completedFull hit")
+		//End cycle for monitoring
+		handleInsertInformationAtTrade(symbol, "limit", holdingWisemen.Qty)
+		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+		response := postNeoBuyOrderResponse(holdingWisemen)
+		fmt.Println(response)
+	}
 }
 
 // func handleOverarchTopStock(params ...interface{}) {
 func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
 	// twiStockList := []Stock{}
+	// fmt.Println("twiStockList[0].Symbol")
+	// fmt.Println(twiStockList[0].Symbol)
+	// fmt.Println("twiStockList[0].Pchg")
+	// fmt.Println(twiStockList[0].Pchg)
+	// fmt.Println("twiStockList[0].Price")
+	// fmt.Println(twiStockList[0].Last)
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
-	//Low process for whale
+	// //Low process for whale
 	lowTransferanceProcess(twiStockList)
 }
 func highTransferanceProcess(twiStockList []Stock) {
 	//TSP
 	topStockPullStockList := topStockPull()
 
+	fmt.Println("topStockPullStockList")
 	for i, v := range topStockPullStockList {
 		fmt.Println(v.Symbol)
 		fmt.Println(v.Pchg)
@@ -863,8 +867,6 @@ func systemStartProcesses() {
 	queryStopTwi()
 	queryStartTwi()
 	//reset dow
-	// dropDow()
-	// createDow()
 	truncateDow()
 	//
 	resetTempSymbolHold()
@@ -874,6 +876,8 @@ func systemStartProcesses() {
 	resetStockWisemen()
 	//
 	resetAltIntervalBuyWisemen()
+	//
+	resetInformationAtTrade()
 }
 
 func resetTempSymbolHold() {
@@ -887,6 +891,9 @@ func resetStockWisemen() {
 }
 func resetAltIntervalBuyWisemen() {
 	truncateAltIntervalBuyWisemen()
+}
+func resetInformationAtTrade() {
+	truncateInformationAtTrade()
 }
 
 func handleDayReset() {
@@ -938,7 +945,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//
 	metrics := selectMetricsWisemen()[0]
 	alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
-	//get insertInformationAtTrade for buy and sell
+	//get although this is reset insertInformationAtTrade for buy and sell for day
 	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
 
 	// fmt.Println("alteredTransactionHistory")

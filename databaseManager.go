@@ -759,17 +759,17 @@ func truncateDayTrackingRecord() {
 
 //insertInformationAtTrade
 func insertInformationAtTrade(informationAtTrade InformationAtTrade) {
-	listValues := []string{informationAtTrade.Symbol, informationAtTrade.TypeTrade, informationAtTrade.Hour, informationAtTrade.Minute, informationAtTrade.Dow, informationAtTrade.Bid, informationAtTrade.Ask, informationAtTrade.Last}
-	postCommandDBInsert("INSERT INTO information_at_trade (symbol, type_trade, hour, minute, dow, bid, ask, last) VALUES (", listValues)
+	listValues := []string{informationAtTrade.Symbol, informationAtTrade.TypeTrade, informationAtTrade.Qty, informationAtTrade.Hour, informationAtTrade.Minute, informationAtTrade.Dow, informationAtTrade.Bid, informationAtTrade.Ask, informationAtTrade.Last}
+	postCommandDBInsert("INSERT INTO information_at_trade (symbol, type_trade, qty, hour, minute, dow, bid, ask, last) VALUES (", listValues)
 }
 func selectInformationAtTrade() []InformationAtTrade {
 	informationAtTradeList := []InformationAtTrade{}
-	response := postCommandDBSelect("SELECT symbol, type_trade, hour, minute, dow, bid, ask, last FROM information_at_trade")
+	response := postCommandDBSelect("SELECT symbol, type_trade, qty, hour, minute, dow, bid, ask, last FROM information_at_trade")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		informationAtTrade := InformationAtTrade{Symbol: v.ListString[0], TypeTrade: v.ListString[1], Hour: v.ListString[2], Minute: v.ListString[3], Dow: v.ListString[4], Bid: v.ListString[5], Ask: v.ListString[6], Last: v.ListString[7]}
+		informationAtTrade := InformationAtTrade{Symbol: v.ListString[0], TypeTrade: v.ListString[1], Qty: v.ListString[2], Hour: v.ListString[3], Minute: v.ListString[4], Dow: v.ListString[5], Bid: v.ListString[6], Ask: v.ListString[7], Last: v.ListString[8]}
 		informationAtTradeList = append(informationAtTradeList, informationAtTrade)
 		i++
 	}

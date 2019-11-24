@@ -39,14 +39,14 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
 	//store trade entered information
-	// tradeEnteredInformation := TradeEnteredInformation{
-	// 	Symbol:      symbol,
-	// 	Price:       stringPrice,
-	// 	OrderStatus: "pending",
-	// 	Qty:         stringQty,
-	// 	QtyBought:   "0",
+	// informationAtTrade := InformationAtTrade{
+	// 	Symbol: symbol,
 	// }
+	handleInsertInformationAtTrade(symbol, "limit", stringQty)
 	// insertTradeEnteredInformation(tradeEnteredInformation)
+
+	// insertInformationAtTrade(informationAtTrade)
+
 	//Submit buy limit to brokerage
 	fmt.Println("symbol")
 	fmt.Println(symbol)
@@ -73,9 +73,11 @@ func monitorSell(params ...interface{}) {
 	if isSymbolPresentInHolding == false {
 		//cancel cycle
 		//support nodemailerror
+		//handle on history...
+		alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol, "limit")
+		handleInsertInformationAtTrade(symbol, "limit", alteredTransactionHistory.HistoryValueList[1].Qty)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
 	}
@@ -108,7 +110,7 @@ func monitorSell(params ...interface{}) {
 		queryTradeSellMarket(holding)
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol, "time delimiter")
+		handleInsertInformationAtTrade(symbol, "time delimiter", holding.Qty)
 		time.Sleep(time.Duration(30) * time.Second)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
@@ -142,13 +144,15 @@ func monitorSell(params ...interface{}) {
 		queryTradeSellMarket(holding)
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol, "drop loss")
+
+		//handle on holding
+		handleInsertInformationAtTrade(symbol, "drop loss", holding.Qty)
 		time.Sleep(time.Duration(30) * time.Second)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
 	}
 }
-func handleInsertInformationAtTrade(symbol string, typeTrade string) {
+func handleInsertInformationAtTrade(symbol string, typeTrade string, qty string) {
 	//query stock
 	response := queryMultiStockPull([]string{symbol})
 	stockList := parseStockSetQuery(response)
@@ -166,6 +170,7 @@ func handleInsertInformationAtTrade(symbol string, typeTrade string) {
 	informationAtTrade := InformationAtTrade{
 		Symbol:    symbol,
 		TypeTrade: typeTrade,
+		Qty:       qty,
 		Hour:      hourString,
 		Minute:    minuteString,
 		Dow:       dow,
@@ -582,16 +587,16 @@ func handleSellLimitWisemen(symbol string) {
 		metricsWisemen := selectMetricsWisemen()[0]
 		//
 		holdingPrice := 0.0
-		metricsDesiredPriceRangeHigh := 0.0
+		priceHighPchgTrade := 0.0
 		//string to float
 		if s, err := strconv.ParseFloat(holdingToSell.Price, 64); err == nil {
 			holdingPrice = s
 		}
-		if s1, err := strconv.ParseFloat(metricsWisemen.DesiredPriceRangeHigh, 64); err == nil {
-			metricsDesiredPriceRangeHigh = s1
+		if s1, err := strconv.ParseFloat(metricsWisemen.PriceHighPchgTrade, 64); err == nil {
+			priceHighPchgTrade = s1
 		}
 		//calculate limit price...
-		limitPrice := holdingPrice + (holdingPrice * metricsDesiredPriceRangeHigh)
+		limitPrice := holdingPrice + (holdingPrice * priceHighPchgTrade)
 
 		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
 
@@ -647,9 +652,8 @@ func cancelOrder(symbol string) {
 }
 
 func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
-	holdingWisemen.OrderStatus = "undetermined"
-	// isPartialUnfinished := false
-	// isCompletedFull := false
+	isPartialUnfinished := false
+	isCompletedFull := false
 	// //Populate order container
 	// containerOrders := getAllOrders()
 	// order := Order{Symbol: "default"}
@@ -658,6 +662,7 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	// listInformationAtTrade := selectInformationAtTrade()
 	// holding := Holding{}
 	holdingWisemenReturned := holdingWisemen
+	holdingWisemenReturned.OrderStatus = "undetermined"
 	// for i,v := range listInformationAtTrade {
 	// 	// if v.Symbol == holdingWisemen.Symbol {
 	// // 	order = v
@@ -668,57 +673,29 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 
 	//get informatin at trade
 	informationAtTradeList := selectInformationAtTrade()
-
+	informationAtTrade := informationAtTradeList[0]
 	//compare holding qty to information at trade qty.
+	fmt.Println("informationAtTrade")
+	fmt.Println(informationAtTrade)
+	fmt.Println("informationAtTrade.qty")
+	fmt.Println(informationAtTrade.Qty)
 
-	// for i, v := range containerOrders.ListOrders {
-	// if v.Symbol == holdingWisemen.Symbol {
-	// 	order = v
-	// }
-	// 	i++
-	// }
-	// //contingent that order.qty still exists.
-	// //If order does not exist should pull trade information.
-	// //Handle conditional where order is not placed.
-	// if order.Symbol == "default" {
-	// 	//cancel process return
-	// 	holdingWisemen.OrderStatus = "order not placed"
-	// 	return holdingWisemen
-	// }
-
-	// fmt.Println("order.Qty")
-	// fmt.Println(order.Qty)
-
-	// stringOrderQty := order.Qty
-	// if len(stringOrderQty) == 1 {
-	// 	//Append '.00' for comparison with holding.qty
-	// 	stringOrderQty = stringOrderQty + ".00"
-	// }
-
-	// fmt.Println(holdingWisemen)
-	// fmt.Println("holdingWisemen.Qty")
-	// fmt.Println(holdingWisemen.Qty)
-	// fmt.Println(len(holdingWisemen.Qty))
-	// fmt.Println("stringOrderQty")
-	// fmt.Println(stringOrderQty)
-	// fmt.Println(len(stringOrderQty))
-
+	fmt.Println("holdingWisemenReturned.Qty")
+	fmt.Println(holdingWisemenReturned.Qty)
 	//compare order qty to bought qty.
-	// if stringOrderQty == holdingWisemen.Qty {
-	// 	isCompletedFull = true
-	// }
-	// if order.Qty > holdingWisemen.Qty {
-	// 	isPartialUnfinished = true
-	// }
-
-	// //update holdingWisemen status
-	// //return holdingWisemen
-	// if isCompletedFull {
-	// 	holdingWisemen.OrderStatus = "completedFull"
-	// }
-	// if isPartialUnfinished {
-	// 	holdingWisemen.OrderStatus = "partial"
-	// }
+	if informationAtTrade.Qty == holdingWisemenReturned.Qty {
+		isCompletedFull = true
+	}
+	if informationAtTrade.Qty > holdingWisemenReturned.Qty {
+		isPartialUnfinished = true
+	}
+	//
+	if isCompletedFull {
+		holdingWisemenReturned.OrderStatus = "completedFull"
+	}
+	if isPartialUnfinished {
+		holdingWisemenReturned.OrderStatus = "partial"
+	}
 	return holdingWisemenReturned
 }
 

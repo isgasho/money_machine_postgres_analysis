@@ -491,7 +491,18 @@ func main() {
 	go handleRequests()
 	fmt.Println("Init")
 
-	processCheckIsTradeBought("GSX")
+	// processCheckIsTradeBought("GSX")
+
+	// insertInformationAtTrade(InformationAtTrade{Symbol: "test", Qty: "1"})
+
+	// truncateInformationAtTrade()
+	// handleInsertInformationAtTrade("GSX", "limit", "1.00")
+
+	// test := selectInformationAtTrade()
+	// fmt.Println("test")
+	// fmt.Println(test)
+	// postCommandDBInsert("INSERT INTO information_at_trade (symbol, type_trade, hour, minute, dow, bid, ask, last) VALUES (", listValues)
+
 	// insertMetricsWisemen("20.00", "4.0", ".08", "0", ".01", ".1", "10.00", "4.0", "5", "30", "3")
 	// metrics := selectMetricsWisemen()
 	// fmt.Println("metrics[0].PriceLowPchgTrade")
