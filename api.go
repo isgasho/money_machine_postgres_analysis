@@ -297,10 +297,6 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("dataList")
 		fmt.Println(dataList)
 		fmt.Println(dataList[0])
-		// symbol := dataList[0]
-		// if symbol == "none chosen" {
-
-		// }
 
 		overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
@@ -494,6 +490,8 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	fmt.Println("Init")
+
+	processCheckIsTradeBought("GSX")
 	// insertMetricsWisemen("20.00", "4.0", ".08", "0", ".01", ".1", "10.00", "4.0", "5", "30", "3")
 	// metrics := selectMetricsWisemen()
 	// fmt.Println("metrics[0].PriceLowPchgTrade")

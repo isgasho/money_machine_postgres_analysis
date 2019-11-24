@@ -648,60 +648,78 @@ func cancelOrder(symbol string) {
 
 func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	holdingWisemen.OrderStatus = "undetermined"
-	isPartialUnfinished := false
-	isCompletedFull := false
-	//Populate order container
-	containerOrders := getAllOrders()
-	order := Order{Symbol: "default"}
-	for i, v := range containerOrders.ListOrders {
-		if v.Symbol == holdingWisemen.Symbol {
-			order = v
-		}
-		i++
-	}
-	//contingent that order.qty still exists.
-	//If order does not exist should pull trade information.
-	//Handle conditional where order is not placed.
-	if order.Symbol == "default" {
-		//cancel process return
-		holdingWisemen.OrderStatus = "order not placed"
-		return holdingWisemen
-	}
+	// isPartialUnfinished := false
+	// isCompletedFull := false
+	// //Populate order container
+	// containerOrders := getAllOrders()
+	// order := Order{Symbol: "default"}
+	// containerHoldings := getAllHolding()
+	// //get informationAtTrade
+	// listInformationAtTrade := selectInformationAtTrade()
+	// holding := Holding{}
+	holdingWisemenReturned := holdingWisemen
+	// for i,v := range listInformationAtTrade {
+	// 	// if v.Symbol == holdingWisemen.Symbol {
+	// // 	order = v
+	// // }
+	// if v.
+	// 	i++
+	// }
 
-	fmt.Println("order.Qty")
-	fmt.Println(order.Qty)
+	//get informatin at trade
+	informationAtTradeList := selectInformationAtTrade()
 
-	stringOrderQty := order.Qty
-	if len(stringOrderQty) == 1 {
-		//Append '.00' for comparison with holding.qty
-		stringOrderQty = stringOrderQty + ".00"
-	}
+	//compare holding qty to information at trade qty.
 
-	fmt.Println(holdingWisemen)
-	fmt.Println("holdingWisemen.Qty")
-	fmt.Println(holdingWisemen.Qty)
-	fmt.Println(len(holdingWisemen.Qty))
-	fmt.Println("stringOrderQty")
-	fmt.Println(stringOrderQty)
-	fmt.Println(len(stringOrderQty))
+	// for i, v := range containerOrders.ListOrders {
+	// if v.Symbol == holdingWisemen.Symbol {
+	// 	order = v
+	// }
+	// 	i++
+	// }
+	// //contingent that order.qty still exists.
+	// //If order does not exist should pull trade information.
+	// //Handle conditional where order is not placed.
+	// if order.Symbol == "default" {
+	// 	//cancel process return
+	// 	holdingWisemen.OrderStatus = "order not placed"
+	// 	return holdingWisemen
+	// }
+
+	// fmt.Println("order.Qty")
+	// fmt.Println(order.Qty)
+
+	// stringOrderQty := order.Qty
+	// if len(stringOrderQty) == 1 {
+	// 	//Append '.00' for comparison with holding.qty
+	// 	stringOrderQty = stringOrderQty + ".00"
+	// }
+
+	// fmt.Println(holdingWisemen)
+	// fmt.Println("holdingWisemen.Qty")
+	// fmt.Println(holdingWisemen.Qty)
+	// fmt.Println(len(holdingWisemen.Qty))
+	// fmt.Println("stringOrderQty")
+	// fmt.Println(stringOrderQty)
+	// fmt.Println(len(stringOrderQty))
 
 	//compare order qty to bought qty.
-	if stringOrderQty == holdingWisemen.Qty {
-		isCompletedFull = true
-	}
-	if order.Qty > holdingWisemen.Qty {
-		isPartialUnfinished = true
-	}
+	// if stringOrderQty == holdingWisemen.Qty {
+	// 	isCompletedFull = true
+	// }
+	// if order.Qty > holdingWisemen.Qty {
+	// 	isPartialUnfinished = true
+	// }
 
-	//update holdingWisemen status
-	//return holdingWisemen
-	if isCompletedFull {
-		holdingWisemen.OrderStatus = "completedFull"
-	}
-	if isPartialUnfinished {
-		holdingWisemen.OrderStatus = "partial"
-	}
-	return holdingWisemen
+	// //update holdingWisemen status
+	// //return holdingWisemen
+	// if isCompletedFull {
+	// 	holdingWisemen.OrderStatus = "completedFull"
+	// }
+	// if isPartialUnfinished {
+	// 	holdingWisemen.OrderStatus = "partial"
+	// }
+	return holdingWisemenReturned
 }
 
 // func calculateIsTradeBoughtSuccessful(symbol string) {
@@ -827,7 +845,6 @@ func removeElementInt(listEntered []int, val int) []int {
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
 	fmt.Println(dataList)
-
 	//handle no neo found..
 	// overarchTradeWisemen
 	if dataList[0] == "none chosen" {

@@ -299,7 +299,7 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	listSymbols := listSymbolsInterface.([]string)
 	symbol := listSymbols[0]
 	//Is holding for symbol present
-	holdingWisemen := HoldingWisemen{}
+	holdingWisemen := HoldingWisemen{Symbol: "default"}
 	//if holding matches symbol seeking
 	holdingList := getAllHolding()
 	for i, v := range holdingList.ListHolding {
@@ -308,53 +308,22 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		}
 		i++
 	}
+	fmt.Println("holdingWisemen.Symbol")
+	fmt.Println(holdingWisemen.Symbol)
+
 	holdingWisemen = calculateHoldingStatus(holdingWisemen)
-	if holdingWisemen.OrderStatus == "order not placed" {
-		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-		postNeoBuyOrderResponse(holdingWisemen)
-	}
-	//Handle conditions for holding incomplete
-	if holdingWisemen.OrderStatus == "completedFull" {
-		fmt.Println("completedFull hit")
-		//End cycle for monitoring
-		handleInsertInformationAtTrade(symbol)
-		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-		response := postNeoBuyOrderResponse(holdingWisemen)
-		fmt.Println(response)
-	}
-
-	//handle time delimiter where no buy is completed.
-	//
-	//
-
-	// if holdingWisemen.OrderStatus == "partial" {
-	// 	fmt.Println("partial hit")
-	// 	//in the impartial case it will iterate a global check variable,
-	// 	//upon global variable reaching a delimter count, which represents monitor cycle time intervals.
-	// 	//upon delmiter met, cancel and post to neo with holding "partial" status.
-	// 	if getIntervalTradeMonitorDelimiter() == 4 {
-	// 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
-	// 		orderContainer := getAllOrders()
-	// 		orderForSymbol := Order{Symbol: "default"}
-	// 		for i, v := range orderContainer.ListOrders {
-	// 			if v.Symbol == symbol {
-	// 				fmt.Println("hit ")
-	// 				orderForSymbol = v
-	// 				break
-	// 			}
-	// 			i++
-	// 		}
-	// 		if orderForSymbol.Symbol == "default" {
-	// 			// queryCancelOrder()
-	// 			// holdingWisemen.OrderStatus
-	// 			postNeoBuyOrderResponse(holdingWisemen)
-	// 		}
-	// 		if orderForSymbol.Symbol != "default" {
-	// 			queryCancelOrder(orderForSymbol.SVI)
-	// 			postNeoBuyOrderResponse(holdingWisemen)
-	// 		}
-	// 	}
-	// 	iterateIntervalTradeMonitorDelimiter()
+	// if holdingWisemen.OrderStatus == "order not placed" {
+	// 	cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+	// 	postNeoBuyOrderResponse(holdingWisemen)
+	// }
+	// //Handle conditions for holding incomplete
+	// if holdingWisemen.OrderStatus == "completedFull" {
+	// 	fmt.Println("completedFull hit")
+	// 	//End cycle for monitoring
+	// 	handleInsertInformationAtTrade(symbol, "limit")
+	// 	cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+	// 	response := postNeoBuyOrderResponse(holdingWisemen)
+	// 	fmt.Println(response)
 	// }
 }
 
