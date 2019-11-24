@@ -200,7 +200,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	if requestType == "insertMetricsWisemen" {
 		// data := databaseQuery.Data
 		dataList := databaseQuery.Data
-		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6], dataList[7], dataList[8])
+		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6], dataList[7], dataList[8], dataList[9], dataList[10])
 
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -296,6 +296,12 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println("tradeBuyWisemen")
 		fmt.Println("dataList")
 		fmt.Println(dataList)
+		fmt.Println(dataList[0])
+		// symbol := dataList[0]
+		// if symbol == "none chosen" {
+
+		// }
+
 		overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -488,7 +494,18 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	fmt.Println("Init")
-	processTimelineStart()
+	// insertMetricsWisemen("20.00", "4.0", ".08", "0", ".01", ".1", "10.00", "4.0", "5", "30", "3")
+	// metrics := selectMetricsWisemen()
+	// fmt.Println("metrics[0].PriceLowPchgTrade")
+	// fmt.Println(metrics[0].PriceLowPchgTrade)
+	// fmt.Println("metrics[0].PriceLowPchgAlgoDecision")
+	// fmt.Println(metrics[0].PriceLowPchgAlgoDecision)
+	// fmt.Println("metrics[0].PriceHighPchgTrade")
+	// fmt.Println(metrics[0].PriceHighPchgTrade)
+	// fmt.Println("metrics[0].PriceLowPchgTrade")
+	// fmt.Println(metrics[0].PriceLowPchgTrade)
+	//
+	// processTimelineStart()
 	// systemStartProcesses()
 	// handleOverarchTopStock()
 	// truncateCashDayEvaluation()

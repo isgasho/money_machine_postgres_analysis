@@ -914,14 +914,9 @@ func resetStockWisemenSymbolHold() {
 	truncateWisemenSymbolHold()
 }
 func resetStockWisemen() {
-	// dropStockWisemen()
-	// createStockWisemen()
 	truncateStockWisemen()
 }
-
 func resetAltIntervalBuyWisemen() {
-	// dropAltIntervalBuyWisemen()
-	// createAltIntervalBuyWisemen()
 	truncateAltIntervalBuyWisemen()
 }
 
@@ -977,10 +972,10 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//get insertInformationAtTrade for buy and sell
 	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
 
-	fmt.Println("alteredTransactionHistory")
-	fmt.Println(alteredTransactionHistory)
-	fmt.Println("listMatchingSymbolInformationAtTrade")
-	fmt.Println(listMatchingSymbolInformationAtTrade)
+	// fmt.Println("alteredTransactionHistory")
+	// fmt.Println(alteredTransactionHistory)
+	// fmt.Println("listMatchingSymbolInformationAtTrade")
+	// fmt.Println(listMatchingSymbolInformationAtTrade)
 
 	//Support for handle multiple InformationAtTrade during day...
 	//typically only would be two... but in case of two of more...
@@ -1028,19 +1023,21 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//
 
 	dowList := selectDow()
+	//Should not be called if no trade completed
 	if len(listMatchingSymbolInformationAtTrade) == 0 {
 		//no trade occured handle TradeResultStore
 		if len(dowList) == 0 {
 			tradeResultStore := TradeResultStore{
 				AlgorithmUsed: "wisemen",
-				Result:        "No trade",
+				Result:        "No trade error len(dowList) == 0",
+				Dow4:          "does not exist",
 			}
 			insertTradeResultStore(tradeResultStore)
 		}
 		if len(dowList) == 4 {
 			tradeResultStore := TradeResultStore{
 				AlgorithmUsed: "wisemen",
-				Result:        "No trade",
+				Result:        "No trade error len(dowList) == 4",
 				Dow1:          dowList[0].CurrentDowValue,
 				Dow2:          dowList[1].CurrentDowValue,
 				Dow3:          dowList[2].CurrentDowValue,
@@ -1066,12 +1063,12 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		//calculate result
 		//if buy and sell, and if changeAmount meet delimiter,
 		changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
-		stringChangeAmount := fmt.Sprintf("%f", 123.456)
+		stringChangeAmount := fmt.Sprintf("%f", changeAmount)
 
-		fmt.Println("changeAmount")
-		fmt.Println(changeAmount)
+		// fmt.Println("changeAmount")
+		// fmt.Println(changeAmount)
 		//handle on metrics delimiter...
-		metricsPriceHighPchg := metrics.PriceHighPchg
+		metricsPriceHighPchg := metrics.PriceHighPchgTrade
 		floatMetricsPriceHighPchg := 0.0
 		if s2, err := strconv.ParseFloat(metricsPriceHighPchg, 64); err == nil {
 			floatMetricsPriceHighPchg = s2
@@ -1080,16 +1077,26 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 
 		result := "negative"
 		//if sell was less than optimal
-		// isAlgorithmProfitable := false
 		if floatSellHistoryValuePrice >= optimal {
-			result = "positive"
+			result = "positive "
 		}
-		fmt.Println(stringChangeAmount)
-		fmt.Println(result)
+		//add handle result, if market trade, droploss or time delimiter
+		//
+		if listMatchingSymbolInformationAtTrade[1].TypeTrade != "limit" {
+			result += listMatchingSymbolInformationAtTrade[1].TypeTrade + " "
+		}
 
-		fmt.Println("listMatchingSymbolInformationAtTrade")
-		fmt.Println(listMatchingSymbolInformationAtTrade[0])
+		//
 
+		//
+		// fmt.Println(stringChangeAmount)
+		// fmt.Println(result)
+
+		// fmt.Println("listMatchingSymbolInformationAtTrade")
+		// fmt.Println(listMatchingSymbolInformationAtTrade[0])
+
+		// BoughtPrice:             buyHistoryValuePrice,
+		// SellPrice:               sellHistoryValuePrice,
 		boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
 		sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
 
@@ -1097,6 +1104,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 			tradeResultStore := TradeResultStore{
 				AlgorithmUsed:           "wisemen",
 				Result:                  result,
+				BoughtPrice:             buyHistoryValuePrice,
+				SellPrice:               sellHistoryValuePrice,
 				ChangeAmount:            stringChangeAmount,
 				StockSymbol:             alteredTransactionHistory.Symbol,
 				TimeTradeBuy:            boughtTime,
@@ -1117,6 +1126,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 			tradeResultStore := TradeResultStore{
 				AlgorithmUsed:           "wisemen",
 				Result:                  result,
+				BoughtPrice:             buyHistoryValuePrice,
+				SellPrice:               sellHistoryValuePrice,
 				ChangeAmount:            stringChangeAmount,
 				StockSymbol:             alteredTransactionHistory.Symbol,
 				TimeTradeBuy:            boughtTime,
@@ -1139,33 +1150,40 @@ func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
 	downDayEval := downDayEvaluationList[len(downDayEvaluationList)-1]
 	dow := 0.0
 	dowPrevious := 0.0
-	dowPchg := 0.0
+	// downDayEvalPchg := 0.0
 
 	//handle where does not pass neo...
 	//query Neo no handle
-
-	if s, err := strconv.ParseFloat(downDayEval.Dow, 64); err == nil {
-		dow = s
-	}
-	if s1, err := strconv.ParseFloat(downDayEval.PreviousDow, 64); err == nil {
-		dowPrevious = s1
-	}
-	if s2, err := strconv.ParseFloat(downDayEval.GreatestPchg, 64); err == nil {
-		dowPchg = s2
-	}
-
+	//handle select list on AIB
+	listAltIntervalBuyWisemen := selectAltIntervalBuyWisemen()
 	reason := "No purchase "
-	if dow < dowPrevious {
-		reason += "Dow is less than previous day close dow: " + downDayEval.Dow + " < " + downDayEval.PreviousDow + " "
-	}
-	if dowPchg < 10.00 {
-		reason += "Greatest stock pchg does not meet delimiter required: " + downDayEval.GreatestPchg + " < " + "10.00 "
+	//Handle where previous dow does not exist.
+
+	for i, v := range listAltIntervalBuyWisemen {
+		reason += v.ReasonCancelation + " "
+		i++
 	}
 
-	if cashDayEvaluationList[0].IsUnsettledFunds == "true" {
-		reason += "Unsettled funds present"
+	if downDayEval.PreviousDow == "does not exist" {
+		if cashDayEvaluationList[0].IsUnsettledFunds == "true" {
+			reason += "Unsettled funds present"
+		}
 	}
 
+	if downDayEval.PreviousDow != "does not exist" {
+		if s, err := strconv.ParseFloat(downDayEval.Dow, 64); err == nil {
+			dow = s
+		}
+		if s1, err := strconv.ParseFloat(downDayEval.PreviousDow, 64); err == nil {
+			dowPrevious = s1
+		}
+		if dow < dowPrevious {
+			reason += "Dow is less than previous day close dow: " + downDayEval.Dow + " < " + downDayEval.PreviousDow + " "
+		}
+		if cashDayEvaluationList[0].IsUnsettledFunds == "true" {
+			reason += "Unsettled funds present"
+		}
+	}
 	//store time
 	dowList := selectDow()
 	tradeResultStore := TradeResultStore{

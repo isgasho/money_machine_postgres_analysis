@@ -75,7 +75,7 @@ func monitorSell(params ...interface{}) {
 		//support nodemailerror
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol)
+		handleInsertInformationAtTrade(symbol, "limit")
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
 	}
@@ -108,7 +108,7 @@ func monitorSell(params ...interface{}) {
 		queryTradeSellMarket(holding)
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol)
+		handleInsertInformationAtTrade(symbol, "time delimiter")
 		time.Sleep(time.Duration(30) * time.Second)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
@@ -142,13 +142,13 @@ func monitorSell(params ...interface{}) {
 		queryTradeSellMarket(holding)
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol)
+		handleInsertInformationAtTrade(symbol, "drop loss")
 		time.Sleep(time.Duration(30) * time.Second)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
 	}
 }
-func handleInsertInformationAtTrade(symbol string) {
+func handleInsertInformationAtTrade(symbol string, typeTrade string) {
 	//query stock
 	response := queryMultiStockPull([]string{symbol})
 	stockList := parseStockSetQuery(response)
@@ -164,13 +164,14 @@ func handleInsertInformationAtTrade(symbol string) {
 	minuteString := strconv.Itoa(minute)
 	//instantiate
 	informationAtTrade := InformationAtTrade{
-		Symbol: symbol,
-		Hour:   hourString,
-		Minute: minuteString,
-		Dow:    dow,
-		Bid:    bid,
-		Ask:    ask,
-		Last:   last,
+		Symbol:    symbol,
+		TypeTrade: typeTrade,
+		Hour:      hourString,
+		Minute:    minuteString,
+		Dow:       dow,
+		Bid:       bid,
+		Ask:       ask,
+		Last:      last,
 	}
 	fmt.Println("informationAtTrade")
 	fmt.Println(informationAtTrade)
@@ -200,7 +201,7 @@ func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 	metrics := selectMetricsWisemen()[0]
 	//Here we need a handle on drop metrics,...
 	//Partial bind...
-	metricPchgDrop := metrics.PriceLowPchg
+	metricPchgDrop := metrics.PriceLowPchgTrade
 	floatPriceFromQuery := 0.0
 	floatMetricPchgDrop := 0.0
 	if s, err := strconv.ParseFloat(priceFromQuery, 64); err == nil {
@@ -826,29 +827,52 @@ func removeElementInt(listEntered []int, val int) []int {
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
 	fmt.Println(dataList)
-	if isTradeDay {
-		//process trade.
-		fmt.Println("internal overarchTradeWisemen")
-		handleTradeWisemen(dataList[0], dataList[1])
-		time.Sleep(time.Duration(10) * time.Second)
-		// //Begin process monitoring for buy fulfilled.
-		processCheckIsTradeBought(dataList[0])
-	}
-	//handle if not isTradeDay
-	if isTradeDay == false {
-		//insert AltIntervalBuyWisemen
-		//interval 1
+
+	//handle no neo found..
+	// overarchTradeWisemen
+	if dataList[0] == "none chosen" {
+		fmt.Println("none chosen")
+		//persist none chosen, in ReasonCancelation in AIB
+		//proceed to alt interval.
 		altIntervalList := selectAltIntervalBuyWisemen()
 		if len(altIntervalList) == 0 {
 			//Support for isTradeDay in returned response, for multi cancelation scenarios.
-			altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true"}
+			altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "Neo none chosen"}
 			insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
 		}
 		if len(altIntervalList) != 0 {
+			altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "Neo none chosen"}
+			insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
 			transactionHistory := TransactionHistory{Symbol: dataList[0]}
 			wrapUpWisemenOutcomeNoBuy(transactionHistory)
-			//reset AltIntervalBuyWisemen
-			resetAltIntervalBuyWisemen()
+		}
+	}
+
+	if dataList[0] != "none chosen" {
+		if isTradeDay {
+			//process trade.
+			fmt.Println("internal overarchTradeWisemen")
+			handleTradeWisemen(dataList[0], dataList[1])
+			time.Sleep(time.Duration(10) * time.Second)
+			// //Begin process monitoring for buy fulfilled.
+			processCheckIsTradeBought(dataList[0])
+		}
+		//handle if not isTradeDay
+		if isTradeDay == false {
+			//insert AltIntervalBuyWisemen
+			//interval 1
+			altIntervalList := selectAltIntervalBuyWisemen()
+			if len(altIntervalList) == 0 {
+				//Support for isTradeDay in returned response, for multi cancelation scenarios.
+				altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "isTradeDayFalse"}
+				insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+			}
+			if len(altIntervalList) != 0 {
+				altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "isTradeDayFalse"}
+				insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+				transactionHistory := TransactionHistory{Symbol: dataList[0]}
+				wrapUpWisemenOutcomeNoBuy(transactionHistory)
+			}
 		}
 	}
 }

@@ -163,8 +163,8 @@ func handleCalculateDownDay() {
 	//Reset dow day eval store before calculation
 	truncateDownDayEvaluation()
 	isDownDay := "true"
-	isDowDown := false
-	isTopStockAbovePchgDelimiter := false
+	isDowDown := true
+	// isTopStockAbovePchgDelimiter := false
 	//is dow in the red
 	//handle on dow...
 	dowValue := handleDowWebscrape()
@@ -173,72 +173,21 @@ func handleCalculateDownDay() {
 	tradeResultStore := TradeResultStore{}
 	if len(tradeResultStoreList) != 0 {
 		tradeResultStore = tradeResultStoreList[len(tradeResultStoreList)-1]
-		if dowValue < tradeResultStore.Dow4 {
-			isDowDown = true
+		if tradeResultStore.Dow4 != "does not exist" {
+			if dowValue > tradeResultStore.Dow4 {
+				isDowDown = false
+			}
 		}
 	}
-
-	// //query highest pchg, is pchg greater than delmiter...
-	// //do TSP, doesn't matter if it's recurrent,
-	// //TSP get topstock...
-	wisemenSymbolList := selectWisemenSymbolHold()
-	response := queryMultiStockPull(wisemenSymbolList)
-	stockList := parseStockSetQuery(response)
-	// //sort for highest...
-	highestStockIndex := 0
-	for indexStock, stock := range stockList {
-		if indexStock == 0 {
-			highestStockIndex = indexStock
-			continue
-		}
-		floatHighest := 0.0
-		floatCurrent := 0.0
-		if s, err := strconv.ParseFloat(stockList[highestStockIndex].Pchg, 64); err == nil {
-			floatHighest = s
-		}
-		if s1, err := strconv.ParseFloat(stock.Pchg, 64); err == nil {
-			floatCurrent = s1
-		}
-		if floatCurrent > floatHighest {
-			highestStockIndex = indexStock
-		}
+	if isDowDown == false {
+		isDownDay = "false"
 	}
-	//if topStop greater than delmiter.
-	// topStock
-	//
-	floatTopStockPchg := 0.0
-	if s, err := strconv.ParseFloat(stockList[highestStockIndex].Pchg, 64); err == nil {
-		floatTopStockPchg = s
-	}
-	//static wismenDownDayDelimiter 10
-	wismenDownDayDelimiter := 10.00
-	//support for dynamic delimiter store
-	//is highest pchg greater than delmiter.
-	if floatTopStockPchg >= wismenDownDayDelimiter {
-		isTopStockAbovePchgDelimiter = true
-	}
-	if isTopStockAbovePchgDelimiter {
-		if isDowDown == false {
-			isDownDay = "false"
-		}
-	}
-	fmt.Println("isDowDown")
-	fmt.Println(isDowDown)
-	fmt.Println("isTopStockAbovePchgDelimiter")
-	fmt.Println(isTopStockAbovePchgDelimiter)
-	fmt.Println("isDownDay")
-	fmt.Println(isDownDay)
-	fmt.Println("dowValue")
-	fmt.Println(dowValue)
-	fmt.Println("stockList[highestStockIndex].Pchg")
-	fmt.Println(stockList[highestStockIndex].Pchg)
-
 	downDayEvaluation := DownDayEvaluation{}
 	if len(tradeResultStoreList) == 0 {
-		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, GreatestPchg: stockList[highestStockIndex].Pchg}
+		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "does not exist"}
 	}
 	if len(tradeResultStoreList) != 0 {
-		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: tradeResultStore.Dow4, GreatestPchg: stockList[highestStockIndex].Pchg}
+		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: tradeResultStore.Dow4}
 	}
 	//store results in DB
 	insertDownDayEvaluation(downDayEvaluation)

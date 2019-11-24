@@ -299,19 +299,19 @@ func queryIsTradeCompleted(symbol string) TradeBoughtEvaluation {
 
 // insertAltIntervalBuyWisemen
 func insertAltIntervalBuyWisemen(altIntervalBuyWisemen AltIntervalBuyWisemen) {
-	listValues := []string{altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation}
-	postCommandDBInsert("INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation) VALUES (", listValues)
+	listValues := []string{altIntervalBuyWisemen.Symbol, altIntervalBuyWisemen.IsAltIntervalOperation, altIntervalBuyWisemen.ReasonCancelation}
+	postCommandDBInsert("INSERT INTO alt_interval_buy_wisemen (symbol, is_alt_interval_operation, reason_cancelation) VALUES (", listValues)
 }
 func selectAltIntervalBuyWisemen() []AltIntervalBuyWisemen {
 	listAltIntervalBuyWisemen := []AltIntervalBuyWisemen{}
-	response := postCommandDBSelect("SELECT symbol, is_alt_interval_operation FROM alt_interval_buy_wisemen")
+	response := postCommandDBSelect("SELECT symbol, is_alt_interval_operation, reason_cancelation FROM alt_interval_buy_wisemen")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
 		stringToStrip := v.ListString[0]
 		strippedString := strings.Join(strings.Fields(stringToStrip), "")
-		altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: strippedString, IsAltIntervalOperation: v.ListString[1]}
+		altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: strippedString, IsAltIntervalOperation: v.ListString[1], ReasonCancelation: v.ListString[2]}
 		listAltIntervalBuyWisemen = append(listAltIntervalBuyWisemen, altIntervalBuyWisemen)
 		i++
 	}
@@ -620,7 +620,7 @@ func selectTempSymbolHoldLow() []string {
 	}
 	return symbolList
 }
-func truncateTempSymbolHoldLow() {
+func truncateTempSymbolHoldselectAltIntervalBuyWisemenLow() {
 	postCommandDBTruncate("TRUNCATE table temp_symbol_hold_low")
 }
 
@@ -691,18 +691,18 @@ func truncateMetricsWhale() {
 }
 
 //insertMetricsWisemen
-func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, price_high_pchg string, price_low_pchg string, desired_pchg_variance_value string, desired_volatility_variance_value string, trade_buy_monitor_delay_seconds string, trade_buy_monitor_delay_query_seconds string, trade_buy_monitor_delay_iteration_count string) {
-	listValues := []string{desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count}
-	postCommandDBInsert("INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count) VALUES (", listValues)
+func insertMetricsWisemen(desired_price_range_high string, desired_price_range_low string, price_high_pchg_algo_decision string, price_low_pchg_algo_decision string, price_high_pchg_trade string, price_low_pchg_trade string, desired_pchg_variance_value string, desired_volatility_variance_value string, trade_buy_monitor_delay_seconds string, trade_buy_monitor_delay_query_seconds string, trade_buy_monitor_delay_iteration_count string) {
+	listValues := []string{desired_price_range_high, desired_price_range_low, price_high_pchg_algo_decision, price_low_pchg_algo_decision, price_high_pchg_trade, price_low_pchg_trade, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count}
+	postCommandDBInsert("INSERT INTO metrics_wisemen (desired_price_range_high, desired_price_range_low, price_high_pchg_algo_decision, price_low_pchg_algo_decision, price_high_pchg_trade, price_low_pchg_trade, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count) VALUES (", listValues)
 }
 func selectMetricsWisemen() []MetricsWisemen {
 	metricsWisemenList := []MetricsWisemen{}
-	response := postCommandDBSelect("SELECT desired_price_range_high, desired_price_range_low, price_high_pchg, price_low_pchg, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count FROM metrics_wisemen")
+	response := postCommandDBSelect("SELECT desired_price_range_high, desired_price_range_low, price_high_pchg_algo_decision, price_low_pchg_algo_decision, price_high_pchg_trade, price_low_pchg_trade, desired_pchg_variance_value, desired_volatility_variance_value, trade_buy_monitor_delay_seconds, trade_buy_monitor_delay_query_seconds, trade_buy_monitor_delay_iteration_count FROM metrics_wisemen")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		metricsWisemen := MetricsWisemen{DesiredPriceRangeHigh: v.ListString[0], DesiredPriceRangeLow: v.ListString[1], PriceHighPchg: v.ListString[2], PriceLowPchg: v.ListString[3], DesiredPchgVarianceValue: v.ListString[4], DesiredVolatilityVarianceValue: v.ListString[5], TradeBuyMonitorDelaySeconds: v.ListString[6], TradeBuyMonitorDelayQuerySeconds: v.ListString[7], TradeBuyMonitorDelayIterationCount: v.ListString[8]}
+		metricsWisemen := MetricsWisemen{DesiredPriceRangeHigh: v.ListString[0], DesiredPriceRangeLow: v.ListString[1], PriceHighPchgAlgoDecision: v.ListString[2], PriceLowPchgAlgoDecision: v.ListString[3], PriceHighPchgTrade: v.ListString[4], PriceLowPchgTrade: v.ListString[5], DesiredPchgVarianceValue: v.ListString[6], DesiredVolatilityVarianceValue: v.ListString[7], TradeBuyMonitorDelaySeconds: v.ListString[8], TradeBuyMonitorDelayQuerySeconds: v.ListString[9], TradeBuyMonitorDelayIterationCount: v.ListString[10]}
 		metricsWisemenList = append(metricsWisemenList, metricsWisemen)
 		i++
 	}
@@ -715,17 +715,17 @@ func truncateMetricsWisemen() {
 //crit
 //insertTradeResultStore
 func insertTradeResultStore(tradeResultStore TradeResultStore) {
-	listValues := []string{tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.HighestPricePointForDay, tradeResultStore.TimeHighestPricePoint, tradeResultStore.LowestPricePointForDay, tradeResultStore.TimeLowestPricePoint, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4}
-	postCommandDBInsert("INSERT INTO trade_result_store (algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4) VALUES (", listValues)
+	listValues := []string{tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.BoughtPrice, tradeResultStore.SellPrice, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.HighestPricePointForDay, tradeResultStore.TimeHighestPricePoint, tradeResultStore.LowestPricePointForDay, tradeResultStore.TimeLowestPricePoint, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4}
+	postCommandDBInsert("INSERT INTO trade_result_store (algorithm_used, result, bought_price, sell_price, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4) VALUES (", listValues)
 }
 func selectTradeResultStore(symbol string) []TradeResultStore {
 	tradeResultStoreList := []TradeResultStore{}
-	response := postCommandDBSelect("SELECT algorithm_used, result, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4 FROM trade_result_store")
+	response := postCommandDBSelect("SELECT algorithm_used, result, bought_price, sell_price, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4 FROM trade_result_store")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		tradeResultStore := TradeResultStore{AlgorithmUsed: v.ListString[0], Result: v.ListString[1], ChangeAmount: v.ListString[2], StockSymbol: v.ListString[3], TimeStart: v.ListString[4], TimeEnd: v.ListString[5], TimeTradeBuy: v.ListString[6], TimeTradeSell: v.ListString[7], HighestPricePointForDay: v.ListString[8], TimeHighestPricePoint: v.ListString[9], LowestPricePointForDay: v.ListString[10], TimeLowestPricePoint: v.ListString[11], Dow1: v.ListString[12], Dow2: v.ListString[13], Dow3: v.ListString[14], Dow4: v.ListString[15]}
+		tradeResultStore := TradeResultStore{AlgorithmUsed: v.ListString[0], Result: v.ListString[1], BoughtPrice: v.ListString[2], SellPrice: v.ListString[3], ChangeAmount: v.ListString[4], StockSymbol: v.ListString[5], TimeStart: v.ListString[6], TimeEnd: v.ListString[7], TimeTradeBuy: v.ListString[8], TimeTradeSell: v.ListString[9], HighestPricePointForDay: v.ListString[10], TimeHighestPricePoint: v.ListString[11], LowestPricePointForDay: v.ListString[12], TimeLowestPricePoint: v.ListString[13], Dow1: v.ListString[14], Dow2: v.ListString[15], Dow3: v.ListString[16], Dow4: v.ListString[17]}
 		tradeResultStoreList = append(tradeResultStoreList, tradeResultStore)
 		i++
 	}
@@ -759,17 +759,17 @@ func truncateDayTrackingRecord() {
 
 //insertInformationAtTrade
 func insertInformationAtTrade(informationAtTrade InformationAtTrade) {
-	listValues := []string{informationAtTrade.Symbol, informationAtTrade.Hour, informationAtTrade.Minute, informationAtTrade.Dow, informationAtTrade.Bid, informationAtTrade.Ask, informationAtTrade.Last}
-	postCommandDBInsert("INSERT INTO information_at_trade (symbol, hour, minute, dow, bid, ask, last) VALUES (", listValues)
+	listValues := []string{informationAtTrade.Symbol, informationAtTrade.TypeTrade, informationAtTrade.Hour, informationAtTrade.Minute, informationAtTrade.Dow, informationAtTrade.Bid, informationAtTrade.Ask, informationAtTrade.Last}
+	postCommandDBInsert("INSERT INTO information_at_trade (symbol, type_trade, hour, minute, dow, bid, ask, last) VALUES (", listValues)
 }
 func selectInformationAtTrade() []InformationAtTrade {
 	informationAtTradeList := []InformationAtTrade{}
-	response := postCommandDBSelect("SELECT symbol, hour, minute, dow, bid, ask, last FROM information_at_trade")
+	response := postCommandDBSelect("SELECT symbol, type_trade, hour, minute, dow, bid, ask, last FROM information_at_trade")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		informationAtTrade := InformationAtTrade{Symbol: v.ListString[0], Hour: v.ListString[1], Minute: v.ListString[2], Dow: v.ListString[3], Bid: v.ListString[4], Ask: v.ListString[5], Last: v.ListString[6]}
+		informationAtTrade := InformationAtTrade{Symbol: v.ListString[0], TypeTrade: v.ListString[1], Hour: v.ListString[2], Minute: v.ListString[3], Dow: v.ListString[4], Bid: v.ListString[5], Ask: v.ListString[6], Last: v.ListString[7]}
 		informationAtTradeList = append(informationAtTradeList, informationAtTrade)
 		i++
 	}

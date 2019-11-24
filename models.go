@@ -187,6 +187,7 @@ type AltIntervalBuyWisemen struct {
 	CreatedAt              string
 	Symbol                 string
 	IsAltIntervalOperation string
+	ReasonCancelation      string
 }
 
 type MetricsWhale struct {
@@ -201,8 +202,10 @@ type MetricsWisemen struct {
 	CreatedAt                          string
 	DesiredPriceRangeHigh              string
 	DesiredPriceRangeLow               string
-	PriceHighPchg                      string
-	PriceLowPchg                       string
+	PriceHighPchgAlgoDecision          string
+	PriceLowPchgAlgoDecision           string
+	PriceHighPchgTrade                 string
+	PriceLowPchgTrade                  string
 	DesiredPchgVarianceValue           string
 	DesiredVolatilityVarianceValue     string
 	TradeBuyMonitorDelaySeconds        string
@@ -210,7 +213,6 @@ type MetricsWisemen struct {
 	TradeBuyMonitorDelayIterationCount string
 	EndTradeTime                       string
 }
-
 type OrderInformationWisemen struct {
 	CreatedAt string
 	IsBought  string
@@ -250,6 +252,7 @@ type ContainerHolding struct {
 type InformationAtTrade struct {
 	CreatedAt string
 	Symbol    string
+	TypeTrade string
 	Hour      string
 	Minute    string
 	Dow       string
@@ -325,6 +328,8 @@ type TradeResultStore struct {
 	CreatedAt               string
 	AlgorithmUsed           string
 	Result                  string
+	BoughtPrice             string
+	SellPrice               string
 	ChangeAmount            string
 	StockSymbol             string
 	TimeStart               string
