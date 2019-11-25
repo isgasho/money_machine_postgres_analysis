@@ -158,7 +158,18 @@ func parseStockSetQuery(queryString string) []Stock {
 
 		// isCurrentPriceHigherThanPreviousClose calculation
 		isCurrentPriceHigherThanPreviousClose := "false"
-		if pcls < last {
+
+		pclsFloat := 0.0
+		lastFloat := 0.0
+		//convert pcls and last to float.
+		if s, err := strconv.ParseFloat(pcls, 64); err == nil {
+			pclsFloat = s
+		}
+		if s1, err := strconv.ParseFloat(last, 64); err == nil {
+			lastFloat = s1
+		}
+
+		if pclsFloat < lastFloat {
 			isCurrentPriceHigherThanPreviousClose = "true"
 		}
 
@@ -190,41 +201,51 @@ func parseStockSetQuery(queryString string) []Stock {
 			Adv90:                                 adv90,
 			IsCurrentPriceHigherThanPreviousClose: isCurrentPriceHigherThanPreviousClose,
 		}
+		// fmt.Println("twi")
+		// fmt.Println("symbol")
+		// fmt.Println(symbol)
+		// fmt.Println("IsCurrentPriceHigherThanPreviousClose")
+		// fmt.Println(isCurrentPriceHigherThanPreviousClose)
+		// fmt.Println("pcls")
+		// fmt.Println(pcls)
+		// fmt.Println("last")
+		// fmt.Println(last)
+
 		stockList = append(stockList, stock)
 	}
 	return stockList
 }
 func parseDBResponse(response string) DBResponseContainer {
-	fmt.Println("begin")
+	// fmt.Println("begin")
 	instanceDBResponseContainer := DBResponseContainer{}
 	listObjectString := strings.Split(response, "\"")[1]
 	listParsedString := strings.Split(listObjectString, "|")
-	fmt.Println(listParsedString)
-	fmt.Println("len(listParsedString)")
-	fmt.Println(len(listParsedString))
+	// fmt.Println(listParsedString)
+	// fmt.Println("len(listParsedString)")
+	// fmt.Println(len(listParsedString))
 	copyList := listParsedString
-	fmt.Println("len(copyList)")
-	fmt.Println(len(copyList))
+	// fmt.Println("len(copyList)")
+	// fmt.Println(len(copyList))
 	for i, v := range listParsedString {
-		fmt.Println(v)
+		// fmt.Println(v)
 		if len(v) == 0 {
 			copyList = removeElementFromListAtIndex(copyList, i)
 		}
 	}
 	// fmt.Println("without")
-	fmt.Println("len(copyList)")
-	fmt.Println(len(copyList))
+	// fmt.Println("len(copyList)")
+	// fmt.Println(len(copyList))
 
 	for i, v := range copyList {
 		listValues := strings.Split(v, ",")
-		fmt.Println("listValues")
+		// fmt.Println("listValues")
 		if len(listValues) != 0 {
 			stringResponse := StringResponse{ListString: listValues}
 			instanceDBResponseContainer.ListStringFromDB = append(instanceDBResponseContainer.ListStringFromDB, stringResponse)
 		}
-		fmt.Println("listIn")
-		fmt.Println(len(listValues))
-		fmt.Println(listValues)
+		// fmt.Println("listIn")
+		// fmt.Println(len(listValues))
+		// fmt.Println(listValues)
 		i++
 	}
 	return instanceDBResponseContainer
@@ -703,14 +724,14 @@ func parseTwiWebscrape(queryString string) []string {
 			}
 		}
 	}
-	// fmt.Println(len(listMatches))
-
+	fmt.Println(len(listMatches))
+	fmt.Println("listMatches")
 	for i, v := range listMatches {
 		// fmt.Println(v)
-		if len(v) < 150 {
-			// fmt.Println(v)
-			listSymbolBeforeParse = append(listSymbolBeforeParse, v)
-		}
+		// if len(v) < 150 {
+		// fmt.Println(v)
+		listSymbolBeforeParse = append(listSymbolBeforeParse, v)
+		// }
 		i++
 	}
 

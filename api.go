@@ -491,6 +491,10 @@ func main() {
 	go handleRequests()
 	fmt.Println("Init")
 
+	// systemStartProcesses()
+
+	// handleOverarchTopStock()
+	healthCheck()
 	// processCheckIsTradeBought("GSX")
 
 	// insertInformationAtTrade(InformationAtTrade{Symbol: "test", Qty: "1"})

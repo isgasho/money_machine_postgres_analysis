@@ -327,6 +327,15 @@ func handleCheckIsTradeBought(params ...interface{}) {
 // func handleOverarchTopStock(params ...interface{}) {
 func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
+	// fmt.Println("twiStockList")
+	// fmt.Println(twiStockList)
+
+	// fmt.Println("twiStockList")
+	// for i, v := range twiStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
 	// twiStockList := []Stock{}
 	// fmt.Println("twiStockList[0].Symbol")
 	// fmt.Println(twiStockList[0].Symbol)
@@ -336,19 +345,26 @@ func handleOverarchTopStock() {
 	// fmt.Println(twiStockList[0].Last)
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
-	// //Low process for whale
+	// // // // //Low process for whale
 	lowTransferanceProcess(twiStockList)
 }
 func highTransferanceProcess(twiStockList []Stock) {
 	//TSP
 	topStockPullStockList := topStockPull()
 
-	fmt.Println("topStockPullStockList")
-	for i, v := range topStockPullStockList {
-		fmt.Println(v.Symbol)
-		fmt.Println(v.Pchg)
-		i++
-	}
+	// fmt.Println("topStockPullStockList")
+	// for i, v := range topStockPullStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+
+	// fmt.Println("twi")
+	// for i, v := range twiStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
 
 	listTempDuplicantFiltered := []Stock{}
 	positiveTwiTSPList := []Stock{}
@@ -356,20 +372,49 @@ func highTransferanceProcess(twiStockList []Stock) {
 	isDuplicate := false
 	isDuplicateTemp := false
 
+	// fmt.Println("twiStockList")
+	// for i, v := range twiStockList {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
+
+	// fmt.Println("inside")
 	// //Handle positive values only in twiTSPList
+	fmt.Println("twiStockList")
 	for i, v := range twiStockList {
+		fmt.Println("v.Symbol")
+		fmt.Println(v.Symbol)
+		fmt.Println("v.Pcls")
+		fmt.Println(v.Pcls)
+		fmt.Println("IsCurrentPriceHigherThanPreviousClose")
+		fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
+
 		if v.IsCurrentPriceHigherThanPreviousClose == "true" {
 			positiveTwiStockList = append(positiveTwiStockList, v)
 		}
 		i++
 	}
 
+	// fmt.Println("positiveTwiStockList")
+	// for i, v := range positiveTwiStockList {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
+
+	// fmt.Println("topStockPullStockList")
+	// for i, v := range topStockPullStockList {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
+
+	positiveTwiTSPList = positiveTwiStockList
 	// //No duplicates in lists
 	for indexTsp, tsp := range topStockPullStockList {
 		isDuplicate = false
 		for indexTwi, twi := range positiveTwiStockList {
 			if twi.Symbol == tsp.Symbol {
 				isDuplicate = true
+				fmt.Println(twi.Symbol)
 				break
 			}
 			indexTwi++
@@ -379,6 +424,14 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		indexTsp++
 	}
+
+	// fmt.Println("positiveTwiTSPList")
+	// for i, v := range positiveTwiTSPList {
+	// 	fmt.Println("v.Symbol")
+	// 	fmt.Println(v.Symbol)
+	// 	i++
+	// }
+
 	// //Query temp
 	tempSymbolHold := selectTempSymbolHoldHigh()
 	// //Find duplicants in temp and appendedList
@@ -399,6 +452,14 @@ func highTransferanceProcess(twiStockList []Stock) {
 
 	i := 0
 	topStockList := []Stock{}
+
+	//
+	fmt.Println("listTempDuplicantFiltered")
+	for i, v := range listTempDuplicantFiltered {
+		fmt.Println(v)
+		i++
+	}
+
 	for i < 3 {
 		// 	// remove highest index 3 times, to get top stocks.
 		// 	//Pop top stock each iteration
@@ -428,8 +489,8 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		i++
 	}
-	fmt.Println("topStockList")
-	fmt.Println(topStockList)
+	// fmt.Println("topStockList")
+	// fmt.Println(topStockList)
 	for i, v := range topStockList {
 		insertTempSymbolHoldHigh(v.Symbol)
 		i++
@@ -457,7 +518,7 @@ func lowTransferanceProcess(twiStockList []Stock) {
 
 	//No duplicates in lists
 
-	// //Handle positive values only in twiTSPList
+	// //Handle negative values only in twiTSPList
 	for i, v := range twiStockList {
 		fmt.Println("v.Symbol")
 		fmt.Println(v.Symbol)
@@ -470,6 +531,8 @@ func lowTransferanceProcess(twiStockList []Stock) {
 		fmt.Println("v.IsCurrentPriceHigherThanPreviousClose")
 		fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
 		if v.IsCurrentPriceHigherThanPreviousClose == "false" {
+			fmt.Println("v that is lower")
+			fmt.Println(v)
 			negativeTwiStockList = append(negativeTwiStockList, v)
 		}
 		i++
@@ -528,17 +591,35 @@ func topStockPull() []Stock {
 
 func healthCheck() {
 	isNeoResponse := "false"
+	isPythonDBResponse := "false"
+
 	//post to neo
-	response := postNeoHealthCheck()
-	//If response from neo
-	if response != "error received" {
+	responseNeo := postNeoHealthCheck()
+	// //If response from neo
+	if responseNeo != "error received" {
 		// fmt.Println(response)
 		isNeoResponse = "true"
 	}
-	postHealthCheckNode(isNeoResponse)
+
+	//post to python
+	// responsePython := selectNews()
+	response := postCommandDBSelect("SELECT news_info FROM news")
+
+	// fmt.Println("response")
+	// fmt.Println(response)
+
+	if !strings.Contains(response, "<!DOCTYPE HTML") {
+		fmt.Println("wowzers")
+		if response != "error received" {
+			fmt.Println("enters")
+			isPythonDBResponse = "true"
+		}
+	}
+	postHealthCheckNode(isNeoResponse, isPythonDBResponse)
 	//res from check
 	//nodemail
 }
+
 func purchaseUpdateSystem() {
 }
 func getTradeResultStoreList() []TradeResultStore {
@@ -828,32 +909,23 @@ func handleDowWebscrape() string {
 }
 
 func twiWebscrape() []Stock {
-
-	// func queryWebscrapeTwi() string {
-	// 	json := `{
-	// 		"request_type": "webscrapeTwi"
-	// 		}`
-	// 	url := "http://localhost:3000/api/brokerage"
-	// 	response := post(url, json)
-	// 	return response
-	// }
-	//stop twi server
-	// response := queryStopTwi()
-	// fmt.Println(response)
-	// //start twi server
-	// response1 := queryStartTwi()
-	// fmt.Println(response1)
-
 	response2 := queryWebscrapeTwi()
-	// fmt.Println(response2)
 	symbolList := parseTwiWebscrape(response2)
+
+	fmt.Println("symbolList")
+	fmt.Println(symbolList)
 	responseSymbolList := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
-	// stockList := []Stock{}
-	for i, v := range stockList {
-		fmt.Println(v)
-		i++
-	}
+	// for i, v := range stockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println("v.Last")
+	// 	fmt.Println(v.Last)
+	// 	fmt.Println("v.Pcls")
+	// 	fmt.Println(v.Pcls)
+	// 	fmt.Println("v.IsCurrentPriceHigherThanPreviousClose")
+	// 	fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
+	// 	i++
+	// }
 	return stockList
 }
 

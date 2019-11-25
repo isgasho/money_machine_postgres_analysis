@@ -951,6 +951,17 @@ func postNeoHealthCheck() string {
 	return response
 }
 
+func postPythonHealthCheck() string {
+	json := `{
+		"requestType": "postPythonHealthCheck",
+		"data": [
+			]}`
+
+	url := "http://localhost:11000/databaseQuery"
+	response := post(url, json)
+	return response
+}
+
 func postNeoTradeDayResult(symbol string, tradeDayResult string) string {
 	json := `{
 		"requestType": "tradeDayResult",

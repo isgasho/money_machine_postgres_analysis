@@ -1492,12 +1492,13 @@ func postNeoSellOrder() string {
 	return ""
 }
 
-func postHealthCheckNode(neoResponse string) string {
+func postHealthCheckNode(neoResponse string, pythonResponse string) string {
 	json := `{
 		"request_type": "healthCheck",
 		"data": {
 			`
-	json = json + "\"neoResponse\":" + "\"" + neoResponse + "\""
+	json = json + "\"neoResponse\":" + "\"" + neoResponse + "\","
+	json = json + "\"pythonResponse\":" + "\"" + pythonResponse + "\""
 	json = json + `}}`
 
 	url := "http://localhost:3000/api/brokerage"
