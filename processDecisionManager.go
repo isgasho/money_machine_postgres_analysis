@@ -8,18 +8,18 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 8
-var checkIsMarketOpenHour = 9
+var checkIsMarketOpenMinute = 49
+var checkIsMarketOpenHour = 7
 
-var conditionOneMinute = 9
-var conditionOneHour = 9
+var conditionOneMinute = 50
+var conditionOneHour = 7
 
-var conditionTwoMinute = 10
-var conditionTwoHour = 9
+var conditionTwoMinute = 0
+var conditionTwoHour = 8
 
 //conditionMinuteHandleCalculateDownDay1 8:29 engage
-var conditionMinuteHandleCalculateDownDay1 = 11
-var conditionHourHandleCalculateDownDay1 = 9
+var conditionMinuteHandleCalculateDownDay1 = 29
+var conditionHourHandleCalculateDownDay1 = 8
 
 var conditionFourMinute = 0
 var conditionFourHour = 9
@@ -27,8 +27,8 @@ var conditionFourHour = 9
 var conditionFiveMinute = 30
 var conditionFiveHour = 9
 
-var conditionSixMinute = 9
-var conditionSixHour = 44
+var conditionSixMinute = 44
+var conditionSixHour = 9
 
 var conditionNineteenMinute = 30
 var conditionNineteenHour = 13
@@ -213,6 +213,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
 		systemStartProcesses()
 		checKIsBrokerageResponding()
+		healthCheck()
 		//Wisemen algorithm same day calculation
 		// handleDayRotation()
 		conditionMarketClosed := selectMarketOpenAnalysis()
@@ -247,6 +248,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		//handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
 		handleCalculateCashDay()
 		handleCalculateDownDay()
+		healthCheck()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
@@ -276,6 +278,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		//clear cyclepool and reset timeline process
 		resetCyclePools()
 		handleDayReset()
+		healthCheck()
 	}
 }
 func createTradeResultStoreMarketClosed() {

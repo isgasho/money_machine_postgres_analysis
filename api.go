@@ -489,12 +489,13 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	processTimelineStart()
 	fmt.Println("Init")
 
 	// systemStartProcesses()
 
 	// handleOverarchTopStock()
-	healthCheck()
+
 	// processCheckIsTradeBought("GSX")
 
 	// insertInformationAtTrade(InformationAtTrade{Symbol: "test", Qty: "1"})
