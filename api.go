@@ -200,7 +200,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	if requestType == "insertMetricsWisemen" {
 		// data := databaseQuery.Data
 		dataList := databaseQuery.Data
-		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6], dataList[7], dataList[8], dataList[9], dataList[10])
+		insertMetricsWisemen(dataList[0], dataList[1], dataList[2], dataList[3], dataList[4], dataList[5], dataList[6])
 
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -425,6 +425,25 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		w.Write(js)
 	}
 
+	if requestType == "metricsWisemenUpdateHighDelimiter" {
+		dataList := databaseQuery.Data
+		fmt.Println("metricsWisemenUpdateHighDelimiter")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		//process trade
+		//
+		// marketOpenAnaylsisIsMarketClosed := selectMarketOpenAnalysis()[0].IsMarketClosed
+		truncateMetricsWisemen()
+		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".02", ".1", "1330")
+		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
 	//
 
 	// if requestType == "selectMetricsWisemen" {
@@ -489,8 +508,150 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	processTimelineStart()
+	// processTimelineStart()
+	// systemStartProcesses()
 	fmt.Println("Init")
+	// handleOverarchTopStock()
+
+	// balance := selectAccountBalance()
+	// fmt.Println(balance)
+	// balance := getBalanceValue()
+	// parsedBalance := parseBalance(balance)
+	// fmt.Println("parsedBalance")
+	// fmt.Println(parsedBalance)
+
+	// storeBalanceValue()
+
+	// truncateDow()
+	// truncateInformationAtTrade()
+	// list := handleInformationAtTradeDayListArbitration("HEPA")
+	// fmt.Println(list)
+
+	truncateInformationAtTrade()
+	// symbol := "HEPA"
+	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
+	// handleInsertInformationAtTrade(symbol, "limit", "buy", "1") //alteredTransactionHistory.HistoryValueList[1].Qty)
+
+	// metrics := selectMetricsWisemen()
+	// fmt.Println(metrics)
+
+	// handleSellLimitWisemen("KERN")
+	// systemStartProcesses()
+	// IAT := selectInformationAtTrade()[0]
+	// fmt.Println(IAT)
+
+	// dowValue := handleDowWebscrape()
+	// dowValue := "26,300"
+	// insertDow(dowValue)
+	// insertDow(dowValue)
+	// insertDow(dowValue)
+	// insertDow(dowValue)
+
+	handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
+	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.12"})
+	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.13"})
+	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.15"})
+
+	processMonitorSell("HEPA", "0.0", "1330")
+
+	// handleInformationAtTradeDayListArbitration("HEPA")
+
+	// listInformationAtTrade := selectInformationAtTrade()
+	// for i, v := range listInformationAtTrade {
+	// 	fmt.Println("v.Year")
+	// 	fmt.Println(v.Year)
+	// 	fmt.Println("v.Month")
+	// 	fmt.Println(v.Month)
+	// 	fmt.Println("v.Day")
+	// 	fmt.Println(v.Day)
+	// 	fmt.Println("v.Hour")
+	// 	fmt.Println(v.Hour)
+	// 	i++
+	// }
+
+	// 	CREATE TABLE information_at_trade
+	// (
+	//    id SERIAL PRIMARY KEY,
+	//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+	//    symbol VARCHAR,
+	//    type_trade VARCHAR,
+	//    side VARCHAR,
+	//    qty VARCHAR,
+	//    year VARCHAR,
+	//    month VARCHAR,
+	//    day VARCHAR,
+	//    hour VARCHAR,
+	//    minute VARCHAR,
+	//    dow VARCHAR,
+	//    bid VARCHAR,
+	//    ask VARCHAR,
+	//    last VARCHAR
+	// );
+
+	// type InformationAtTrade struct {
+	// 	CreatedAt string
+	// 	Symbol    string
+	// 	TypeTrade string
+	// 	Side      string
+	// 	Qty       string
+	// 	Year      string
+	// 	Month     string
+	// 	Day       string
+	// 	Hour      string
+	// 	Minute    string
+	// 	Dow       string
+	// 	Bid       string
+	// 	Ask       string
+	// 	Last      string
+	// }
+	//
+
+	// getDate()
+	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: "KERN"})
+	// fmt.Println(alteredTransactionHistory)
+	//monitorSell
+
+	// truncateInformationAtTrade()
+	// handleInsertInformationAtTrade("KERN", "limit", "1.00")
+	// processCheckIsTradeBought("KERN")
+
+	// metrics := selectMetricsWisemen()[0]
+	// fmt.Println("metrics.SellTime")
+	// fmt.Println(metrics)
+	// fmt.Println(metrics.SellTime)
+	// fmt.Println("metrics.DesiredVolatilityVarianceValue")
+	// fmt.Println(metrics.DesiredVolatilityVarianceValue)
+
+	// type MetricsWisemen struct {
+	// 	CreatedAt                      string
+	// 	DesiredPriceRangeHigh          string
+	// 	DesiredPriceRangeLow           string
+	// 	PriceHighPchgAlgoDecision      string
+	// 	PriceLowPchgAlgoDecision       string
+	// 	PriceHighPchgTrade             string
+	// 	PriceLowPchgTrade              string
+	// 	DesiredPchgVarianceValue       string
+	// 	DesiredVolatilityVarianceValue string
+	// 	SellTime                       string
+	// }
+
+	// fmt.Println("metrics.DesiredPriceRangeHigh")
+	// fmt.Println(metrics.DesiredPriceRangeHigh)
+	// fmt.Println("metrics.DesiredPriceRangeLow")
+	// fmt.Println(metrics.DesiredPriceRangeLow)
+	// fmt.Println("metrics.PriceHighPchgAlgoDecision")
+	// fmt.Println(metrics.PriceHighPchgAlgoDecision)
+	// fmt.Println("metrics.PriceLowPchgAlgoDecision")
+	// fmt.Println(metrics.PriceLowPchgAlgoDecision)
+	// fmt.Println("metrics.PriceHighPchgTrade")
+	// fmt.Println(metrics.PriceHighPchgTrade)
+	// fmt.Println("metrics.PriceLowPchgTrade")
+	// fmt.Println(metrics.PriceLowPchgTrade)
+	// fmt.Println("metrics.SellTime")
+	// fmt.Println(metrics.SellTime)
+
+	// fmt.Println("metrics.TradeBuyMonitorDelayIterationCount")
+	// fmt.Println(metrics.TradeBuyMonitorDelayIterationCount)
 
 	// systemStartProcesses()
 

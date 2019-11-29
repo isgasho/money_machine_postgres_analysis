@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 )
 
 // type fn func(params ...interface{})
@@ -1511,6 +1512,94 @@ func queryHistory() string {
 		"request_type": "historyBrokerage",
 		"data": {
 			 }}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+// type TradeResultStore struct {
+// 	CreatedAt               string
+// 	AlgorithmUsed           string
+// 	Result                  string
+// 	BoughtPrice             string
+// 	SellPrice               string
+// 	ChangeAmount            string
+// 	StockSymbol             string
+// 	TimeStart               string
+// 	TimeEnd                 string
+// 	TimeTradeBuy            string
+// 	TimeTradeSell           string
+// 	HighestPricePointForDay string
+// 	TimeHighestPricePoint   string
+// 	LowestPricePointForDay  string
+// 	TimeLowestPricePoint    string
+// 	Dow1                    string
+// 	Dow2                    string
+// 	Dow3                    string
+// 	Dow4                    string
+// }
+
+// func postEmailTradeResultStoreNoTrade() {
+// 	json := `{
+// 		"request_type": "postEmailTradeResultStore",
+// 		"data": {
+// 			`
+// 	json = json + "\"algorithmUsed\":" + "\"" + "wisemen" + "\","
+// 	json = json + "\"result\":" + "\"" + "no trade today" + "\""
+// 	json = json + `}}`
+
+// 	url := "http://localhost:3000/api/brokerage"
+// 	response := post(url, json)
+// 	return response
+// }
+
+func postEmailTradeResultStore(tradeResultStore TradeResultStore) string {
+	//get balance at start of day,
+	startDayBalance := selectAccountBalance()[0]
+
+	//balance now
+	balance := queryBalance()
+	currentBalance := parseBalance(balance)
+
+	floatStartDayBalance := 0.0
+	floatCurrentBalance := 0.0
+	//convert balance to floats
+	if s, err := strconv.ParseFloat(startDayBalance.Balance, 64); err == nil {
+		floatStartDayBalance = s
+	}
+	if s1, err := strconv.ParseFloat(currentBalance, 64); err == nil {
+		floatCurrentBalance = s1
+	}
+
+	//calculate change amount
+
+	floatBalanceChangeAmount := floatStartDayBalance - floatCurrentBalance
+	// negative value or positive value.
+	//get percentage
+	floatPercentageChange := floatBalanceChangeAmount / floatBalanceChangeAmount
+	stringPercentageChangeBalance := fmt.Sprintf("%f", floatPercentageChange)
+	//startBalance
+	//currentBalance
+	//percentageChangeBalance
+	//startStockPrice
+	//endStockPrice
+	//percentageChangeStock
+
+	// select
+	json := `{
+		"request_type": "emailTradeResult",
+		"data": {
+			`
+	json = json + "\"algorithmUsed\":" + "\"" + tradeResultStore.AlgorithmUsed + "\","
+	json = json + "\"startBalance\":" + "\"" + startDayBalance.Balance + "\","
+	json = json + "\"currentBalance\":" + "\"" + currentBalance + "\","
+	json = json + "\"percentageChangeBalance\":" + "\"" + stringPercentageChangeBalance + "\","
+	json = json + "\"startStockPrice\":" + "\"" + tradeResultStore.BoughtPrice + "\","
+	json = json + "\"endStockPrice\":" + "\"" + tradeResultStore.SellPrice + "\","
+	json = json + "\"percentageChangeStock\":" + "\"" + tradeResultStore.ChangeAmount + "\","
+	json = json + "\"result\":" + "\"" + tradeResultStore.Result + "\""
+	json = json + `}}`
 
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)

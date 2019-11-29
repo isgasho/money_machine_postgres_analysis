@@ -199,19 +199,16 @@ type MetricsWhale struct {
 	DesiredVolatilityVarianceValue string
 }
 type MetricsWisemen struct {
-	CreatedAt                          string
-	DesiredPriceRangeHigh              string
-	DesiredPriceRangeLow               string
-	PriceHighPchgAlgoDecision          string
-	PriceLowPchgAlgoDecision           string
-	PriceHighPchgTrade                 string
-	PriceLowPchgTrade                  string
-	DesiredPchgVarianceValue           string
-	DesiredVolatilityVarianceValue     string
-	TradeBuyMonitorDelaySeconds        string
-	TradeBuyMonitorDelayQuerySeconds   string
-	TradeBuyMonitorDelayIterationCount string
-	EndTradeTime                       string
+	CreatedAt                      string
+	DesiredPriceRangeHigh          string
+	DesiredPriceRangeLow           string
+	PriceHighPchgAlgoDecision      string
+	PriceLowPchgAlgoDecision       string
+	PriceHighPchgTrade             string
+	PriceLowPchgTrade              string
+	DesiredPchgVarianceValue       string
+	DesiredVolatilityVarianceValue string
+	SellTime                       string
 }
 type OrderInformationWisemen struct {
 	CreatedAt string
@@ -253,7 +250,11 @@ type InformationAtTrade struct {
 	CreatedAt string
 	Symbol    string
 	TypeTrade string
+	Side      string
 	Qty       string
+	Year      string
+	Month     string
+	Day       string
 	Hour      string
 	Minute    string
 	Dow       string
@@ -366,4 +367,7 @@ type DBResponseContainer struct {
 }
 type StringResponse struct {
 	ListString []string
+}
+type AccountBalance struct {
+	Balance string
 }

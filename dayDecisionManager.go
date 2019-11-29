@@ -63,6 +63,7 @@ func getDate() (int, int, int) {
 	yr, mt, day := currentTime.Date()
 	intMonth := int(mt)
 	fmt.Println(yr, mt, day)
+	day = 27
 	return yr, intMonth, day
 }
 

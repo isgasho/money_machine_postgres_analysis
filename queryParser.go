@@ -220,12 +220,12 @@ func parseDBResponse(response string) DBResponseContainer {
 	instanceDBResponseContainer := DBResponseContainer{}
 	listObjectString := strings.Split(response, "\"")[1]
 	listParsedString := strings.Split(listObjectString, "|")
-	// fmt.Println(listParsedString)
-	// fmt.Println("len(listParsedString)")
-	// fmt.Println(len(listParsedString))
 	copyList := listParsedString
 	// fmt.Println("len(copyList)")
 	// fmt.Println(len(copyList))
+
+	fmt.Println("response")
+	fmt.Println(response)
 	for i, v := range listParsedString {
 		// fmt.Println(v)
 		if len(v) == 0 {
@@ -236,6 +236,8 @@ func parseDBResponse(response string) DBResponseContainer {
 	// fmt.Println("len(copyList)")
 	// fmt.Println(len(copyList))
 
+	fmt.Println("copyList")
+	fmt.Println(copyList)
 	for i, v := range copyList {
 		listValues := strings.Split(v, ",")
 		// fmt.Println("listValues")
@@ -724,8 +726,10 @@ func parseTwiWebscrape(queryString string) []string {
 			}
 		}
 	}
-	fmt.Println(len(listMatches))
-	fmt.Println("listMatches")
+	// fmt.Println(len(listMatches))
+	// fmt.Println("listMatches")
+	// fmt.Println(listMatches)
+
 	for i, v := range listMatches {
 		// fmt.Println(v)
 		// if len(v) < 150 {
@@ -736,14 +740,19 @@ func parseTwiWebscrape(queryString string) []string {
 	}
 
 	for i, v := range listSymbolBeforeParse {
-		// fmt.Println(v)
-		currentTwiValueQuery1 := strings.Split(v, ">")
-		listSymbols = append(listSymbols, currentTwiValueQuery1[len(currentTwiValueQuery1)-1])
-		// fmt.Println()
-		// currentTwiValueQuery2 := strings.Split(currentTwiValueQuery1, "\">")[1]
+		if len(v) > 150 {
+			currentTwiValueQuery1 := strings.Split(v, "/symbol/")[1]
+			currentTwiValueQuery2 := strings.Split(currentTwiValueQuery1, "\\\"><div")[0]
+			// fmt.Println("currentTwiValueQuery2")
+			// fmt.Println(currentTwiValueQuery2)
+			listSymbols = append(listSymbols, currentTwiValueQuery2)
+		}
+		if len(v) < 150 {
+			currentTwiValueQuery1 := strings.Split(v, ">")
+			listSymbols = append(listSymbols, currentTwiValueQuery1[len(currentTwiValueQuery1)-1])
+		}
 		i++
 	}
-
 	for i, v := range listSymbols {
 		fmt.Println(v)
 		if strings.Contains(v, ".") == false {

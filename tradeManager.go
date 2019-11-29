@@ -42,7 +42,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// informationAtTrade := InformationAtTrade{
 	// 	Symbol: symbol,
 	// }
-	handleInsertInformationAtTrade(symbol, "limit", stringQty)
+	// handleInsertInformationAtTrade(symbol, "limit", "buy", "1.00")
 	// insertTradeEnteredInformation(tradeEnteredInformation)
 
 	// insertInformationAtTrade(informationAtTrade)
@@ -61,9 +61,16 @@ func monitorSell(params ...interface{}) {
 	listVal := reflect.ValueOf(params[0])
 	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
 	listStrings := listSymbolsInterface.([]string)
+
+	metrics := selectMetricsWisemen()[0]
 	symbol := listStrings[0]
 	priceDrop := listStrings[1]
-	timeDelimiter := listStrings[2]
+	timeDelimiter := metrics.SellTime
+
+	// calculateIsTimeDelimiterMetSell()
+	// calculateIsTimeDelimiterMetSell
+	// monitorSell()
+
 	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
 	isDropPriceMet := calculateIsDropPriceMet(symbol, priceDrop)
 	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
@@ -75,11 +82,13 @@ func monitorSell(params ...interface{}) {
 		//support nodemailerror
 		//handle on history...
 		alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
-		operatingCycle := cycleMapPool["monitorSell"]
-		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol, "limit", alteredTransactionHistory.HistoryValueList[1].Qty)
+		fmt.Println("alteredTransactionHistory.HistoryValueList")
+		fmt.Println(alteredTransactionHistory.HistoryValueList)
+		handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
 	}
 
 	if isTimeDelimiterMet {
@@ -108,12 +117,12 @@ func monitorSell(params ...interface{}) {
 		//cancel order, pause 10 seconds
 		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
-		operatingCycle := cycleMapPool["monitorSell"]
-		cancelCycle(operatingCycle)
-		handleInsertInformationAtTrade(symbol, "time delimiter", holding.Qty)
+		handleInsertInformationAtTrade(symbol, "time delimiter", "sell", holding.Qty)
 		time.Sleep(time.Duration(30) * time.Second)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
 	}
 
 	if isDropPriceMet {
@@ -142,17 +151,16 @@ func monitorSell(params ...interface{}) {
 		//cancel order, pause 10 seconds
 		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
-		operatingCycle := cycleMapPool["monitorSell"]
-		cancelCycle(operatingCycle)
-
 		//handle on holding
-		handleInsertInformationAtTrade(symbol, "drop loss", holding.Qty)
+		handleInsertInformationAtTrade(symbol, "drop loss", "sell", holding.Qty)
 		time.Sleep(time.Duration(30) * time.Second)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
 	}
 }
-func handleInsertInformationAtTrade(symbol string, typeTrade string, qty string) {
+func handleInsertInformationAtTrade(symbol string, typeTrade string, side string, qty string) {
 	//query stock
 	response := queryMultiStockPull([]string{symbol})
 	stockList := parseStockSetQuery(response)
@@ -160,7 +168,13 @@ func handleInsertInformationAtTrade(symbol string, typeTrade string, qty string)
 	ask := stockList[0].Ask
 	last := stockList[0].Last
 	//dow
-	dow := handleDowWebscrape()
+	// dow := handleDowWebscrape()
+	dow := "26,000"
+	//date
+	year, month, day := getDate()
+	yearString := strconv.Itoa(year)
+	monthString := strconv.Itoa(month)
+	dayString := strconv.Itoa(day)
 	//time
 	hour := getCurrentHour()
 	minute := getCurrentMinute()
@@ -170,7 +184,11 @@ func handleInsertInformationAtTrade(symbol string, typeTrade string, qty string)
 	informationAtTrade := InformationAtTrade{
 		Symbol:    symbol,
 		TypeTrade: typeTrade,
+		Side:      side,
 		Qty:       qty,
+		Year:      yearString,
+		Month:     monthString,
+		Day:       dayString,
 		Hour:      hourString,
 		Minute:    minuteString,
 		Dow:       dow,
@@ -318,9 +336,11 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 	response := queryHistory()
 	historyList := parseHistory(response)
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
+	// fmt.Println("listHistoryValues")
+	// fmt.Println(listHistoryValues)
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
-	dayCurrent = 8
+	// dayCurrent = 8
 	//sort values by day...
 	//store values of today only...
 	for i, v := range listHistoryValues {
@@ -335,12 +355,27 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 			fmt.Println(err)
 		}
 		//get trades done today...
+		// fmt.Println("intYear")
+		// fmt.Println(intYear)
+		// fmt.Println("yearCurrent")
+		// fmt.Println(yearCurrent)
+		// fmt.Println("intMonth")
+		// fmt.Println(intMonth)
+		// fmt.Println("intDay")
+		// fmt.Println(intDay)
+		// fmt.Println("dayCurrent")
+		// fmt.Println(dayCurrent)
+		// fmt.Println("v.Symbol")
+		// fmt.Println(v.Symbol)
 		if intYear == yearCurrent {
+			// fmt.Println("hit...o")
 			if intMonth == monthCurrent {
+				// fmt.Println("hit...i")
 				if intDay == dayCurrent {
+					// fmt.Println("hit...")
 					if v.Symbol == symbol {
-						fmt.Println("values in")
-						fmt.Println(v)
+						// fmt.Println("values in")
+						// fmt.Println(v)
 						listMatchingSymbolHistoryValue = append(listMatchingSymbolHistoryValue, v)
 					}
 				}
@@ -353,34 +388,59 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTrade {
 	listMatchingSymbolInformationAtTrade := []InformationAtTrade{}
 	listInformationAtTrade := selectInformationAtTrade()
-	for i, v := range listInformationAtTrade {
-		listInformationAtTrade[i].CreatedAt = formatCreatedAtFromInformationAtTrade(v.CreatedAt)
-	}
+	// for i, v := range listInformationAtTrade {
+
+	// 	// listInformationAtTrade[i].CreatedAt = formatCreatedAtFromInformationAtTrade(v.CreatedAt)
+	// }
 	fmt.Println("listInformationAtTrade")
 	fmt.Println(listInformationAtTrade)
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
+
 	//dayCurrent = 8
 	//sort values by day...
 	//store values of today only...
 	for i, v := range listInformationAtTrade {
 		i++
-		year := strings.Split(v.CreatedAt, " ")[0]
-		month := strings.Split(v.CreatedAt, " ")[1]
-		day := strings.Split(v.CreatedAt, " ")[2]
-		intYear, err := strconv.Atoi(year)
-		intMonth, err := strconv.Atoi(month)
-		intDay, err := strconv.Atoi(day)
+		// year := strings.Split(v.Year, " ")[0]
+		// month := strings.Split(v.Month, " ")[1]
+		// day := strings.Split(v.Day, " ")[2]
+		intYear, err := strconv.Atoi(v.Year)
+		intMonth, err := strconv.Atoi(v.Month)
+		intDay, err := strconv.Atoi(v.Day)
 		if err != nil {
 			fmt.Println(err)
 		}
+
+		fmt.Println("yearCurrent")
+		fmt.Println(yearCurrent)
+		fmt.Println("intYear")
+		fmt.Println(intYear)
+
+		fmt.Println("monthCurrent")
+		fmt.Println(monthCurrent)
+		fmt.Println("intMonth")
+		fmt.Println(intMonth)
+
+		fmt.Println("dayCurrent")
+		fmt.Println(dayCurrent)
+		fmt.Println("intDay")
+		fmt.Println(intDay)
+
+		// fmt.Println(year)
 		//get trades completed this day
 		if intYear == yearCurrent {
 			if intMonth == monthCurrent {
 				if intDay == dayCurrent {
+					fmt.Println("hit internal")
+					fmt.Println("v.Symbol")
+					fmt.Println(v.Symbol)
+
+					fmt.Println("symbol")
+					fmt.Println(symbol)
 					if v.Symbol == symbol {
-						// fmt.Println("values in")
-						// fmt.Println(v)
+						fmt.Println("values in")
+						fmt.Println(v)
 						listMatchingSymbolInformationAtTrade = append(listMatchingSymbolInformationAtTrade, v)
 					}
 				}
@@ -397,6 +457,9 @@ func calculateTransactionHistory(transactionHistory TransactionHistory) Transact
 	//remove sell from consideration index...
 	//at this point trading is completed and wrap up engaged.
 	buySellList := []HistoryValue{}
+
+	fmt.Println("listValuesMatchedHistoryDayList")
+	fmt.Println(listValuesMatchedHistoryDayList)
 	for i, v := range listValuesMatchedHistoryDayList {
 		if i == 0 {
 			if v.Side == "-1" {
@@ -405,6 +468,8 @@ func calculateTransactionHistory(transactionHistory TransactionHistory) Transact
 		}
 		buySellList = append(buySellList, v)
 	}
+	fmt.Println("buySellList")
+	fmt.Println(buySellList)
 	//future support for multiple trade in same day of algorithm.
 	if len(buySellList) != 0 {
 		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[0])
@@ -581,8 +646,7 @@ func handleSellLimitWisemen(symbol string) {
 		fmt.Println("Holding not present")
 	}
 	if holdingToSell.Symbol != "default" {
-		//get price information
-		// stockQueried := getCurrentStockFromQuery([]string{holdingToSell.Symbol})[0]
+		// get price information
 		//get metric delimiter
 		metricsWisemen := selectMetricsWisemen()[0]
 		//
@@ -595,6 +659,8 @@ func handleSellLimitWisemen(symbol string) {
 		if s1, err := strconv.ParseFloat(metricsWisemen.PriceHighPchgTrade, 64); err == nil {
 			priceHighPchgTrade = s1
 		}
+		fmt.Println("priceHighPchgTrade")
+		fmt.Println(priceHighPchgTrade)
 		//calculate limit price...
 		limitPrice := holdingPrice + (holdingPrice * priceHighPchgTrade)
 

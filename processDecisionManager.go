@@ -8,32 +8,51 @@ import (
 	"time"
 )
 
-var checkIsMarketOpenMinute = 49
-var checkIsMarketOpenHour = 7
+//7:49
+var checkIsMarketOpenMinute = 20
+var checkIsMarketOpenHour = 13
 
-var conditionOneMinute = 50
-var conditionOneHour = 7
+//7:50
+var conditionOneMinute = 21
+var conditionOneHour = 13
 
-var conditionTwoMinute = 0
-var conditionTwoHour = 8
+//8:00
+var conditionTwoMinute = 22
+var conditionTwoHour = 13
 
 //conditionMinuteHandleCalculateDownDay1 8:29 engage
-var conditionMinuteHandleCalculateDownDay1 = 29
-var conditionHourHandleCalculateDownDay1 = 8
+var conditionMinuteHandleCalculateDownDay1 = 23
+var conditionHourHandleCalculateDownDay1 = 13
 
+//9:00
 var conditionFourMinute = 0
 var conditionFourHour = 9
 
+//9:30
 var conditionFiveMinute = 30
 var conditionFiveHour = 9
 
+//9:44
 var conditionSixMinute = 44
 var conditionSixHour = 9
 
+//1:30
 var conditionNineteenMinute = 30
 var conditionNineteenHour = 13
 
-var isDowStore = true
+var conditionTimeMinuteDow1 = checkIsMarketOpenMinute
+var conditionTimeHourDow1 = checkIsMarketOpenHour
+
+var conditionTimeMinuteDow2 = conditionOneMinute
+var conditionTimeHourDow2 = conditionOneHour
+
+var conditionTimeMinuteDow3 = conditionTwoMinute
+var conditionTimeHourDow3 = conditionTwoHour
+
+var conditionTimeMinuteDow4 = conditionMinuteHandleCalculateDownDay1
+var conditionTimeHourDow4 = conditionHourHandleCalculateDownDay1
+
+// var isDowStore = true
 var checkIsMarketOpenBool = true
 var boolOperate1 = true
 var boolOperate2 = true
@@ -42,6 +61,11 @@ var boolOperate4 = true
 var boolOperate5 = true
 var boolOperate6 = true
 var boolOperate19 = true
+
+var boolOperateDow1 = true
+var boolOperateDow2 = true
+var boolOperateDow3 = true
+var boolOperateDow4 = true
 
 var initialStockQueryPerformed = false
 var initialWisemenStockQueryPerformed = false
@@ -81,36 +105,6 @@ func processWhaleQueryStockSet() {
 	// }
 }
 
-// func intiateMonitorTradeWisemon() {
-// metrics := selectMetricsWisemen()
-// Select metrics make use of it, continue.
-// fmt.Println(metrics)
-//Delay before monitor cycle
-// time.Sleep(time.Duration(10) * time.Second)
-// fmt.Println("hit awesome")
-//single query is holding of symbol
-
-//if not delay, do iterate until true
-// for
-// indexCheck := 1
-// for indexCheck < 100000 {
-// 	queryIsTradeCompleted()
-
-// 	time.Sleep(time.Duration(3) * time.Second)
-// 	indexCheck++
-// }
-// holdingStatus := calculateHoldingStatus()
-
-//evaluation if order is closed
-
-// }
-
-// func processCheckIsBuyPeformed() {
-// 	createCycle(3, 10000000000000, handleWisemenQueryStockList, "handleWisemenQueryStockList")
-// 	operatingCycle := cycleMapPool["handleWisemenQueryStockList"]
-// 	go startCycle(operatingCycle)
-// }
-
 func processTSPRefresh() {
 	// go handleTSPRefresh()
 }
@@ -131,75 +125,109 @@ func processCheckIsTradeBought(symbol string) {
 }
 
 func checkIsDowStore(currentHour int, currentMinute int) {
-	//point1
-	if isDowStore {
-		if currentHour == 7 {
-			if currentMinute == 49 {
-				dowValue := handleDowWebscrape()
-				insertDow(dowValue)
-				isDowStore = false
-			}
-		}
-	}
-	if isDowStore == false {
-		if currentHour == 7 {
-			if currentMinute == 50 {
-				isDowStore = true
-			}
-		}
-	}
-	//point2
-	if isDowStore {
-		if currentHour == 8 {
-			if currentMinute == 30 {
-				dowValue := handleDowWebscrape()
-				insertDow(dowValue)
-				isDowStore = false
-			}
-		}
-	}
-	if isDowStore == false {
-		if currentHour == 8 {
-			if currentMinute == 31 {
-				isDowStore = true
-			}
-		}
-	}
-	//point3
-	if isDowStore {
-		if currentHour == 9 {
-			if currentMinute == 45 {
-				dowValue := handleDowWebscrape()
-				insertDow(dowValue)
-				isDowStore = false
-			}
-		}
-	}
-	if isDowStore == false {
-		if currentHour == 9 {
-			if currentMinute == 46 {
-				isDowStore = true
-			}
-		}
+	// boolOperateDow1
+	// conditionTimeMinuteDow1
+	// conditionTimeHourDow1
+	if currentMinute == conditionTimeMinuteDow1 && currentHour == conditionTimeHourDow1 && boolOperateDow1 {
+		dowValue := handleDowWebscrape()
+		insertDow(dowValue)
+		boolOperateDow1 = false
 	}
 
-	//point4
-	if isDowStore {
-		if currentHour == 12 {
-			if currentMinute == 0 {
-				dowValue := handleDowWebscrape()
-				insertDow(dowValue)
-				isDowStore = false
-			}
-		}
+	if currentMinute == conditionTimeMinuteDow2 && currentHour == conditionTimeHourDow2 && boolOperateDow2 {
+		dowValue := handleDowWebscrape()
+		insertDow(dowValue)
+		boolOperateDow2 = false
 	}
-	if isDowStore == false {
-		if currentHour == 12 {
-			if currentMinute == 1 {
-				isDowStore = true
-			}
-		}
+
+	if currentMinute == conditionTimeMinuteDow3 && currentHour == conditionTimeHourDow3 && boolOperateDow3 {
+		dowValue := handleDowWebscrape()
+		insertDow(dowValue)
+		boolOperateDow3 = false
 	}
+
+	if currentMinute == conditionTimeMinuteDow4 && currentHour == conditionTimeHourDow4 && boolOperateDow4 {
+		dowValue := handleDowWebscrape()
+		insertDow(dowValue)
+		boolOperateDow4 = false
+	}
+	// //point1
+	// if isDowStore {
+	// 	// 7:49
+	// 	if currentHour == 7 {
+	// 		if currentMinute == 12 {
+	// 			dowValue := handleDowWebscrape()
+	// 			insertDow(dowValue)
+	// 			isDowStore = false
+	// 		}
+	// 	}
+	// }
+	// if isDowStore == false {
+	// 	// 7:50
+	// 	if currentHour == 7 {
+	// 		if currentMinute == 13 {
+	// 			isDowStore = true
+	// 		}
+	// 	}
+	// }
+	// //point2
+	// if isDowStore {
+	// 	//8:30
+	// 	if currentHour == 8 {
+	// 		if currentMinute == 30 {
+	// 			dowValue := handleDowWebscrape()
+	// 			insertDow(dowValue)
+	// 			isDowStore = false
+	// 		}
+	// 	}
+	// }
+	// if isDowStore == false {
+	// 	//8:31
+	// 	if currentHour == 8 {
+	// 		if currentMinute == 31 {
+	// 			isDowStore = true
+	// 		}
+	// 	}
+	// }
+	// //point3
+	// if isDowStore {
+	// 	//9:45
+	// 	if currentHour == 9 {
+	// 		if currentMinute == 45 {
+	// 			dowValue := handleDowWebscrape()
+	// 			insertDow(dowValue)
+	// 			isDowStore = false
+	// 		}
+	// 	}
+	// }
+	// if isDowStore == false {
+	// 	//9:46
+	// 	if currentHour == 9 {
+	// 		if currentMinute == 46 {
+	// 			isDowStore = true
+	// 		}
+	// 	}
+	// }
+
+	// //point4
+	// if isDowStore {
+	// 	//12:00
+	// 	if currentHour == 12 {
+	// 		if currentMinute == 0 {
+	// 			dowValue := handleDowWebscrape()
+	// 			insertDow(dowValue)
+	// 			isDowStore = false
+	// 		}
+	// 	}
+	// }
+	// if isDowStore == false {
+	// 	//12:01
+	// 	if currentHour == 12 {
+	// 		if currentMinute == 1 {
+	// 			isDowStore = true
+	// 		}
+	// 	}
+	// }
 }
 
 func handleTimelineConditionalTriggers(params ...interface{}) {
@@ -320,7 +348,7 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	if holdingWisemen.OrderStatus == "completedFull" {
 		fmt.Println("completedFull hit")
 		//End cycle for monitoring
-		handleInsertInformationAtTrade(symbol, "limit", holdingWisemen.Qty)
+		handleInsertInformationAtTrade(symbol, "limit", "buy", holdingWisemen.Qty)
 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
 		response := postNeoBuyOrderResponse(holdingWisemen)
 		fmt.Println(response)
@@ -333,12 +361,12 @@ func handleOverarchTopStock() {
 	// fmt.Println("twiStockList")
 	// fmt.Println(twiStockList)
 
-	// fmt.Println("twiStockList")
-	// for i, v := range twiStockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
+	fmt.Println("twiStockList")
+	for i, v := range twiStockList {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
 	// twiStockList := []Stock{}
 	// fmt.Println("twiStockList[0].Symbol")
 	// fmt.Println(twiStockList[0].Symbol)
@@ -612,9 +640,9 @@ func healthCheck() {
 	// fmt.Println(response)
 
 	if !strings.Contains(response, "<!DOCTYPE HTML") {
-		fmt.Println("wowzers")
+		// fmt.Println("wowzers")
 		if response != "error received" {
-			fmt.Println("enters")
+			// fmt.Println("enters")
 			isPythonDBResponse = "true"
 		}
 	}
@@ -938,10 +966,13 @@ func twiWebscrape() []Stock {
 // }
 
 func systemStartProcesses() {
-	//reset existing twi server
+	//reset procedures
+	truncateMetricsWisemen()
+	insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1330")
+	//
 	queryStopTwi()
 	queryStartTwi()
-	//reset dow
+
 	truncateDow()
 	//
 	resetTempSymbolHold()
@@ -953,6 +984,16 @@ func systemStartProcesses() {
 	resetAltIntervalBuyWisemen()
 	//
 	resetInformationAtTrade()
+
+	//get balance begining of day
+	storeBalanceValue()
+
+}
+
+func storeBalanceValue() {
+	balance := queryBalance()
+	parsedBalance := parseBalance(balance)
+	insertAccountBalance(AccountBalance{Balance: parsedBalance})
 }
 
 func resetTempSymbolHold() {
@@ -1025,8 +1066,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 
 	// fmt.Println("alteredTransactionHistory")
 	// fmt.Println(alteredTransactionHistory)
-	// fmt.Println("listMatchingSymbolInformationAtTrade")
-	// fmt.Println(listMatchingSymbolInformationAtTrade)
+	fmt.Println("listMatchingSymbolInformationAtTrade")
+	fmt.Println(listMatchingSymbolInformationAtTrade)
 
 	//Support for handle multiple InformationAtTrade during day...
 	//typically only would be two... but in case of two of more...
@@ -1084,6 +1125,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				Dow4:          "does not exist",
 			}
 			insertTradeResultStore(tradeResultStore)
+			// postEmailTradeResultStore(tradeResultStore)
 		}
 		if len(dowList) == 4 {
 			tradeResultStore := TradeResultStore{
@@ -1095,6 +1137,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				Dow4:          dowList[3].CurrentDowValue,
 			}
 			insertTradeResultStore(tradeResultStore)
+			// postEmailTradeResultStore(tradeResultStore)
 		}
 	}
 
@@ -1172,6 +1215,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 			}
 			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
+			postEmailTradeResultStore(tradeResultStore)
 		}
 		if len(dowList) != 4 {
 			tradeResultStore := TradeResultStore{
@@ -1190,6 +1234,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 			}
 			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
+			postEmailTradeResultStore(tradeResultStore)
 		}
 	}
 }
