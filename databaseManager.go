@@ -715,17 +715,17 @@ func truncateMetricsWisemen() {
 //crit
 //insertTradeResultStore
 func insertTradeResultStore(tradeResultStore TradeResultStore) {
-	listValues := []string{tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.BoughtPrice, tradeResultStore.SellPrice, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.HighestPricePointForDay, tradeResultStore.TimeHighestPricePoint, tradeResultStore.LowestPricePointForDay, tradeResultStore.TimeLowestPricePoint, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4}
-	postCommandDBInsert("INSERT INTO trade_result_store (algorithm_used, result, bought_price, sell_price, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4) VALUES (", listValues)
+	listValues := []string{tradeResultStore.AlgorithmUsed, tradeResultStore.Result, tradeResultStore.BoughtPrice, tradeResultStore.SellPrice, tradeResultStore.ChangeAmount, tradeResultStore.StockSymbol, tradeResultStore.TimeStart, tradeResultStore.TimeEnd, tradeResultStore.TimeTradeBuy, tradeResultStore.TimeTradeSell, tradeResultStore.HighestPricePointForDay, tradeResultStore.TimeHighestPricePoint, tradeResultStore.LowestPricePointForDay, tradeResultStore.TimeLowestPricePoint, tradeResultStore.Dow1, tradeResultStore.Dow2, tradeResultStore.Dow3, tradeResultStore.Dow4, tradeResultStore.Dow5, tradeResultStore.Dow6}
+	postCommandDBInsert("INSERT INTO trade_result_store (algorithm_used, result, bought_price, sell_price, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4, dow5, dow6) VALUES (", listValues)
 }
 func selectTradeResultStore(symbol string) []TradeResultStore {
 	tradeResultStoreList := []TradeResultStore{}
-	response := postCommandDBSelect("SELECT algorithm_used, result, bought_price, sell_price, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4 FROM trade_result_store")
+	response := postCommandDBSelect("SELECT algorithm_used, result, bought_price, sell_price, change_amount, stock_symbol, time_start, time_end, time_trade_buy, time_trade_sell, highest_price_point_for_day, time_highest_price_point, lowest_price_point_for_day, time_lowest_price_point, dow1, dow2, dow3, dow4, dow5, dow6 FROM trade_result_store")
 	container := parseDBResponse(response)
 	fmt.Println(container.ListStringFromDB)
 	fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		tradeResultStore := TradeResultStore{AlgorithmUsed: v.ListString[0], Result: v.ListString[1], BoughtPrice: v.ListString[2], SellPrice: v.ListString[3], ChangeAmount: v.ListString[4], StockSymbol: v.ListString[5], TimeStart: v.ListString[6], TimeEnd: v.ListString[7], TimeTradeBuy: v.ListString[8], TimeTradeSell: v.ListString[9], HighestPricePointForDay: v.ListString[10], TimeHighestPricePoint: v.ListString[11], LowestPricePointForDay: v.ListString[12], TimeLowestPricePoint: v.ListString[13], Dow1: v.ListString[14], Dow2: v.ListString[15], Dow3: v.ListString[16], Dow4: v.ListString[17]}
+		tradeResultStore := TradeResultStore{AlgorithmUsed: v.ListString[0], Result: v.ListString[1], BoughtPrice: v.ListString[2], SellPrice: v.ListString[3], ChangeAmount: v.ListString[4], StockSymbol: v.ListString[5], TimeStart: v.ListString[6], TimeEnd: v.ListString[7], TimeTradeBuy: v.ListString[8], TimeTradeSell: v.ListString[9], HighestPricePointForDay: v.ListString[10], TimeHighestPricePoint: v.ListString[11], LowestPricePointForDay: v.ListString[12], TimeLowestPricePoint: v.ListString[13], Dow1: v.ListString[14], Dow2: v.ListString[15], Dow3: v.ListString[16], Dow4: v.ListString[17], Dow5: v.ListString[18], Dow6: v.ListString[19]}
 		tradeResultStoreList = append(tradeResultStoreList, tradeResultStore)
 		i++
 	}

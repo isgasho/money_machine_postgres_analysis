@@ -63,7 +63,7 @@ func getDate() (int, int, int) {
 	yr, mt, day := currentTime.Date()
 	intMonth := int(mt)
 	fmt.Println(yr, mt, day)
-	day = 27
+	// day = 27
 	return yr, intMonth, day
 }
 
@@ -143,8 +143,6 @@ func Abs(x int64) int64 {
 // 	}
 // }
 //
-// handleCalculateDownDay
-// isCashAccountCheckUnsettledFunds
 func handleCalculateCashDay() {
 	//Reset dow day eval store before calculation
 	truncateCashDayEvaluation()
@@ -164,31 +162,48 @@ func handleCalculateDownDay() {
 	//Reset dow day eval store before calculation
 	truncateDownDayEvaluation()
 	isDownDay := "true"
-	isDowDown := true
-	// isTopStockAbovePchgDelimiter := false
 	//is dow in the red
 	//handle on dow...
 	dowValue := handleDowWebscrape()
-
 	tradeResultStoreList := getTradeResultStoreList()
-	tradeResultStore := TradeResultStore{}
+	downDayEvaluation := DownDayEvaluation{}
+	//if TRS is not empty
 	if len(tradeResultStoreList) != 0 {
-		tradeResultStore = tradeResultStoreList[len(tradeResultStoreList)-1]
-		if tradeResultStore.Dow4 != "does not exist" {
-			if dowValue > tradeResultStore.Dow4 {
-				isDowDown = false
+		//get latest TRS
+		tradeResultStorePulled := tradeResultStoreList[len(tradeResultStoreList)-1]
+		listCalculationTradeResultStore := []TradeResultStore{tradeResultStorePulled}
+
+		for i, tradeResultStore := range listCalculationTradeResultStore {
+			if tradeResultStore.Dow6 != "" {
+				if dowValue > tradeResultStore.Dow6 {
+					isDownDay = "false"
+					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "6"} //tradeResultStore.Dow6}
+					break
+				}
 			}
+			if tradeResultStore.Dow5 != "" {
+				if dowValue > tradeResultStore.Dow5 {
+					isDownDay = "false"
+					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "5"} //tradeResultStore.Dow5}
+					break
+				}
+			}
+			if tradeResultStore.Dow4 != "" {
+				if dowValue > tradeResultStore.Dow4 {
+					isDownDay = "false"
+					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "4"} //tradeResultStore.Dow4}
+					break
+				}
+			}
+			if tradeResultStore.Dow4 == "" {
+				downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "3"} //tradeResultStore.Dow4}
+				break
+			}
+			i++
 		}
 	}
-	if isDowDown == false {
-		isDownDay = "false"
-	}
-	downDayEvaluation := DownDayEvaluation{}
 	if len(tradeResultStoreList) == 0 {
 		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "does not exist"}
-	}
-	if len(tradeResultStoreList) != 0 {
-		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: tradeResultStore.Dow4}
 	}
 	//store results in DB
 	insertDownDayEvaluation(downDayEvaluation)

@@ -346,6 +346,8 @@ type TradeResultStore struct {
 	Dow2                    string
 	Dow3                    string
 	Dow4                    string
+	Dow5                    string
+	Dow6                    string
 }
 
 type RecordSystemMonthContainer struct {
