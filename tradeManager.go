@@ -82,8 +82,8 @@ func monitorSell(params ...interface{}) {
 		//support nodemailerror
 		//handle on history...
 		alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
-		fmt.Println("alteredTransactionHistory.HistoryValueList")
-		fmt.Println(alteredTransactionHistory.HistoryValueList)
+		// fmt.Println("alteredTransactionHistory.HistoryValueList")
+		// fmt.Println(alteredTransactionHistory.HistoryValueList)
 		handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)

@@ -1574,17 +1574,13 @@ func postEmailTradeResultStore(tradeResultStore TradeResultStore) string {
 
 	//calculate change amount
 
-	floatBalanceChangeAmount := floatStartDayBalance - floatCurrentBalance
+	floatBalanceChangeAmount := floatCurrentBalance - floatStartDayBalance
 	// negative value or positive value.
 	//get percentage
-	floatPercentageChange := floatBalanceChangeAmount / floatBalanceChangeAmount
+	floatPercentageChange := floatBalanceChangeAmount / floatStartDayBalance
+	//
 	stringPercentageChangeBalance := fmt.Sprintf("%f", floatPercentageChange)
-	//startBalance
-	//currentBalance
-	//percentageChangeBalance
-	//startStockPrice
-	//endStockPrice
-	//percentageChangeStock
+	stringPercentageChangeBalance = transformPercentageToPercentageVisual(stringPercentageChangeBalance)
 
 	// select
 	json := `{
@@ -1603,5 +1599,8 @@ func postEmailTradeResultStore(tradeResultStore TradeResultStore) string {
 
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
+	// fmt.Println("json")
+	// fmt.Println(json)
+	// response := ""
 	return response
 }

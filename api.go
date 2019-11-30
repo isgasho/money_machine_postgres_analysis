@@ -432,10 +432,32 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println(dataList)
 		//process trade
 		//
-		// marketOpenAnaylsisIsMarketClosed := selectMarketOpenAnalysis()[0].IsMarketClosed
 		truncateMetricsWisemen()
 		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".02", ".1", "1330")
 		js, err := json.Marshal("success")
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(js)
+	}
+
+	if requestType == "selectInformationAtTrade" {
+		dataList := databaseQuery.Data
+		fmt.Println("selectInformationAtTrade")
+		fmt.Println("dataList")
+		fmt.Println(dataList)
+		//process trade
+		//
+		// truncateMetricsWisemen()
+		// insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".02", ".1", "1330")
+		response := "empty"
+		listInformationAtTrade := selectInformationAtTrade()
+		if len(listInformationAtTrade) != 0 {
+			response = "entries"
+		}
+		js, err := json.Marshal(response)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -513,6 +535,25 @@ func main() {
 	fmt.Println("Init")
 	// handleOverarchTopStock()
 
+	// truncateInformationAtTrade()
+	// truncateTradeResultStore()
+
+	transactionHistory := TransactionHistory{Symbol: "HEPA"}
+	wrapUpWisemenOutcome(transactionHistory)
+
+	// stringValue := transformPercentageToPercentageVisual("0.0095546754")
+	// fmt.Println(stringValue)
+	//
+
+	// postEmailTradeResultStore
+
+	// tradeResultStore := selectTradeResultStore("HEPA")[0]
+	// fmt.Println(tradeResultStore)
+	// fmt.Println("tradeResultStore.BoughtPrice")
+	// fmt.Println(tradeResultStore.BoughtPrice)
+	// fmt.Println("tradeResultStore.SellPrice")
+	// fmt.Println(tradeResultStore.SellPrice)
+
 	// balance := selectAccountBalance()
 	// fmt.Println(balance)
 	// balance := getBalanceValue()
@@ -527,7 +568,7 @@ func main() {
 	// list := handleInformationAtTradeDayListArbitration("HEPA")
 	// fmt.Println(list)
 
-	truncateInformationAtTrade()
+	// truncateInformationAtTrade()
 	// symbol := "HEPA"
 	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
 	// handleInsertInformationAtTrade(symbol, "limit", "buy", "1") //alteredTransactionHistory.HistoryValueList[1].Qty)
@@ -547,12 +588,13 @@ func main() {
 	// insertDow(dowValue)
 	// insertDow(dowValue)
 
-	handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
+	// handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
+	// handleInsertInformationAtTrade("HEPA", "limit", "sell", "1.00")
 	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.12"})
 	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.13"})
 	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.15"})
 
-	processMonitorSell("HEPA", "0.0", "1330")
+	// processMonitorSell("HEPA", "0.0", "1330")
 
 	// handleInformationAtTradeDayListArbitration("HEPA")
 

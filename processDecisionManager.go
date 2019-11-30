@@ -1059,7 +1059,7 @@ func setTimelineOperationsFalse() {
 func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//Post wisemen outcome.
 	//
-	metrics := selectMetricsWisemen()[0]
+	// metrics := selectMetricsWisemen()[0]
 	alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
 	//get although this is reset insertInformationAtTrade for buy and sell for day
 	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
@@ -1154,24 +1154,28 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		if s1, err := strconv.ParseFloat(sellHistoryValuePrice, 64); err == nil {
 			floatSellHistoryValuePrice = s1
 		}
+
+		fmt.Println("floatBuyHistoryValuePrice")
+		fmt.Println(floatBuyHistoryValuePrice)
+		fmt.Println("floatSellHistoryValuePrice")
+		fmt.Println(floatSellHistoryValuePrice)
 		//calculate result
 		//if buy and sell, and if changeAmount meet delimiter,
 		changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
-		stringChangeAmount := fmt.Sprintf("%f", changeAmount)
 
-		// fmt.Println("changeAmount")
-		// fmt.Println(changeAmount)
-		//handle on metrics delimiter...
-		metricsPriceHighPchg := metrics.PriceHighPchgTrade
-		floatMetricsPriceHighPchg := 0.0
-		if s2, err := strconv.ParseFloat(metricsPriceHighPchg, 64); err == nil {
-			floatMetricsPriceHighPchg = s2
-		}
-		optimal := floatBuyHistoryValuePrice + (floatBuyHistoryValuePrice * floatMetricsPriceHighPchg)
+		fmt.Println("changeAmount")
+		fmt.Println(changeAmount)
 
+		floatPercentageChangeAmount := changeAmount / floatBuyHistoryValuePrice
+		stringChangeAmount := fmt.Sprintf("%f", floatPercentageChangeAmount)
+
+		fmt.Println("floatPercentageChangeAmount")
+		fmt.Println(stringChangeAmount)
+
+		stringChangeAmount = transformPercentageToPercentageVisual(stringChangeAmount)
 		result := "negative"
 		//if sell was less than optimal
-		if floatSellHistoryValuePrice >= optimal {
+		if floatPercentageChangeAmount >= 0 {
 			result = "positive "
 		}
 		//add handle result, if market trade, droploss or time delimiter
@@ -1213,6 +1217,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				Dow3:                    dowList[2].CurrentDowValue,
 				Dow4:                    dowList[3].CurrentDowValue,
 			}
+			fmt.Println("tradeResultStore")
 			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 			postEmailTradeResultStore(tradeResultStore)
@@ -1232,6 +1237,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				LowestPricePointForDay:  lowestStock.Last,
 				TimeLowestPricePoint:    timeCreatedLow,
 			}
+			fmt.Println("tradeResultStore")
 			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 			postEmailTradeResultStore(tradeResultStore)
@@ -1293,6 +1299,62 @@ func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
 	insertTradeResultStore(tradeResultStore)
 }
 
-func calculateHighestStock() {
+func transformPercentageToPercentageVisual(stringValue string) string {
+	// floatValue := 0.0
+	// if s, err := strconv.ParseFloat(stringValue, 64); err == nil {
+	// 	floatValue = s
+	// }
+	//0.00955
 
+	//split at period,
+	//
+	//.9%
+
+	symbolString1 := strings.Split(stringValue, ".")[1]
+	// fmt.Println(symbolString1)
+	newString := ""
+	for i, v := range symbolString1 {
+		if i == 2 {
+			newString += "."
+		}
+		newString += string(v)
+	}
+
+	// symbolString2 := strings.Split(symbolString1, "</sym>")
+	// symbol := symbolString2[0]
+	returnString := ""
+	for i, v := range newString {
+		if i == 0 {
+			if string(v) == "0" {
+				continue
+			}
+		}
+		returnString += string(v)
+	}
+	// fmt.Println("returnString")
+	// fmt.Println(returnString)
+
+	//
+	zeroIndexCount := 0
+	isPeriodReached := false
+	returnString1 := ""
+	for i, v := range returnString {
+		if isPeriodReached {
+			zeroIndexCount += 1
+			if zeroIndexCount == 3 {
+				break
+			}
+		}
+		if string(v) == "." {
+			isPeriodReached = true
+		}
+		returnString1 += string(v)
+		i++
+	}
+	returnString1 += "%"
+
+	if returnString1 == "0.00%" {
+		returnString1 = "less than 1%"
+	}
+	return returnString1
 }

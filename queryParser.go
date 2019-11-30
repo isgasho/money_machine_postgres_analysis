@@ -224,8 +224,8 @@ func parseDBResponse(response string) DBResponseContainer {
 	// fmt.Println("len(copyList)")
 	// fmt.Println(len(copyList))
 
-	fmt.Println("response")
-	fmt.Println(response)
+	// fmt.Println("response")
+	// fmt.Println(response)
 	for i, v := range listParsedString {
 		// fmt.Println(v)
 		if len(v) == 0 {
@@ -236,8 +236,8 @@ func parseDBResponse(response string) DBResponseContainer {
 	// fmt.Println("len(copyList)")
 	// fmt.Println(len(copyList))
 
-	fmt.Println("copyList")
-	fmt.Println(copyList)
+	// fmt.Println("copyList")
+	// fmt.Println(copyList)
 	for i, v := range copyList {
 		listValues := strings.Split(v, ",")
 		// fmt.Println("listValues")
@@ -883,8 +883,8 @@ func parseAllHolding(query string) ContainerHolding {
 	// 	QtyBought   string
 	// 	OrderStatus string
 	// }
-	fmt.Println("splitHolding out")
-	fmt.Println(splitHolding)
+	// fmt.Println("splitHolding out")
+	// fmt.Println(splitHolding)
 
 	for i, v := range splitHolding {
 		// fmt.Println()
@@ -901,8 +901,8 @@ func parseAllHolding(query string) ContainerHolding {
 		qtyString2 := strings.Split(qtyString1, "</qty>")
 		qty := qtyString2[0]
 
-		fmt.Println("qty")
-		fmt.Println(qty)
+		// fmt.Println("qty")
+		// fmt.Println(qty)
 
 		holding := HoldingWisemen{Symbol: symbol, Price: purchasePrice, Qty: qty}
 		containerHolding.ListHolding = append(containerHolding.ListHolding, holding)
