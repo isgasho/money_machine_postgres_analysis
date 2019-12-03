@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"strings"
 	"time"
-
-	_ "github.com/lib/pq"
 )
 
 func parseQuery(queryString string) Stock {

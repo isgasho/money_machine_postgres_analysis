@@ -1368,3 +1368,9 @@ func transformPercentageToPercentageVisual(stringValue string) string {
 	}
 	return returnString1
 }
+
+func check(e error) {
+	if e != nil {
+		panic(e)
+	}
+}
