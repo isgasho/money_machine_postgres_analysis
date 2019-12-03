@@ -105,7 +105,7 @@ func processWhaleQueryStockSet() {
 	// 	go startCycle(cycleMapPool["handleWhaleQueryStockList"])
 	// }
 	// if initialWhaleStockQueryPerformed == false {
-	createCycle(300, 1000000000000, handleWhaleQueryStockList, "handleWhaleQueryStockList")
+	createCycle(300, 1000000, handleWhaleQueryStockList, "handleWhaleQueryStockList")
 	operatingCycle := cycleMapPool["handleWhaleQueryStockList"]
 	go startCycle(operatingCycle)
 	// initialWhaleStockQueryPerformed = true
