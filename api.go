@@ -530,6 +530,8 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	metrics := selectMetricsWisemen()
+	fmt.Println(metrics)
 	processTimelineStart()
 	fmt.Println("Init")
 
