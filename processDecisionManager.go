@@ -9,15 +9,15 @@ import (
 )
 
 //7:49
-var checkIsMarketOpenMinute = 44
-var checkIsMarketOpenHour = 8
+var checkIsMarketOpenMinute = 49
+var checkIsMarketOpenHour = 7
 
 //7:50
-var conditionOneMinute = 45
-var conditionOneHour = 8
+var conditionOneMinute = 50
+var conditionOneHour = 7
 
 //8:00
-var conditionTwoMinute = 03
+var conditionTwoMinute = 00
 var conditionTwoHour = 8
 
 //conditionMinuteHandleCalculateDownDay1 8:29 engage
