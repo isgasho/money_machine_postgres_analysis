@@ -9,15 +9,15 @@ import (
 )
 
 //7:49
-var checkIsMarketOpenMinute = 49
-var checkIsMarketOpenHour = 7
+var checkIsMarketOpenMinute = 44
+var checkIsMarketOpenHour = 8
 
 //7:50
-var conditionOneMinute = 50
-var conditionOneHour = 7
+var conditionOneMinute = 45
+var conditionOneHour = 8
 
 //8:00
-var conditionTwoMinute = 00
+var conditionTwoMinute = 03
 var conditionTwoHour = 8
 
 //conditionMinuteHandleCalculateDownDay1 8:29 engage
@@ -191,6 +191,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		conditionMarketClosed := selectMarketOpenAnalysis()
 		if conditionMarketClosed[0].IsMarketClosed == "true" {
 			setTimelineOperationsFalse()
+			fmt.Println("inside hit12")
 		}
 		checkIsMarketOpenBool = false
 		boolOperate19 = true
@@ -909,11 +910,13 @@ func twiWebscrape() []Stock {
 
 func systemStartProcesses() {
 	//reset procedures
+	truncateMarketOpenAnalysis()
+	//
 	truncateMetricsWisemen()
 	insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1330")
 	//
-	queryStopTwi()
-	queryStartTwi()
+	// queryStopTwi()
+	// queryStartTwi()
 
 	truncateDow()
 	//
