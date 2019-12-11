@@ -1507,6 +1507,17 @@ func postHealthCheckNode(neoResponse string, pythonResponse string) string {
 	return response
 }
 
+func postNodeTSPFailureEmail() string {
+	json := `{
+		"request_type": "postNodeTSPFailureEmail",
+		"data": {}}
+		`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryHistory() string {
 	json := `{
 		"request_type": "historyBrokerage",

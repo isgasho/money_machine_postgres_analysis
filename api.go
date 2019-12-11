@@ -530,10 +530,11 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	storeBalanceValue()
+	// postNodeTSPFailureEmail()
+	// storeBalanceValue()
 	// metrics := selectMetricsWisemen()
 	// fmt.Println(metrics)
-	// processTimelineStart()
+	processTimelineStart()
 	// fmt.Println("Init")
 	// systemStartProcesses()
 	// handleOverarchTopStock()

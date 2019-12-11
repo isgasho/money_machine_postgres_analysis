@@ -883,7 +883,23 @@ func handleDowWebscrape() string {
 }
 
 func twiWebscrape() []Stock {
-	response2 := queryWebscrapeTwi()
+	indexTwiWebscrape := 0
+	response2 := ""
+	//keep trying
+	for indexTwiWebscrape < 5 {
+		response2 = queryWebscrapeTwi()
+
+		if response2 != "try again failure" {
+			break
+		}
+		postNodeTSPFailureEmail()
+
+		time.Sleep(time.Duration(1) * time.Second)
+		fmt.Println("continuing")
+		indexTwiWebscrape++
+	}
+
+	// catch response2 failure
 	symbolList := parseTwiWebscrape(response2)
 
 	fmt.Println("symbolList")
