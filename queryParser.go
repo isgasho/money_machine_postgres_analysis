@@ -199,16 +199,6 @@ func parseStockSetQuery(queryString string) []Stock {
 			Adv90:                                 adv90,
 			IsCurrentPriceHigherThanPreviousClose: isCurrentPriceHigherThanPreviousClose,
 		}
-		// fmt.Println("twi")
-		// fmt.Println("symbol")
-		// fmt.Println(symbol)
-		// fmt.Println("IsCurrentPriceHigherThanPreviousClose")
-		// fmt.Println(isCurrentPriceHigherThanPreviousClose)
-		// fmt.Println("pcls")
-		// fmt.Println(pcls)
-		// fmt.Println("last")
-		// fmt.Println(last)
-
 		stockList = append(stockList, stock)
 	}
 	return stockList
@@ -663,7 +653,7 @@ func parseDowWebscrape(queryString string) string {
 
 	currentDowValueQuery1 := strings.Split(stringClosestMatch, "</span>")[0]
 	currentDowValueQuery2 := strings.Split(currentDowValueQuery1, "\">")[1]
-	fmt.Println(currentDowValueQuery2)
+	// fmt.Println(currentDowValueQuery2)
 	currentDowValue := currentDowValueQuery2
 	return currentDowValue
 }
@@ -695,7 +685,7 @@ func parseTwiWebscrape(queryString string) []string {
 		i++
 	}
 	// listIndexPossibleMatches
-	fmt.Println(len(listPossibleMatches))
+	// fmt.Println(len(listPossibleMatches))
 	for i, v := range listPossibleMatches {
 		if strings.Contains(v, "/svg>") {
 			fmt.Println("inside yo")
@@ -707,7 +697,7 @@ func parseTwiWebscrape(queryString string) []string {
 	fmt.Println("hit")
 	// fmt.Println(listPossibleMatches[listIndexCuts[len(listIndexCuts)-1]])
 
-	fmt.Println(listIndexCuts[len(listIndexCuts)-1])
+	// fmt.Println(listIndexCuts[len(listIndexCuts)-1])
 	for i, v := range listPossibleMatches {
 		// stringIndex := listIndexCuts[len(listIndexCuts)-1]
 		// valueIndex, err := //strconv.Atoi(stringIndex)
@@ -752,7 +742,7 @@ func parseTwiWebscrape(queryString string) []string {
 		i++
 	}
 	for i, v := range listSymbols {
-		fmt.Println(v)
+		// fmt.Println(v)
 		if strings.Contains(v, ".") == false {
 			filterDotList = append(filterDotList, v)
 		}

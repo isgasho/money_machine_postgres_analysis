@@ -293,13 +293,13 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 
 	if requestType == "tradeBuyWisemen" {
 		dataList := databaseQuery.Data
-		fmt.Println("tradeBuyWisemen")
-		fmt.Println("dataList")
-		fmt.Println(dataList)
-		fmt.Println(dataList[0])
+		// fmt.Println("tradeBuyWisemen")
+		// fmt.Println("dataList")
+		// fmt.Println(dataList)
+		// fmt.Println(dataList[0])
 
-		fmt.Println("hot")
-		// overarchTradeWisemen(dataList)
+		// fmt.Println("hot")
+		overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -410,11 +410,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if requestType == "pullMarketOpenAnaylsis" {
-		dataList := databaseQuery.Data
-		fmt.Println("pullMarketOpenAnaylsis")
-		fmt.Println("dataList")
-		fmt.Println(dataList)
-		//process trade.
+		// dataList := databaseQuery.Data
 		//
 		marketOpenAnaylsisIsMarketClosed := selectMarketOpenAnalysis()[0].IsMarketClosed
 		js, err := json.Marshal(marketOpenAnaylsisIsMarketClosed)
@@ -531,12 +527,13 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	processTimelineStart()
+
 	// postNodeTSPFailureEmail()
 	// storeBalanceValue()
 	// metrics := selectMetricsWisemen()
 	// fmt.Println(metrics)
 	// twiWebscrape()
-	processTimelineStart()
 	// dowValue := handleDowWebscrape()
 	// fmt.Println(dowValue)
 	// parseDowWebscrape()

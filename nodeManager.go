@@ -49,7 +49,7 @@ func queryTSP() string {
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
 
-	fmt.Println(response)
+	// fmt.Println(response)
 
 	// response := `<?xml version="1.0" encoding="UTF-8"?>
 	// <response id="58d6662f-2410-4e43-ba2b-5298e22c5aae">

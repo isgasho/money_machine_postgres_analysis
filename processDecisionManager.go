@@ -304,19 +304,12 @@ func handleCheckIsTradeBought(params ...interface{}) {
 func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
 
-	fmt.Println("twiStockList")
+	// fmt.Println("twiStockList")
 	for i, v := range twiStockList {
 		fmt.Println(v.Symbol)
 		fmt.Println(v.Pchg)
 		i++
 	}
-	// twiStockList := []Stock{}
-	// fmt.Println("twiStockList[0].Symbol")
-	// fmt.Println(twiStockList[0].Symbol)
-	// fmt.Println("twiStockList[0].Pchg")
-	// fmt.Println(twiStockList[0].Pchg)
-	// fmt.Println("twiStockList[0].Price")
-	// fmt.Println(twiStockList[0].Last)
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
 	// // // // //Low process for whale
@@ -325,61 +318,18 @@ func handleOverarchTopStock() {
 func highTransferanceProcess(twiStockList []Stock) {
 	//TSP
 	topStockPullStockList := topStockPull()
-
-	// fmt.Println("topStockPullStockList")
-	// for i, v := range topStockPullStockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
-
-	// fmt.Println("twi")
-	// for i, v := range twiStockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
-
 	listTempDuplicantFiltered := []Stock{}
 	positiveTwiTSPList := []Stock{}
 	positiveTwiStockList := []Stock{}
 	isDuplicate := false
 	isDuplicateTemp := false
 
-	// fmt.Println("twiStockList")
-	// for i, v := range twiStockList {
-	// 	fmt.Println(v)
-	// 	i++
-	// }
-
-	// fmt.Println("inside")
-	// //Handle positive values only in twiTSPList
-	fmt.Println("twiStockList")
 	for i, v := range twiStockList {
-		fmt.Println("v.Symbol")
-		fmt.Println(v.Symbol)
-		fmt.Println("v.Pcls")
-		fmt.Println(v.Pcls)
-		fmt.Println("IsCurrentPriceHigherThanPreviousClose")
-		fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
-
 		if v.IsCurrentPriceHigherThanPreviousClose == "true" {
 			positiveTwiStockList = append(positiveTwiStockList, v)
 		}
 		i++
 	}
-
-	// fmt.Println("positiveTwiStockList")
-	// for i, v := range positiveTwiStockList {
-	// 	fmt.Println(v)
-	// 	i++
-	// }
-
-	// fmt.Println("topStockPullStockList")
-	// for i, v := range topStockPullStockList {
-	// 	fmt.Println(v)
-	// 	i++
-	// }
 
 	positiveTwiTSPList = positiveTwiStockList
 	// //No duplicates in lists
@@ -388,7 +338,6 @@ func highTransferanceProcess(twiStockList []Stock) {
 		for indexTwi, twi := range positiveTwiStockList {
 			if twi.Symbol == tsp.Symbol {
 				isDuplicate = true
-				fmt.Println(twi.Symbol)
 				break
 			}
 			indexTwi++
@@ -398,13 +347,6 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		indexTsp++
 	}
-
-	// fmt.Println("positiveTwiTSPList")
-	// for i, v := range positiveTwiTSPList {
-	// 	fmt.Println("v.Symbol")
-	// 	fmt.Println(v.Symbol)
-	// 	i++
-	// }
 
 	// //Query temp
 	tempSymbolHold := selectTempSymbolHoldHigh()
@@ -428,12 +370,11 @@ func highTransferanceProcess(twiStockList []Stock) {
 	topStockList := []Stock{}
 
 	//
-	fmt.Println("listTempDuplicantFiltered")
+	// fmt.Println("listTempDuplicantFiltered")
 	for i, v := range listTempDuplicantFiltered {
 		fmt.Println(v)
 		i++
 	}
-
 	for i < 3 {
 		// 	// remove highest index 3 times, to get top stocks.
 		// 	//Pop top stock each iteration
@@ -463,13 +404,10 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		i++
 	}
-	// fmt.Println("topStockList")
-	// fmt.Println(topStockList)
 	for i, v := range topStockList {
 		insertTempSymbolHoldHigh(v.Symbol)
 		i++
 	}
-	// //fill algorithm symbol holds
 	handleWisemenFillHold()
 	// handleWhaleFillHoldHigh()
 }
@@ -673,11 +611,11 @@ func handleWhaleFillHoldLow() {
 }
 
 func handleWisemenQueryStockList(params ...interface{}) {
-	fmt.Println("hit handleWisemenQueryStockList")
+	// fmt.Println("hit handleWisemenQueryStockList")
 	//Query monitor_symbol
 	symbolList := selectWisemenSymbolHold()
-	fmt.Println("symbolList")
-	fmt.Println(symbolList)
+	// fmt.Println("symbolList")
+	// fmt.Println(symbolList)
 
 	//Parse format errors in symbols
 	formattedSymbolList := []string{}
@@ -902,8 +840,8 @@ func twiWebscrape() []Stock {
 	// catch response2 failure
 	symbolList := parseTwiWebscrape(response2)
 
-	fmt.Println("symbolList")
-	fmt.Println(symbolList)
+	// fmt.Println("symbolList")
+	// fmt.Println(symbolList)
 	responseSymbolList := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
 	return stockList

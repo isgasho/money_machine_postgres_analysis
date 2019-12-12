@@ -34,7 +34,7 @@ func checKIsBrokerageResponding() {
 	response := queryIsBrokerageResponding()
 	askTime := parseAskTimeQuery(response)
 	isMarketClosed := false
-	fmt.Println("asktime is:", askTime)
+	// fmt.Println("asktime is:", askTime)
 	//Conditional if Ask time set to 0
 	isMarketClosed = checkConditionalIsAskTime(askTime)
 	if isMarketClosed == false {
@@ -51,7 +51,7 @@ func checKIsBrokerageResponding() {
 
 func checkConditionalIsAskTime(askTime string) bool {
 	boolReturned := false
-	fmt.Println(askTime)
+	// fmt.Println(askTime)
 	if askTime == "00:00" {
 		boolReturned = true
 	}
@@ -79,8 +79,8 @@ func getCurrentMinute() int {
 
 func getDayOfWeek() time.Weekday {
 	weekday := time.Now().Weekday()
-	fmt.Println(weekday)      // "Tuesday"
-	fmt.Println(int(weekday)) // "2"
+	// fmt.Println(weekday)      // "Tuesday"
+	// fmt.Println(int(weekday)) // "2"
 	return weekday
 }
 
@@ -148,10 +148,6 @@ func handleCalculateCashDay() {
 	truncateCashDayEvaluation()
 	isUnsettledFunds := "true"
 	//query account
-	// response := queryAccountBrokerage()
-	// accountBrokerage := parseAccountBrokerage(response)
-	//set negative for trade qty 1 testing
-	// if accountBrokerage.UnsettledFunds == "0" {
 	isUnsettledFunds = "false"
 	// }
 	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds}
