@@ -298,7 +298,8 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println(dataList)
 		fmt.Println(dataList[0])
 
-		overarchTradeWisemen(dataList)
+		fmt.Println("hot")
+		// overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -534,11 +535,22 @@ func main() {
 	// storeBalanceValue()
 	// metrics := selectMetricsWisemen()
 	// fmt.Println(metrics)
+	// twiWebscrape()
 	processTimelineStart()
+	// dowValue := handleDowWebscrape()
+	// fmt.Println(dowValue)
+	// parseDowWebscrape()
 	// fmt.Println("Init")
 	// systemStartProcesses()
 	// handleOverarchTopStock()
 	// handleDowWebscrape()
+	// handleCalculateDownDay()
+
+	// handleOverarchTopStock()
+	// //handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
+	// handleCalculateCashDay()
+	// handleCalculateDownDay()
+	// healthCheck()
 
 	// truncateInformationAtTrade()
 	// systemStartProcesses()

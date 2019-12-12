@@ -17,11 +17,11 @@ var conditionOneMinute = 50
 var conditionOneHour = 7
 
 //8:00
-var conditionTwoMinute = 00
+var conditionTwoMinute = 0
 var conditionTwoHour = 8
 
-//conditionMinuteHandleCalculateDownDay1 8:29 engage
-var conditionMinuteHandleCalculateDownDay1 = 29
+//conditionMinuteHandleCalculateDownDay1 8:27 engage
+var conditionMinuteHandleCalculateDownDay1 = 27
 var conditionHourHandleCalculateDownDay1 = 8
 
 //9:00
@@ -886,7 +886,7 @@ func twiWebscrape() []Stock {
 	indexTwiWebscrape := 0
 	response2 := ""
 	//keep trying
-	for indexTwiWebscrape < 5 {
+	for indexTwiWebscrape < 10 {
 		response2 = queryWebscrapeTwi()
 
 		if response2 != "try again failure" {
@@ -906,19 +906,19 @@ func twiWebscrape() []Stock {
 	fmt.Println(symbolList)
 	responseSymbolList := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
-	// for i, v := range stockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println("v.Last")
-	// 	fmt.Println(v.Last)
-	// 	fmt.Println("v.Pcls")
-	// 	fmt.Println(v.Pcls)
-	// 	fmt.Println("v.IsCurrentPriceHigherThanPreviousClose")
-	// 	fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
-	// 	i++
-	// }
 	return stockList
 }
 
+// for i, v := range stockList {
+// 	fmt.Println(v.Symbol)
+// 	fmt.Println("v.Last")
+// 	fmt.Println(v.Last)
+// 	fmt.Println("v.Pcls")
+// 	fmt.Println(v.Pcls)
+// 	fmt.Println("v.IsCurrentPriceHigherThanPreviousClose")
+// 	fmt.Println(v.IsCurrentPriceHigherThanPreviousClose)
+// 	i++
+// }
 // func handleEndOfDayAnalyticsOperations() {
 // 	day := getDayOfWeek()
 // 	//insert into table conditional
