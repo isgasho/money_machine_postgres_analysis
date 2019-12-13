@@ -457,7 +457,7 @@ func parseTopStockQuery(queryString string) []Stock {
 
 	var stockList = []Stock{}
 
-	fmt.Println(parseList[0])
+	// fmt.Println(parseList[0])
 	for i, v := range parseList {
 		// isCurrentPriceHigherThanPreviousClose := false
 		//Create stock and append to composite

@@ -305,11 +305,11 @@ func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
 
 	// fmt.Println("twiStockList")
-	for i, v := range twiStockList {
-		fmt.Println(v.Symbol)
-		fmt.Println(v.Pchg)
-		i++
-	}
+	// for i, v := range twiStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
 	// // // // //Low process for whale
