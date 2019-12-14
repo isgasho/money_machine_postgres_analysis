@@ -527,10 +527,17 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	// processTimelineStart()
+	processTimelineStart()
 
-	holdingWisemen := HoldingWisemen{Symbol: "TGTX", Price: "10.28", OrderStatus: "completedFull"}
-	postNeoBuyOrderResponse(holdingWisemen)
+	// truncateInformationAtTrade()
+	// handleInsertInformationAtTrade("TGTX", "limit", "buy", "1.00")
+
+	// holdingWisemen := HoldingWisemen{Symbol: "TGTX", Price: "10.28", OrderStatus: "completedFull"}
+	// postNeoBuyOrderResponse(holdingWisemen)
+	// holdings := getAllHolding()
+	// fmt.Println(holdings)
+
+	// processMonitorSellMarket("TGTX")
 
 	// orderList := getAllOrders()
 	// fmt.Println("len(orderList.ListOrders)")

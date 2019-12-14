@@ -69,6 +69,7 @@ func monitorSell(params ...interface{}) {
 
 	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
 
+	// isSymbolPresentInHolding = false
 	//alter
 	isDropPriceMet := calculateIsDropPriceMet(symbol, priceDrop)
 	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
@@ -76,8 +77,10 @@ func monitorSell(params ...interface{}) {
 	//Is holding is not present cancel cycle process
 	//and move to wrap up.
 	if isSymbolPresentInHolding == false {
+		//bought information pulled from brokerage
 		alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
 		handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
+		//
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
 		operatingCycle := cycleMapPool["monitorSell"]
@@ -164,8 +167,13 @@ func monitorSellMarket(params ...interface{}) {
 	listStrings := listSymbolsInterface.([]string)
 
 	symbol := listStrings[0]
+
+	fmt.Println("symbol")
+	fmt.Println(symbol)
+
 	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
 
+	// isSymbolPresentInHolding = false
 	if isSymbolPresentInHolding == false {
 		fmt.Println("symbol not present")
 		transactionHistory := TransactionHistory{Symbol: symbol}
@@ -290,12 +298,6 @@ func calculateIsTimeDelimiterMetSell(timeDelimiter string) bool {
 	//get current hour
 	currentMinute := getCurrentMinute()
 
-	fmt.Println("currentHour")
-	fmt.Println(currentHour)
-
-	fmt.Println("currentMinute")
-	fmt.Println(currentMinute)
-
 	stringCurrentHour := strconv.Itoa(currentHour)
 	stringCurrentMinute := strconv.Itoa(currentMinute)
 
@@ -313,9 +315,8 @@ func calculateIsTimeDelimiterMetSell(timeDelimiter string) bool {
 	// timeCompositeCurrentString = "1330"
 
 	//match
-
 	// timeCompositeCurrentString = "1331"
-	timeDelimiter = "1347"
+	// timeDelimiter = "1347"
 	fmt.Println("timeCompositeCurrentString")
 	fmt.Println(timeCompositeCurrentString)
 	// fmt.Println(timeDelimiter)

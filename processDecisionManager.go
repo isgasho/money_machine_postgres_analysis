@@ -96,7 +96,7 @@ func processMonitorSell(symbol string, dropLoss string, timeToSell string) {
 
 func processMonitorSellMarket(symbol string) {
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(5, 10000000, monitorSellMarket, "monitorSellMarket", []string{symbol})
+	createCycle(10, 10000000, monitorSellMarket, "monitorSellMarket", []string{symbol})
 	operatingCycle := cycleMapPool["monitorSellMarket"]
 	go startCycle(operatingCycle)
 }
