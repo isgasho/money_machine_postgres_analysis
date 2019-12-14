@@ -42,18 +42,18 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// informationAtTrade := InformationAtTrade{
 	// 	Symbol: symbol,
 	// }
-	// handleInsertInformationAtTrade(symbol, "limit", "buy", "1.00")
+	handleInsertInformationAtTrade(symbol, "limit", "buy", "1.00")
 	// insertTradeEnteredInformation(tradeEnteredInformation)
 
 	// insertInformationAtTrade(informationAtTrade)
 
 	//Submit buy limit to brokerage
-	fmt.Println("symbol")
-	fmt.Println(symbol)
+	// fmt.Println("symbol")
+	// fmt.Println(symbol)
 	fmt.Println("stringQty")
 	fmt.Println(stringQty)
-	fmt.Println("stringPrice")
-	fmt.Println(stringPrice)
+	// fmt.Println("stringPrice")
+	// fmt.Println(stringPrice)
 	queryTradeBuyLimit(symbol, stringPrice, "1")
 }
 
@@ -67,23 +67,16 @@ func monitorSell(params ...interface{}) {
 	priceDrop := listStrings[1]
 	timeDelimiter := metrics.SellTime
 
-	// calculateIsTimeDelimiterMetSell()
-	// calculateIsTimeDelimiterMetSell
-	// monitorSell()
-
 	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
+
+	//alter
 	isDropPriceMet := calculateIsDropPriceMet(symbol, priceDrop)
 	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
 
 	//Is holding is not present cancel cycle process
 	//and move to wrap up.
 	if isSymbolPresentInHolding == false {
-		//cancel cycle
-		//support nodemailerror
-		//handle on history...
 		alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
-		// fmt.Println("alteredTransactionHistory.HistoryValueList")
-		// fmt.Println(alteredTransactionHistory.HistoryValueList)
 		handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
 		transactionHistory := TransactionHistory{Symbol: symbol}
 		wrapUpWisemenOutcome(transactionHistory)
@@ -108,21 +101,23 @@ func monitorSell(params ...interface{}) {
 		fmt.Println(len(orderList.ListOrders))
 		order := Order{}
 		for i, v := range orderList.ListOrders {
-			if v.Symbol == symbol {
+			if v.Symbol == "TGTX" {
 				order = v
+				break
 			}
 			i++
 		}
+
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
+
 		queryCancelOrder(order.SVI)
 		//cancel order, pause 10 seconds
 		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
 		handleInsertInformationAtTrade(symbol, "time delimiter", "sell", holding.Qty)
-		time.Sleep(time.Duration(30) * time.Second)
-		transactionHistory := TransactionHistory{Symbol: symbol}
-		wrapUpWisemenOutcome(transactionHistory)
-		operatingCycle := cycleMapPool["monitorSell"]
-		cancelCycle(operatingCycle)
+		time.Sleep(time.Duration(10) * time.Second)
+		processMonitorSellMarket(symbol)
 	}
 
 	if isDropPriceMet {
@@ -142,24 +137,48 @@ func monitorSell(params ...interface{}) {
 		fmt.Println(len(orderList.ListOrders))
 		order := Order{}
 		for i, v := range orderList.ListOrders {
-			if v.Symbol == symbol {
+			if v.Symbol == "TGTX" {
 				order = v
+				break
 			}
 			i++
 		}
+
+		operatingCycle := cycleMapPool["monitorSell"]
+		cancelCycle(operatingCycle)
+
 		queryCancelOrder(order.SVI)
 		//cancel order, pause 10 seconds
 		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
 		//handle on holding
 		handleInsertInformationAtTrade(symbol, "drop loss", "sell", holding.Qty)
-		time.Sleep(time.Duration(30) * time.Second)
-		transactionHistory := TransactionHistory{Symbol: symbol}
-		wrapUpWisemenOutcome(transactionHistory)
-		operatingCycle := cycleMapPool["monitorSell"]
-		cancelCycle(operatingCycle)
+		time.Sleep(time.Duration(10) * time.Second)
+		processMonitorSellMarket(symbol)
 	}
 }
+
+func monitorSellMarket(params ...interface{}) {
+	listVal := reflect.ValueOf(params[0])
+	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
+	listStrings := listSymbolsInterface.([]string)
+
+	symbol := listStrings[0]
+	isSymbolPresentInHolding := calculateIsSymbolPresentInHolding(symbol)
+
+	if isSymbolPresentInHolding == false {
+		fmt.Println("symbol not present")
+		transactionHistory := TransactionHistory{Symbol: symbol}
+		wrapUpWisemenOutcome(transactionHistory)
+		operatingCycle := cycleMapPool["monitorSellMarket"]
+		cancelCycle(operatingCycle)
+	}
+
+	if isSymbolPresentInHolding == true {
+		fmt.Println("symbol present")
+	}
+}
+
 func handleInsertInformationAtTrade(symbol string, typeTrade string, side string, qty string) {
 	//query stock
 	response := queryMultiStockPull([]string{symbol})
@@ -201,6 +220,7 @@ func handleInsertInformationAtTrade(symbol string, typeTrade string, side string
 	//insert
 	insertInformationAtTrade(informationAtTrade)
 }
+
 func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 	listSymbol := []string{symbol}
 	isBoolReturning := false
@@ -212,12 +232,16 @@ func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 			// isBoolReturning = "true"
 			holding = v
 		}
-		fmt.Println(v)
+		// fmt.Println(v)
 		i++
 	}
 
 	response := queryMultiStockPull(listSymbol)
 	stockList := parseStockSetQuery(response)
+
+	// calculateIsDropPriceMet
+	// stockList := []Stock{Stock{Symbol: "TGTX", Last: "9.25"}}
+
 	priceFromQuery := stockList[0].Last
 	//Support for bid vs ask variance from last.
 
@@ -243,14 +267,14 @@ func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 
 	//compare drop price to holding price.
 
-	fmt.Println("dropPrice")
-	fmt.Println(dropPrice)
+	// fmt.Println("dropPrice")
+	// fmt.Println(dropPrice)
 
-	fmt.Println("dropPrice")
-	fmt.Println(dropPrice)
+	// fmt.Println("dropPrice")
+	// fmt.Println(dropPrice)
 
-	fmt.Println("floatPriceFromQuery")
-	fmt.Println(floatPriceFromQuery)
+	// fmt.Println("floatPriceFromQuery")
+	// fmt.Println(floatPriceFromQuery)
 
 	if floatPriceFromQuery <= dropPrice {
 		// sellAtMarket
@@ -283,12 +307,22 @@ func calculateIsTimeDelimiterMetSell(timeDelimiter string) bool {
 	timeCompositeCurrentString := stringCurrentHour + stringCurrentMinute
 	fmt.Println("timeDelimiter")
 	fmt.Println(timeDelimiter)
-	//compare time to delimiter
 
+	// timeDelimiter = "1206"
+	//compare time to delimiter
+	// timeCompositeCurrentString = "1330"
+
+	//match
+
+	// timeCompositeCurrentString = "1331"
+	timeDelimiter = "1347"
 	fmt.Println("timeCompositeCurrentString")
 	fmt.Println(timeCompositeCurrentString)
 	// fmt.Println(timeDelimiter)
 	if timeCompositeCurrentString == timeDelimiter {
+		isTimeDelimiterMet = true
+	}
+	if timeCompositeCurrentString == "1331" {
 		isTimeDelimiterMet = true
 	}
 	return isTimeDelimiterMet

@@ -527,8 +527,45 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	processTimelineStart()
+	// processTimelineStart()
 
+	holdingWisemen := HoldingWisemen{Symbol: "TGTX", Price: "10.28", OrderStatus: "completedFull"}
+	postNeoBuyOrderResponse(holdingWisemen)
+
+	// orderList := getAllOrders()
+	// fmt.Println("len(orderList.ListOrders)")
+	// fmt.Println(len(orderList.ListOrders))
+	// order := Order{}
+	// for i, v := range orderList.ListOrders {
+	// 	if v.Symbol == "TGTX" {
+	// 		order = v
+	// 		break
+	// 	}
+	// 	i++
+	// }
+	// // operatingCycle := cycleMapPool["monitorSell"]
+	// // cancelCycle(operatingCycle)
+
+	// fmt.Println(order.SVI)
+	// queryCancelOrder(order.SVI)
+
+	// fmt.Println("sell time")
+	// fmt.Println(metrics)
+	// metrics := "1211"
+	// metrics := selectMetricsWisemen()[0].SellTime
+
+	// boolTest := calculateIsTimeDelimiterMetSell(metrics)
+	// if boolTest {
+	// 	println("success")
+	// }
+
+	// if boolTest == false {
+	// 	println("false")
+	// }
+
+	// stock := Stock{Symbol: "TGTX", Last: "10.28"}
+	// insertStockWisemen(stock)
+	// select
 	// postNodeTSPFailureEmail()
 	// storeBalanceValue()
 	// metrics := selectMetricsWisemen()

@@ -89,8 +89,15 @@ func processTimelineStart() {
 
 func processMonitorSell(symbol string, dropLoss string, timeToSell string) {
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(10, 100000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
+	createCycle(10, 10000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
 	operatingCycle := cycleMapPool["monitorSell"]
+	go startCycle(operatingCycle)
+}
+
+func processMonitorSellMarket(symbol string) {
+	cycleMapPool = map[string]*Cycle{}
+	createCycle(5, 10000000, monitorSellMarket, "monitorSellMarket", []string{symbol})
+	operatingCycle := cycleMapPool["monitorSellMarket"]
 	go startCycle(operatingCycle)
 }
 
@@ -969,6 +976,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	// fmt.Println(alteredTransactionHistory)
 	fmt.Println("listMatchingSymbolInformationAtTrade")
 	fmt.Println(listMatchingSymbolInformationAtTrade)
+
+	fmt.Println("inside listMatchingSymbolInformationAtTrade")
 
 	//Support for handle multiple InformationAtTrade during day...
 	//typically only would be two... but in case of two of more...
