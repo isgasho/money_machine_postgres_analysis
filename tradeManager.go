@@ -42,6 +42,8 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// informationAtTrade := InformationAtTrade{
 	// 	Symbol: symbol,
 	// }
+
+	//move to handleCheckIsTradeBought to when trade actually occurs.
 	handleInsertInformationAtTrade(symbol, "limit", "buy", "1.00")
 	// insertTradeEnteredInformation(tradeEnteredInformation)
 
@@ -370,14 +372,16 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 	listMatchingSymbolHistoryValue := []HistoryValue{}
 	response := queryHistory()
 	historyList := parseHistory(response)
+	fmt.Println("hit2")
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
 	// fmt.Println("listHistoryValues")
 	// fmt.Println(listHistoryValues)
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
-	// dayCurrent = 8
+	// dayCurrent = 17
 	//sort values by day...
 	//store values of today only...
+	fmt.Println("hit3")
 	for i, v := range listHistoryValues {
 		i++
 		year := strings.Split(v.Date, " ")[0]
@@ -432,6 +436,7 @@ func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTr
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
 
+	// dayCurrent = 17
 	//dayCurrent = 8
 	//sort values by day...
 	//store values of today only...
@@ -486,6 +491,8 @@ func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTr
 }
 
 func calculateTransactionHistory(transactionHistory TransactionHistory) TransactionHistory {
+
+	fmt.Println("hit1")
 	alteredTransactionHistory := transactionHistory
 	listValuesMatchedHistoryDayList := handleHistoryDayListArbitration(alteredTransactionHistory.Symbol)
 	//if condition: a sell exists, from previous day and algorithm with the same symbol, before buy...
@@ -755,34 +762,12 @@ func cancelOrder(symbol string) {
 func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	isPartialUnfinished := false
 	isCompletedFull := false
-	// //Populate order container
-	// containerOrders := getAllOrders()
-	// order := Order{Symbol: "default"}
-	// containerHoldings := getAllHolding()
-	// //get informationAtTrade
-	// listInformationAtTrade := selectInformationAtTrade()
-	// holding := Holding{}
 	holdingWisemenReturned := holdingWisemen
 	holdingWisemenReturned.OrderStatus = "undetermined"
-	// for i,v := range listInformationAtTrade {
-	// 	// if v.Symbol == holdingWisemen.Symbol {
-	// // 	order = v
-	// // }
-	// if v.
-	// 	i++
-	// }
-
 	//get informatin at trade
 	informationAtTradeList := selectInformationAtTrade()
 	informationAtTrade := informationAtTradeList[0]
-	//compare holding qty to information at trade qty.
-	fmt.Println("informationAtTrade")
-	fmt.Println(informationAtTrade)
-	fmt.Println("informationAtTrade.qty")
-	fmt.Println(informationAtTrade.Qty)
 
-	fmt.Println("holdingWisemenReturned.Qty")
-	fmt.Println(holdingWisemenReturned.Qty)
 	//compare order qty to bought qty.
 	if informationAtTrade.Qty == holdingWisemenReturned.Qty {
 		isCompletedFull = true
@@ -799,6 +784,16 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	}
 	return holdingWisemenReturned
 }
+
+//Entered IAT at buy
+//compare holding qty to information at trade qty.
+// fmt.Println("informationAtTrade")
+// fmt.Println(informationAtTrade)
+// fmt.Println("informationAtTrade.qty")
+// fmt.Println(informationAtTrade.Qty)
+
+// fmt.Println("holdingWisemenReturned.Qty")
+// fmt.Println(holdingWisemenReturned.Qty)
 
 // func calculateIsTradeBoughtSuccessful(symbol string) {
 // 	isSuccessful := detectIsTradeBoughtSuccessful(symbol)

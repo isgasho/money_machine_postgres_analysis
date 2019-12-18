@@ -387,14 +387,17 @@ func insertDow(current_dow_value string) {
 func selectDow() []Dow {
 	listDow := []Dow{}
 	response := postCommandDBSelect("SELECT current_dow_value FROM dow")
-	container := parseDBResponse(response)
-	fmt.Println(container.ListStringFromDB)
-	fmt.Println(len(container.ListStringFromDB))
+	container := parseDBResponseDow(response)
 	for i, v := range container.ListStringFromDB {
-		stringToStrip := v.ListString[0]
-		strippedString := strings.Join(strings.Fields(stringToStrip), "")
-		dow := Dow{CurrentDowValue: strippedString}
+		dow := Dow{CurrentDowValue: v.ListString[0]}
 		listDow = append(listDow, dow)
+
+		// for i, v := range container.ListStringFromDB {
+		// 	stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7], TimeCreated: v.ListString[8]}
+		// 	listStock = append(listStock, stock)
+		// 	i++
+		// }
+		// return listStock
 		i++
 	}
 	return listDow

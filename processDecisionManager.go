@@ -135,7 +135,7 @@ func processCheckIsTradeBought(symbol string) {
 	createCycle(10, 100000, handleCheckIsTradeBought, "handleCheckIsTradeBought", []string{symbol})
 	operatingCycle := cycleMapPool["handleCheckIsTradeBought"]
 	go startCycle(operatingCycle)
-	initialWhaleStockQueryPerformed = true
+	// initialWhaleStockQueryPerformed = true
 }
 
 func checkIsDowStore(currentHour int, currentMinute int) {
@@ -275,8 +275,6 @@ func resetCyclePools() {
 	processTimelineStart()
 }
 func handleCheckIsTradeBought(params ...interface{}) {
-	//Support for non-static time delimiter.
-	// stringTimeDelimiterHour := ""
 	listVal := reflect.ValueOf(params[0])
 	var listSymbolsInterface interface{} = listVal.Index(0).Interface()
 	listSymbols := listSymbolsInterface.([]string)
@@ -291,15 +289,16 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		}
 		i++
 	}
-	fmt.Println("holdingWisemen.Symbol")
-	fmt.Println(holdingWisemen.Symbol)
+	//
+	//Notice it's getting IAT where none entered
 	holdingWisemen = calculateHoldingStatus(holdingWisemen)
-	fmt.Println("holdingWisemen")
-	fmt.Println(holdingWisemen)
 	//Handle conditions for holding incomplete
 	if holdingWisemen.OrderStatus == "completedFull" {
 		fmt.Println("completedFull hit")
 		//End cycle for monitoring
+		//Remove previous IAT at order placement...
+		truncateInformationAtTrade()
+		//Insert IAT now that buy placed detected.
 		handleInsertInformationAtTrade(symbol, "limit", "buy", holdingWisemen.Qty)
 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
 		response := postNeoBuyOrderResponse(holdingWisemen)
@@ -965,25 +964,15 @@ func setTimelineOperationsFalse() {
 }
 
 func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
-	//Post wisemen outcome.
-	//
-	// metrics := selectMetricsWisemen()[0]
+	fmt.Println("hit")
 	alteredTransactionHistory := calculateTransactionHistory(transactionHistory)
 	//get although this is reset insertInformationAtTrade for buy and sell for day
 	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
 
-	// fmt.Println("alteredTransactionHistory")
-	// fmt.Println(alteredTransactionHistory)
 	fmt.Println("listMatchingSymbolInformationAtTrade")
 	fmt.Println(listMatchingSymbolInformationAtTrade)
 
 	fmt.Println("inside listMatchingSymbolInformationAtTrade")
-
-	//Support for handle multiple InformationAtTrade during day...
-	//typically only would be two... but in case of two of more...
-	//Support for more than 2 trades
-	//if no trade occured...
-
 	//query stocks
 	stockList := selectStockWisemen()
 

@@ -529,6 +529,25 @@ func main() {
 	go handleRequests()
 	processTimelineStart()
 
+	// truncateTradeResultStore()
+	// transactionHistory := TransactionHistory{Symbol: "VNCE"}
+	// wrapUpWisemenOutcome(transactionHistory)
+
+	// dowList := selectDow()
+	// fmt.Println(dowList)
+
+	// listResults := handleHistoryDayListArbitration("VNCE")
+	// fmt.Println(listResults)
+
+	// processOverarchTopStock()
+
+	// processCheckIsTradeBought("QYNE")
+
+	// holdingList := getAllHolding()
+	// fmt.Println(holdingList)
+
+	//Work
+
 	// truncateInformationAtTrade()
 	// handleInsertInformationAtTrade("TGTX", "limit", "buy", "1.00")
 

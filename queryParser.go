@@ -240,6 +240,46 @@ func parseDBResponse(response string) DBResponseContainer {
 	}
 	return instanceDBResponseContainer
 }
+
+func parseDBResponseDow(response string) DBResponseContainer {
+	// fmt.Println("begin")
+	instanceDBResponseContainer := DBResponseContainer{}
+	listObjectString := strings.Split(response, "\"")[1]
+	listParsedString := strings.Split(listObjectString, "|")
+	copyList := listParsedString
+	// fmt.Println("len(copyList)")
+	// fmt.Println(len(copyList))
+
+	// fmt.Println("response")
+	// fmt.Println(response)
+	for i, v := range listParsedString {
+		// fmt.Println(v)
+		if len(v) == 0 {
+			copyList = removeElementFromListAtIndex(copyList, i)
+		}
+	}
+	// fmt.Println("without")
+	// fmt.Println("len(copyList)")
+	// fmt.Println(len(copyList))
+
+	// fmt.Println("copyList")
+	// fmt.Println(copyList)
+	for i, v := range copyList {
+		// listValues := strings.Split(v, ",")
+		// fmt.Println("listValues")
+		// if len(listValues) != 0 {
+		listValues := []string{v}
+		stringResponse := StringResponse{ListString: listValues}
+		instanceDBResponseContainer.ListStringFromDB = append(instanceDBResponseContainer.ListStringFromDB, stringResponse)
+		// }
+		// fmt.Println("listIn")
+		// fmt.Println(len(listValues))
+		// fmt.Println(listValues)
+		i++
+	}
+	return instanceDBResponseContainer
+}
+
 func removeElementFromListAtIndex(listEntered []string, val int) []string {
 	// var i int
 	listAltered := listEntered
@@ -860,19 +900,6 @@ func parseAllHolding(query string) ContainerHolding {
 	splitHolding := strings.Split(query, "</holding>")
 
 	splitHolding = splitHolding[:len(splitHolding)-1]
-	// fmt.Println(len(splitHolding))
-	// splitDataQuery2 := strings.Split(splitDataQuery1, "</accountholdings>")
-	// </holding>\r\n
-	// type HoldingWisemen struct {
-	// 	CreatedAt   string
-	// 	Symbol      string
-	// 	Price       string
-	// 	Qty         string
-	// 	QtyBought   string
-	// 	OrderStatus string
-	// }
-	// fmt.Println("splitHolding out")
-	// fmt.Println(splitHolding)
 
 	for i, v := range splitHolding {
 		// fmt.Println()
@@ -888,9 +915,6 @@ func parseAllHolding(query string) ContainerHolding {
 		qtyString1 := strings.Split(v, "<qty>")[1]
 		qtyString2 := strings.Split(qtyString1, "</qty>")
 		qty := qtyString2[0]
-
-		// fmt.Println("qty")
-		// fmt.Println(qty)
 
 		holding := HoldingWisemen{Symbol: symbol, Price: purchasePrice, Qty: qty}
 		containerHolding.ListHolding = append(containerHolding.ListHolding, holding)
