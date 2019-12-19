@@ -44,7 +44,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// }
 
 	//move to handleCheckIsTradeBought to when trade actually occurs.
-	handleInsertInformationAtTrade(symbol, "limit", "buy", "1.00")
+	handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
 	// insertTradeEnteredInformation(tradeEnteredInformation)
 
 	// insertInformationAtTrade(informationAtTrade)
@@ -56,7 +56,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(stringQty)
 	// fmt.Println("stringPrice")
 	// fmt.Println(stringPrice)
-	queryTradeBuyLimit(symbol, stringPrice, "1")
+	queryTradeBuyLimit(symbol, stringPrice, "2")
 }
 
 func monitorSell(params ...interface{}) {
@@ -372,10 +372,19 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 	listMatchingSymbolHistoryValue := []HistoryValue{}
 	response := queryHistory()
 	historyList := parseHistory(response)
+
 	fmt.Println("hit2")
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
+
+	// historyValue := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "1", Qty: "1", Price: "10.1"}
+	// historyValue1 := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "2", Qty: "-1", Price: "10.3"}
+
+	// listHistoryValues = append(listHistoryValues, historyValue)
+	// listHistoryValues = append(listHistoryValues, historyValue1)
+
 	// fmt.Println("listHistoryValues")
 	// fmt.Println(listHistoryValues)
+
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
 	// dayCurrent = 17
@@ -393,19 +402,6 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 		if err != nil {
 			fmt.Println(err)
 		}
-		//get trades done today...
-		// fmt.Println("intYear")
-		// fmt.Println(intYear)
-		// fmt.Println("yearCurrent")
-		// fmt.Println(yearCurrent)
-		// fmt.Println("intMonth")
-		// fmt.Println(intMonth)
-		// fmt.Println("intDay")
-		// fmt.Println(intDay)
-		// fmt.Println("dayCurrent")
-		// fmt.Println(dayCurrent)
-		// fmt.Println("v.Symbol")
-		// fmt.Println(v.Symbol)
 		if intYear == yearCurrent {
 			// fmt.Println("hit...o")
 			if intMonth == monthCurrent {
@@ -491,13 +487,13 @@ func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTr
 }
 
 func calculateTransactionHistory(transactionHistory TransactionHistory) TransactionHistory {
-
 	fmt.Println("hit1")
 	alteredTransactionHistory := transactionHistory
 	listValuesMatchedHistoryDayList := handleHistoryDayListArbitration(alteredTransactionHistory.Symbol)
 	//if condition: a sell exists, from previous day and algorithm with the same symbol, before buy...
 	//remove sell from consideration index...
 	//at this point trading is completed and wrap up engaged.
+
 	buySellList := []HistoryValue{}
 
 	fmt.Println("listValuesMatchedHistoryDayList")
@@ -514,8 +510,8 @@ func calculateTransactionHistory(transactionHistory TransactionHistory) Transact
 	fmt.Println(buySellList)
 	//future support for multiple trade in same day of algorithm.
 	if len(buySellList) != 0 {
-		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[0])
-		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[1])
+		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[(len(buySellList)-2)])
+		alteredTransactionHistory.HistoryValueList = append(alteredTransactionHistory.HistoryValueList, buySellList[(len(buySellList)-1)])
 	}
 	return alteredTransactionHistory
 }

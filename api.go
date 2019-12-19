@@ -528,9 +528,31 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	processTimelineStart()
+	// response := queryHistory()
+	// historyList := parseHistory(response)
+	// listHistoryValues := createListHistoryValuesForWisemen(historyList)
+
+	// historyValue := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "1", Qty: "1", Price: "10.1"}
+	// historyValue1 := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "2", Qty: "-1", Price: "10.3"}
+
+	// listHistoryValues = append(listHistoryValues, historyValue)
+	// listHistoryValues = append(listHistoryValues, historyValue1)
+
+	// fmt.Println(listHistoryValues)
+	// transactionHistory := TransactionHistory{Symbol: "RAD"}
+	// calculateTransactionHistory(transactionHistory)
+
+	// truncateInformationAtTrade()
+	// // informationAtTrade := InformationAtTrade{}
+	// handleInsertInformationAtTrade("RAD", "limit", "buy", "2.00")
+	// //
+	// handleInsertInformationAtTrade("RAD", "limit", "sell", "2.00")
+
+	// insertInformationAtTrade(informationAtTrade)
+	// insertInformationAtTrade(informationAtTrade1)
 
 	// truncateTradeResultStore()
-	// transactionHistory := TransactionHistory{Symbol: "VNCE"}
+	// transactionHistory := TransactionHistory{Symbol: "RAD"}
 	// wrapUpWisemenOutcome(transactionHistory)
 
 	// dowList := selectDow()
