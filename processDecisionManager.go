@@ -233,17 +233,26 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
 		boolOperate4 = false
-		handleOverarchTopStock()
+		listInformationAtTrade := selectInformationAtTrade()
+		if len(listInformationAtTrade) == 0 {
+			handleOverarchTopStock()
+		}
 	}
 	if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate5 {
 		fmt.Println("hit5")
 		boolOperate5 = false
-		handleOverarchTopStock()
+		listInformationAtTrade := selectInformationAtTrade()
+		if len(listInformationAtTrade) == 0 {
+			handleOverarchTopStock()
+		}
 	}
 	if currentTime.Minute() == conditionSixMinute && currentTime.Hour() == conditionSixHour && boolOperate6 {
 		fmt.Println("hit6")
 		boolOperate6 = false
-		handleOverarchTopStock()
+		listInformationAtTrade := selectInformationAtTrade()
+		if len(listInformationAtTrade) == 0 {
+			handleOverarchTopStock()
+		}
 	}
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")

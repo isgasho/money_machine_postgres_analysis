@@ -528,6 +528,31 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	processTimelineStart()
+
+	// listInformationAtTrade := selectInformationAtTrade()
+	// fmt.Println(listInformationAtTrade)
+	// if len(listInformationAtTrade) == 0 {
+	// 	// handleOverarchTopStock()
+	// 	fmt.Println("empty")
+	// }
+	// if len(listInformationAtTrade) != 0 {
+	// 	// handleOverarchTopStock()
+	// 	fmt.Println("not empty")
+	// }
+	// stringPrice := "14.7901"
+	// floatPrice := stringToFloat(stringPrice)
+	// //remove decimals past 2nd placing after decimal
+	// splitValue := splitFloatAfterSecondDecimalPlace(floatPrice)
+	// // fmt.Println(floatToString(splitValue))
+	// //remove trailing zeros and convert to string
+	// updatedStringPrice := floatToString(splitValue)
+	// fmt.Println(updatedStringPrice)
+	// fmt.Println("limitPrice")
+	// fmt.Println(limitPrice)
+	// fmt.Println(FloatToString(21312421.213123))
+
+	// limitPrice = strconv.FormatFloat(splitValue, 'f', -1, 64)
+	// fmt.Println(limitPrice)
 	// response := queryHistory()
 	// historyList := parseHistory(response)
 	// listHistoryValues := createListHistoryValuesForWisemen(historyList)

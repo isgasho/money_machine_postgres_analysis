@@ -54,9 +54,15 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// fmt.Println(symbol)
 	fmt.Println("stringQty")
 	fmt.Println(stringQty)
-	// fmt.Println("stringPrice")
-	// fmt.Println(stringPrice)
-	queryTradeBuyLimit(symbol, stringPrice, "2")
+
+	floatPrice := stringToFloat(stringPrice)
+	//remove decimals past 2nd placing after decimal
+	splitValue := splitFloatAfterSecondDecimalPlace(floatPrice)
+	// fmt.Println(floatToString(splitValue))
+	//remove trailing zeros and convert to string
+	updatedStringPrice := floatToString(splitValue)
+
+	queryTradeBuyLimit(symbol, updatedStringPrice, "2")
 }
 
 func monitorSell(params ...interface{}) {
@@ -834,7 +840,6 @@ func roundDown(floatValue float64) int {
 }
 
 func splitFloatAfterSecondDecimalPlace(floatValue float64) float64 {
-
 	// convert to string
 	s := fmt.Sprintf("%f", floatValue)
 	// split by period
@@ -868,7 +873,7 @@ func splitFloatAfterSecondDecimalPlace(floatValue float64) float64 {
 
 func floatToString(input_num float64) string {
 	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', 6, 64)
+	return strconv.FormatFloat(input_num, 'f', -1, 64)
 }
 func stringToFloat(value string) float64 {
 	returnFloat := 0.0
@@ -962,3 +967,8 @@ func overarchTradeWisemen(dataList []string) {
 		}
 	}
 }
+
+// func FloatToString(input_num float64) string {
+// 	// to convert a float number to a string
+// 	return strconv.FormatFloat(input_num, 'f', 6, 64)
+// }
