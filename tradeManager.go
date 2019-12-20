@@ -55,14 +55,17 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println("stringQty")
 	fmt.Println(stringQty)
 
-	floatPrice := stringToFloat(stringPrice)
-	//remove decimals past 2nd placing after decimal
-	splitValue := splitFloatAfterSecondDecimalPlace(floatPrice)
-	// fmt.Println(floatToString(splitValue))
-	//remove trailing zeros and convert to string
-	updatedStringPrice := floatToString(splitValue)
+	// floatPrice := stringToFloat(stringPrice)
+	// //remove decimals past 2nd placing after decimal
+	// splitValue := splitFloatAfterSecondDecimalPlace(floatPrice)
+	// // fmt.Println(floatToString(splitValue))
+	// //remove trailing zeros and convert to string
+	// updatedStringPrice := floatToString(splitValue)
 
-	queryTradeBuyLimit(symbol, updatedStringPrice, "2")
+	// stringLimitPrice := "14.2920018"
+	stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
+
+	queryTradeBuyLimit(symbol, stringLimitPrice, "2")
 }
 
 func monitorSell(params ...interface{}) {
@@ -709,8 +712,8 @@ func handleSellLimitWisemen(symbol string) {
 		limitPrice := holdingPrice + (holdingPrice * priceHighPchgTrade)
 
 		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
-
 		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
+
 		queryTradeSellLimit(holdingToSell.Symbol, stringLimitPrice, holdingToSell.Qty)
 	}
 }
@@ -873,7 +876,7 @@ func splitFloatAfterSecondDecimalPlace(floatValue float64) float64 {
 
 func floatToString(input_num float64) string {
 	// to convert a float number to a string
-	return strconv.FormatFloat(input_num, 'f', -1, 64)
+	return strconv.FormatFloat(input_num, 'f', 2, 64)
 }
 func stringToFloat(value string) float64 {
 	returnFloat := 0.0

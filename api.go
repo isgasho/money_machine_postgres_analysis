@@ -528,7 +528,11 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	processTimelineStart()
+	// stringPrice := "17.111090020"
+	// stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
 
+	// fmt.Println("stringLimitPrice")
+	// fmt.Println(stringLimitPrice)
 	// listInformationAtTrade := selectInformationAtTrade()
 	// fmt.Println(listInformationAtTrade)
 	// if len(listInformationAtTrade) == 0 {
