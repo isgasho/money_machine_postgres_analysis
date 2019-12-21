@@ -1518,6 +1518,28 @@ func postNodeTSPFailureEmail() string {
 	return response
 }
 
+func postNodeTSPAsyncSuccessEmail() string {
+	json := `{
+		"request_type": "postNodeTSPAsyncSuccessEmail",
+		"data": {}}
+		`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+func postNodeTSPAsyncFailureEmail() string {
+	json := `{
+		"request_type": "postNodeTSPAsyncFailureEmail",
+		"data": {}}
+		`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryHistory() string {
 	json := `{
 		"request_type": "historyBrokerage",

@@ -318,18 +318,29 @@ func handleCheckIsTradeBought(params ...interface{}) {
 // func handleOverarchTopStock(params ...interface{}) {
 func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
-
-	// fmt.Println("twiStockList")
-	// for i, v := range twiStockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
+	//if stocklist is 0 after several attempts then restart TSP process async
+	if len(twiStockList) == 0 {
+		go handleOverarchTopStockAync()
+		return
+	}
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
 	// // // // //Low process for whale
 	// lowTransferanceProcess(twiStockList)
 }
+
+func handleOverarchTopStockAync() {
+	fmt.Println("async operation activated")
+	twiStockList := twiWebscrape()
+	if len(twiStockList) == 0 {
+		postNodeTSPAsyncFailureEmail()
+		return
+	}
+	postNodeTSPAsyncSuccessEmail()
+	//High process for wisemen and whale
+	highTransferanceProcess(twiStockList)
+}
+
 func highTransferanceProcess(twiStockList []Stock) {
 	//TSP
 	topStockPullStockList := topStockPull()
@@ -850,17 +861,44 @@ func twiWebscrape() []Stock {
 		time.Sleep(time.Duration(1) * time.Second)
 		fmt.Println("continuing")
 		indexTwiWebscrape++
+		if indexTwiWebscrape == 10 {
+			fmt.Println("doing awesomeness")
+			return []Stock{}
+		}
 	}
-
 	// catch response2 failure
 	symbolList := parseTwiWebscrape(response2)
-
-	// fmt.Println("symbolList")
-	// fmt.Println(symbolList)
 	responseSymbolList := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
 	return stockList
 }
+
+// func twiWebscrapeAync(params ...interface{}) {
+// 	indexTwiWebscrape := 0
+// 	response2 := ""
+// 	//keep trying
+// 	for indexTwiWebscrape < 10 {
+// 		response2 = queryWebscrapeTwi()
+
+// 		if response2 != "try again failure" {
+// 			break
+// 		}
+// 		postNodeTSPFailureEmail()
+
+// 		time.Sleep(time.Duration(1) * time.Second)
+// 		fmt.Println("continuing")
+// 		indexTwiWebscrape++
+// 		if indexTwiWebscrape == 10 {
+// 			fmt.Println("doing awesomeness")
+// 			return []Stock{}
+// 		}
+// 	}
+// 	// catch response2 failure
+// 	symbolList := parseTwiWebscrape(response2)
+// 	responseSymbolList := queryMultiStockPull(symbolList)
+// 	stockList := parseStockSetQuery(responseSymbolList)
+// 	return stockList
+// }
 
 // for i, v := range stockList {
 // 	fmt.Println(v.Symbol)
