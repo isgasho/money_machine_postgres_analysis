@@ -917,6 +917,9 @@ func twiWebscrape() []Stock {
 
 func systemStartProcesses() {
 	//reset procedures
+	truncateShortDayAnalysis()
+	calculateShortDayAnalysis()
+	//
 	truncateMarketOpenAnalysis()
 	//
 	truncateMetricsWisemen()

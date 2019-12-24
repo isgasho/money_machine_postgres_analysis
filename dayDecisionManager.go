@@ -220,6 +220,24 @@ func overarchIsTradeDay() bool {
 	return isTradeDay
 }
 
+func calculateShortDayAnalysis() ShortDayAnalysis {
+	shortDayAnalysis := ShortDayAnalysis{}
+	listShortCalendarDay := selectShortCalendarDay()
+	isShortDay := "false"
+	currentMonth := getDate()
+	// currentDay :=
+	// for i, v := range listShortCalendarDay {
+
+	// 	listSplitDate := strings.Split(v.DateOfOccurance, " ")
+	// 	if listSplitDate[0] == {
+	// 		if listSplitDate[1] {
+	// 		}
+	// 	}
+	// 	i++
+	// }
+	return shortDayAnalysis
+}
+
 // func handleCalculateCashDay() {
 // 	//Reset dow day eval store before calculation
 // 	dropCashDayEvaluation()

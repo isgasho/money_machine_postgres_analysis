@@ -527,8 +527,18 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	processTimelineStart()
+	// processTimelineStart()
 
+	// 7 2 2020
+	// 11 27 2020
+	// 12 24 2020
+
+	listShortCalendarDay := selectShortCalendarDay()
+	fmt.Println(listShortCalendarDay)
+	fmt.Println("listShortCalendarDay")
+	calculateIsShortDay()
+
+	// insertShortDayAnalysis(ShortDayAnalysis{IsShortDay: "true"})
 	//ZYNE
 	// monitorSell()
 	// processMonitorSell("ZYNE", "6.06", "1130")

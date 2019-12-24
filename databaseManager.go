@@ -465,6 +465,46 @@ func truncateStockWisemen() {
 	postCommandDBTruncate("TRUNCATE table stock_wisemen")
 }
 
+// short_day_analysis
+func insertShortDayAnalysis(shortDayAnalysis ShortDayAnalysis) {
+	listValues := []string{shortDayAnalysis.IsShortDay}
+	postCommandDBInsert("INSERT INTO short_day_analysis (is_short_day) VALUES (", listValues)
+}
+func selectShortDayAnalysis() []ShortDayAnalysis {
+	listShortDayAnalysis := []ShortDayAnalysis{}
+	response := postCommandDBSelect("SELECT is_short_day FROM short_day_analysis")
+	container := parseDBResponse(response)
+	for i, v := range container.ListStringFromDB {
+		shortDayAnalysis := ShortDayAnalysis{IsShortDay: v.ListString[0]}
+		listShortDayAnalysis = append(listShortDayAnalysis, shortDayAnalysis)
+		i++
+	}
+	return listShortDayAnalysis
+}
+func truncateShortDayAnalysis() {
+	postCommandDBTruncate("TRUNCATE table short_day_analysis")
+}
+
+// short_calendar_day
+func insertShortCalendarDay(shortCalendarDay ShortCalendarDay) {
+	listValues := []string{shortCalendarDay.DateOfOccurance}
+	postCommandDBInsert("INSERT INTO short_calendar_day (date_of_occurance) VALUES (", listValues)
+}
+func selectShortCalendarDay() []ShortCalendarDay {
+	listShortCalendarDay := []ShortCalendarDay{}
+	response := postCommandDBSelect("SELECT date_of_occurance FROM short_calendar_day")
+	container := parseDBResponse(response)
+	for i, v := range container.ListStringFromDB {
+		shortCalendarDay := ShortCalendarDay{DateOfOccurance: v.ListString[0]}
+		listShortCalendarDay = append(listShortCalendarDay, shortCalendarDay)
+		i++
+	}
+	return listShortCalendarDay
+}
+func truncateShortCalendarDay() {
+	postCommandDBTruncate("TRUNCATE table short_calendar_day")
+}
+
 //StockWhale High
 func insertStockWhaleHigh(stock Stock) {
 	hour := getCurrentHour()

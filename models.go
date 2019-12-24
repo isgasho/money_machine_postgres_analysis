@@ -373,3 +373,10 @@ type StringResponse struct {
 type AccountBalance struct {
 	Balance string
 }
+
+type ShortDayAnalysis struct {
+	IsShortDay string
+}
+type ShortCalendarDay struct {
+	DateOfOccurance string
+}
