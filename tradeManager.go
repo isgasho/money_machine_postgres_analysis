@@ -28,10 +28,10 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(floatBalance)
 
 	//
-	// cashAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-
+	dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
+	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
-	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
+	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
 	fmt.Println("before rounding down")
 	fmt.Println(qty)
 	qtyInt := roundDown(qty)
@@ -41,11 +41,6 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
-	//store trade entered information
-	// informationAtTrade := InformationAtTrade{
-	// 	Symbol: symbol,
-	// }
-
 	//move to handleCheckIsTradeBought to when trade actually occurs.
 	handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
 	// insertTradeEnteredInformation(tradeEnteredInformation)
@@ -73,20 +68,10 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 
 func calculateMaximumAmountOfMoneyAvailableToTrade() string {
 	amountToTrade := "0.0"
-
-	//hook query amount to trade
-	//
 	response := queryAccountBrokerage()
 	accountBrokerage := parseAccountBrokerage(response)
-	//convert to float
-	fmt.Println("accountBrokerage")
-	fmt.Println(accountBrokerage)
 
-	//
-
-	//
-	//
-	//convert to string
+	amountToTrade = accountBrokerage.CashAvailable
 	return amountToTrade
 }
 
@@ -190,6 +175,7 @@ func monitorSell(params ...interface{}) {
 		//handle on holding
 		handleInsertInformationAtTrade(symbol, "drop loss", "sell", holding.Qty)
 		time.Sleep(time.Duration(10) * time.Second)
+		fmt.Println("selling timeeee")
 		processMonitorSellMarket(symbol)
 	}
 }
@@ -281,15 +267,18 @@ func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 	stockList := parseStockSetQuery(response)
 
 	// calculateIsDropPriceMet
-	// stockList := []Stock{Stock{Symbol: "TGTX", Last: "9.25"}}
+	// stockList := []Stock{Stock{Symbol: "ZYNE", Last: "6.06"}}
 
 	priceFromQuery := stockList[0].Last
+
 	//Support for bid vs ask variance from last.
 
 	metrics := selectMetricsWisemen()[0]
 	//Here we need a handle on drop metrics,...
 	//Partial bind...
 	metricPchgDrop := metrics.PriceLowPchgTrade
+	// dropPriceString
+
 	floatPriceFromQuery := 0.0
 	floatMetricPchgDrop := 0.0
 	if s, err := strconv.ParseFloat(priceFromQuery, 64); err == nil {
@@ -298,12 +287,23 @@ func calculateIsDropPriceMet(symbol string, dropPriceString string) bool {
 	if s, err := strconv.ParseFloat(metricPchgDrop, 64); err == nil {
 		floatMetricPchgDrop = s
 	}
+	// if s, err := strconv.ParseFloat(dropPriceString, 64); err == nil {
+	// 	floatMetricPchgDrop = s
+	// }
 
 	holdingPrice := 0.0
-
 	if s, err := strconv.ParseFloat(holding.Price, 64); err == nil {
 		holdingPrice = s
 	}
+
+	// fmt.Println("holding.Price")
+	// fmt.Println(holding.Price)
+
+	// fmt.Println("floatMetricPchgDrop")
+	// fmt.Println(floatMetricPchgDrop)
+
+	//calculate dropPrice here.
+
 	dropPrice := holdingPrice - (holdingPrice * floatMetricPchgDrop)
 
 	//compare drop price to holding price.

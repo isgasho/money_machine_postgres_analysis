@@ -37,8 +37,8 @@ var conditionSixMinute = 44
 var conditionSixHour = 9
 
 //1:30
-var conditionNineteenMinute = 0
-var conditionNineteenHour = 11
+var conditionNineteenMinute = 30
+var conditionNineteenHour = 13
 
 //
 var conditionTimeMinuteDow1 = checkIsMarketOpenMinute

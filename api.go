@@ -529,7 +529,11 @@ func main() {
 	go handleRequests()
 	processTimelineStart()
 
-	// calculateMaximumAmountOfMoneyAvailableToTrade()
+	//ZYNE
+	// monitorSell()
+	// processMonitorSell("ZYNE", "6.06", "1130")
+
+	// processMonitorSell
 	// handleOverarchTopStock()
 	//
 	// limitPrice = strconv.FormatFloat(splitValue, 'f', -1, 64)
