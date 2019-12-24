@@ -529,6 +529,7 @@ func main() {
 	go handleRequests()
 	processTimelineStart()
 
+	// calculateMaximumAmountOfMoneyAvailableToTrade()
 	// handleOverarchTopStock()
 	//
 	// limitPrice = strconv.FormatFloat(splitValue, 'f', -1, 64)

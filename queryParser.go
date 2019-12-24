@@ -800,6 +800,13 @@ func parseBalance(queryString string) string {
 	// balance := ""
 	return balance
 }
+
+// type AccountBrokerage struct {
+// 	Total          string
+// 	CashAvailable  string
+// 	UnsettledFunds string
+// }
+
 func parseAccountBrokerage(queryString string) AccountBrokerage {
 	accountBrokerage := AccountBrokerage{}
 	splitDataQuery1 := strings.Split(queryString, "<unsettledfunds>")[1]

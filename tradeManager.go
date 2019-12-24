@@ -27,6 +27,9 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println("floatBalance")
 	fmt.Println(floatBalance)
 
+	//
+	// cashAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
+
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatBalance)
 	fmt.Println("before rounding down")
@@ -66,6 +69,25 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
 
 	queryTradeBuyLimit(symbol, stringLimitPrice, "2")
+}
+
+func calculateMaximumAmountOfMoneyAvailableToTrade() string {
+	amountToTrade := "0.0"
+
+	//hook query amount to trade
+	//
+	response := queryAccountBrokerage()
+	accountBrokerage := parseAccountBrokerage(response)
+	//convert to float
+	fmt.Println("accountBrokerage")
+	fmt.Println(accountBrokerage)
+
+	//
+
+	//
+	//
+	//convert to string
+	return amountToTrade
 }
 
 func monitorSell(params ...interface{}) {

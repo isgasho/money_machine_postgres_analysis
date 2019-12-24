@@ -143,6 +143,7 @@ func Abs(x int64) int64 {
 // 	}
 // }
 //
+
 func handleCalculateCashDay() {
 	//Reset dow day eval store before calculation
 	truncateCashDayEvaluation()
