@@ -281,7 +281,7 @@ func resetCyclePools() {
 		fmt.Println(i)
 	}
 	cycleMapPool = make(map[string]*Cycle)
-	processTimelineStart()
+	// processTimelineStart()
 }
 func handleCheckIsTradeBought(params ...interface{}) {
 	listVal := reflect.ValueOf(params[0])
