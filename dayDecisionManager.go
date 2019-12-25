@@ -220,23 +220,46 @@ func overarchIsTradeDay() bool {
 	return isTradeDay
 }
 
-func calculateShortDayAnalysis() ShortDayAnalysis {
+func calculateShortDayAnalysis() {
 	shortDayAnalysis := ShortDayAnalysis{}
 	listShortCalendarDay := selectShortCalendarDay()
 	isShortDay := "false"
-	currentMonth := getDate()
-	// currentDay :=
-	// for i, v := range listShortCalendarDay {
+	year, month, day := getDate()
 
-	// 	listSplitDate := strings.Split(v.DateOfOccurance, " ")
-	// 	if listSplitDate[0] == {
-	// 		if listSplitDate[1] {
-	// 		}
-	// 	}
-	// 	i++
-	// }
-	return shortDayAnalysis
+	stringMonth := strconv.Itoa(month)
+	stringDay := strconv.Itoa(day)
+	// stringMonth = "7"
+	// stringDay = "2"
+
+	fmt.Println(year)
+	for i, v := range listShortCalendarDay {
+		listSplitDate := strings.Split(v.DateOfOccurance, " ")
+		if listSplitDate[0] == stringMonth {
+			if listSplitDate[1] == stringDay {
+				isShortDay = "true"
+			}
+		}
+		i++
+	}
+	shortDayAnalysis.IsShortDay = isShortDay
+	insertShortDayAnalysis(shortDayAnalysis)
+
+	if shortDayAnalysis.IsShortDay == "true" {
+		conditionNineteenMinute = 59
+		conditionNineteenHour = 10
+	}
 }
+
+// currentDay :=
+// for i, v := range listShortCalendarDay {
+
+// 	listSplitDate := strings.Split(v.DateOfOccurance, " ")
+// 	if listSplitDate[0] == {
+// 		if listSplitDate[1] {
+// 		}
+// 	}
+// 	i++
+// }
 
 // func handleCalculateCashDay() {
 // 	//Reset dow day eval store before calculation

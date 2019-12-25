@@ -917,17 +917,16 @@ func twiWebscrape() []Stock {
 
 func systemStartProcesses() {
 	//reset procedures
+
+	//Handle short day analysis
 	truncateShortDayAnalysis()
 	calculateShortDayAnalysis()
-	//
+
 	truncateMarketOpenAnalysis()
 	//
 	truncateMetricsWisemen()
-	insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1330")
+	handleInsertMetricsConditionalAlteration()
 	//
-	// queryStopTwi()
-	// queryStartTwi()
-
 	truncateDow()
 	//
 	resetTempSymbolHold()
@@ -942,6 +941,18 @@ func systemStartProcesses() {
 
 	//get balance begining of day
 	storeBalanceValue()
+
+}
+func handleInsertMetricsConditionalAlteration() {
+	shortDayAnalysis := selectShortDayAnalysis()[0]
+	if shortDayAnalysis.IsShortDay == "true" {
+		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1057")
+		return
+	}
+	if shortDayAnalysis.IsShortDay == "false" {
+		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1330")
+		return
+	}
 
 }
 

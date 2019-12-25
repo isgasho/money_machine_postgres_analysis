@@ -527,17 +527,31 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	// processTimelineStart()
+	processTimelineStart()
 
-	// 7 2 2020
-	// 11 27 2020
-	// 12 24 2020
+	// listShortCalendarDay := selectShortCalendarDay()
+	// fmt.Println(listShortCalendarDay)
+	// fmt.Println("listShortCalendarDay")
+	// calculateShortDayAnalysis()
+	// shortDayAnalysis := selectShortDayAnalysis()[0]
+	// fmt.Println("shortDayAnalysis")
+	// fmt.Println(shortDayAnalysis)
 
-	listShortCalendarDay := selectShortCalendarDay()
-	fmt.Println(listShortCalendarDay)
-	fmt.Println("listShortCalendarDay")
-	calculateIsShortDay()
+	// systemStartProcesses()
+	// metrics := selectMetricsWisemen()[0]
+	// // symbol := listStrings[0]
+	// // priceDrop := listStrings[1]
+	// timeDelimiter := metrics.SellTime
 
+	// fmt.Println("timeDelimiter")
+	// fmt.Println(timeDelimiter)
+	// fmt.Println("conditionNineteenMinute")
+	// fmt.Println(conditionNineteenMinute)
+	// fmt.Println("conditionNineteenHour")
+	// fmt.Println(conditionNineteenHour)
+
+	//
+	//
 	// insertShortDayAnalysis(ShortDayAnalysis{IsShortDay: "true"})
 	//ZYNE
 	// monitorSell()
