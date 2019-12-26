@@ -32,9 +32,12 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	stringPrice := fmt.Sprintf("%f", desiredLimitPrice)
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
+	//
+	// stringQty = "1"
 	//move to handleCheckIsTradeBought to when trade actually occurs.
 	// handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
-	handleInsertInformationAtTrade(symbol, "limit", "buy", stringQty)
+	stringQtyIAT := stringQty + ".00"
+	handleInsertInformationAtTrade(symbol, "limit", "buy", stringQtyIAT)
 
 	fmt.Println("stringQty")
 	fmt.Println(stringQty)
@@ -205,6 +208,8 @@ func handleInsertInformationAtTrade(symbol string, typeTrade string, side string
 	minute := getCurrentMinute()
 	hourString := strconv.Itoa(hour)
 	minuteString := strconv.Itoa(minute)
+
+	// qtyEntered := qty + ".00"
 	//instantiate
 	informationAtTrade := InformationAtTrade{
 		Symbol:    symbol,
@@ -221,8 +226,8 @@ func handleInsertInformationAtTrade(symbol string, typeTrade string, side string
 		Ask:       ask,
 		Last:      last,
 	}
-	fmt.Println("informationAtTrade")
-	fmt.Println(informationAtTrade)
+	// fmt.Println("informationAtTrade")
+	// fmt.Println(informationAtTrade)
 	//insert
 	insertInformationAtTrade(informationAtTrade)
 }
@@ -386,9 +391,14 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 	fmt.Println("hit2")
 	listHistoryValues := createListHistoryValuesForWisemen(historyList)
 
+	// listHistoryValues := []HistoryValue{}
 	// historyValue := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "1", Qty: "1", Price: "10.1"}
 	// historyValue1 := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "2", Qty: "-1", Price: "10.3"}
 
+	// historyValue := HistoryValue{Symbol: "GSX", Date: "2019 12 26", Side: "1", Qty: "1", Price: "18.7"}
+	// historyValue1 := HistoryValue{Symbol: "GSX", Date: "2019 12 26", Side: "2", Qty: "-1", Price: "22.035"}
+
+	// GSX 2019 12 26 2 -1 22.035
 	// listHistoryValues = append(listHistoryValues, historyValue)
 	// listHistoryValues = append(listHistoryValues, historyValue1)
 
@@ -397,7 +407,7 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
-	// dayCurrent = 17
+	// dayCurrent = 24
 	//sort values by day...
 	//store values of today only...
 	fmt.Println("hit3")
@@ -711,6 +721,7 @@ func handleSellLimitWisemen(symbol string) {
 		fmt.Println(priceHighPchgTrade)
 		//calculate limit price...
 		limitPrice := holdingPrice + (holdingPrice * priceHighPchgTrade)
+		// limitPrice = 21.80
 
 		stringLimitPrice := fmt.Sprintf("%f", limitPrice)
 		stringLimitPrice = floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringLimitPrice)))
@@ -774,6 +785,12 @@ func calculateHoldingStatus(holdingWisemen HoldingWisemen) HoldingWisemen {
 	//get informatin at trade
 	informationAtTradeList := selectInformationAtTrade()
 	informationAtTrade := informationAtTradeList[0]
+
+	fmt.Println("informationAtTrade.Qty")
+	fmt.Println(informationAtTrade.Qty)
+
+	fmt.Println("holdingWisemenReturned.Qty")
+	fmt.Println(holdingWisemenReturned.Qty)
 
 	//compare order qty to bought qty.
 	if informationAtTrade.Qty == holdingWisemenReturned.Qty {
@@ -948,6 +965,7 @@ func overarchTradeWisemen(dataList []string) {
 		if isTradeDay {
 			//process trade.
 			fmt.Println("internal overarchTradeWisemen")
+			// dataList[0] = "GSX"
 			handleTradeWisemen(dataList[0], dataList[1])
 			time.Sleep(time.Duration(10) * time.Second)
 			// //Begin process monitoring for buy fulfilled.

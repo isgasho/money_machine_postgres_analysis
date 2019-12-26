@@ -293,12 +293,6 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 
 	if requestType == "tradeBuyWisemen" {
 		dataList := databaseQuery.Data
-		// fmt.Println("tradeBuyWisemen")
-		// fmt.Println("dataList")
-		// fmt.Println(dataList)
-		// fmt.Println(dataList[0])
-
-		// fmt.Println("hot")
 		overarchTradeWisemen(dataList)
 		js, err := json.Marshal("success")
 		if err != nil {
@@ -372,6 +366,8 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		fmt.Println(dataList)
 		//sell at limit order submission.
 		//
+		// dataList[0] = "GSX"
+		// dataList[1] = "21.50"
 		handleSellLimitWisemen(dataList[0])
 		//handle monitor
 		processMonitorSell(dataList[0], dataList[1], dataList[2])
@@ -529,6 +525,48 @@ func main() {
 	go handleRequests()
 	processTimelineStart()
 
+	// insertTradeResultStore(TradeResultStore{StockSymbol: "BARK", Qty: "24"})
+	// trs := selectTradeResultStore("BARK")[0]
+
+	// postEmailTradeResultStore(tradeResultStore)
+	// fmt.Println(trs.StockSymbol)
+	// fmt.Println(trs.Qty)
+	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: "RAD"})
+	// fmt.Println(alteredTransactionHistory.HistoryValueList[0].Qty)
+	// fmt.Println(alteredTransactionHistory.HistoryValueList[0].Side)
+	// processCheckIsTradeBought("TGTX")
+	// value := formatQtyHolding("1.00")
+	// fmt.Println(value)
+	// processMonitorSell("GSX", "21.85", "1330")
+
+	// dataList := []string{"1", "2", "3"}
+	// dataList[0] = "0"
+	// for i, v := range dataList {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
+
+	// systemStartProcesses()
+	// symbol := "MBOT"
+	// stringQty := "1"
+	// handleInsertInformationAtTrade(symbol, "limit", "buy", stringQty)
+
+	// holdingWisemen := HoldingWisemen{Symbol: "default"}
+	// holdingList := getAllHolding()
+	// for i, v := range holdingList.ListHolding {
+	// 	if v.Symbol == symbol {
+	// 		holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: v.Qty, OrderStatus: "pending eval"}
+	// 	}
+	// 	i++
+	// }
+	// holdingWisemenReturned := calculateHoldingStatus(holdingWisemen)
+	// fmt.Println("holdingWisemenReturned")
+	// fmt.Println(holdingWisemenReturned)
+
+	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
+	// handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
+
+	//
 	// handleTradeWisemen("RAD", "16.14")
 	// listShortCalendarDay := selectShortCalendarDay()
 	// fmt.Println(listShortCalendarDay)

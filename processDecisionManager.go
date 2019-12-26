@@ -308,11 +308,19 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		//Remove previous IAT at order placement...
 		truncateInformationAtTrade()
 		//Insert IAT now that buy placed detected.
-		handleInsertInformationAtTrade(symbol, "limit", "buy", holdingWisemen.Qty)
+		//holdingWisemen.Qty to 1 value
+		//break a
+		formattedQty := formatQtyHolding(holdingWisemen.Qty)
+		handleInsertInformationAtTrade(symbol, "limit", "buy", formattedQty)
 		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
 		response := postNeoBuyOrderResponse(holdingWisemen)
 		fmt.Println(response)
 	}
+}
+
+func formatQtyHolding(qty string) string {
+	formattedQty := strings.Split(qty, ".")[0]
+	return formattedQty
 }
 
 // func handleOverarchTopStock(params ...interface{}) {
@@ -1169,7 +1177,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
 		sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
 
-		//
+		//getHoldingBuy
+
 		if len(dowList) == 6 {
 			tradeResultStore := TradeResultStore{
 				AlgorithmUsed:           "wisemen",
@@ -1178,6 +1187,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				SellPrice:               sellHistoryValuePrice,
 				ChangeAmount:            stringChangeAmount,
 				StockSymbol:             alteredTransactionHistory.Symbol,
+				Qty:                     alteredTransactionHistory.HistoryValueList[0].Qty,
 				TimeTradeBuy:            boughtTime,
 				TimeTradeSell:           sellTime,
 				HighestPricePointForDay: highestStock.Last,

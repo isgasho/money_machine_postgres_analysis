@@ -334,6 +334,7 @@ type TradeResultStore struct {
 	SellPrice               string
 	ChangeAmount            string
 	StockSymbol             string
+	Qty                     string
 	TimeStart               string
 	TimeEnd                 string
 	TimeTradeBuy            string
