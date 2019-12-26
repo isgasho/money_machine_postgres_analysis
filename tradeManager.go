@@ -17,18 +17,9 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	}
 	fmt.Println("desiredLimitPrice")
 	fmt.Println(desiredLimitPrice)
-	//get balance
-	response := queryBalance()
-	balance := parseBalance(response)
-	floatBalance := 0.0
-	if s, err := strconv.ParseFloat(balance, 64); err == nil {
-		floatBalance = s
-	}
-	fmt.Println("floatBalance")
-	fmt.Println(floatBalance)
-
 	//
-	dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
+	// dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
+	dollarAmountToTrade := "500.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
@@ -42,28 +33,16 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
 	//move to handleCheckIsTradeBought to when trade actually occurs.
-	handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
-	// insertTradeEnteredInformation(tradeEnteredInformation)
+	// handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
+	handleInsertInformationAtTrade(symbol, "limit", "buy", stringQty)
 
-	// insertInformationAtTrade(informationAtTrade)
-
-	//Submit buy limit to brokerage
-	// fmt.Println("symbol")
-	// fmt.Println(symbol)
 	fmt.Println("stringQty")
 	fmt.Println(stringQty)
 
-	// floatPrice := stringToFloat(stringPrice)
-	// //remove decimals past 2nd placing after decimal
-	// splitValue := splitFloatAfterSecondDecimalPlace(floatPrice)
-	// // fmt.Println(floatToString(splitValue))
-	// //remove trailing zeros and convert to string
-	// updatedStringPrice := floatToString(splitValue)
-
-	// stringLimitPrice := "14.2920018"
 	stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
-
-	queryTradeBuyLimit(symbol, stringLimitPrice, "2")
+	fmt.Println(stringLimitPrice)
+	// queryTradeBuyLimit(symbol, stringLimitPrice, "2")
+	queryTradeBuyLimit(symbol, stringLimitPrice, stringQty)
 }
 
 func calculateMaximumAmountOfMoneyAvailableToTrade() string {
@@ -757,6 +736,7 @@ func calculateAmountOfStockToBuy(pricePointOfStock float64, balance float64) flo
 	//1% 5000 50
 	buffer := balance * .015
 	bufferedBalance := balance - buffer
+	fmt.Println("bufferedBalance")
 	fmt.Println(bufferedBalance)
 	//Want to leave enough account balance to buffer for variance in buying.
 	amountToBuy := bufferedBalance / pricePointOfStock

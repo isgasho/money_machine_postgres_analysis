@@ -45,3 +45,9 @@ func completeAlgorithmRecordingWisemen() {
 	// algorithmEvaluationForDay := selectAlgorithmEvaluationForDay("test")
 	// fmt.Println(algorithmEvaluationForDay)
 }
+
+func writeToTradeResultCSV() {
+
+}
+
+//Write to csv file upload csv file to drive.

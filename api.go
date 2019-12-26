@@ -529,6 +529,7 @@ func main() {
 	go handleRequests()
 	processTimelineStart()
 
+	// handleTradeWisemen("RAD", "16.14")
 	// listShortCalendarDay := selectShortCalendarDay()
 	// fmt.Println(listShortCalendarDay)
 	// fmt.Println("listShortCalendarDay")
