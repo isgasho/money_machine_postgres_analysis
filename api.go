@@ -523,7 +523,13 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	processTimelineStart()
+	// processTimelineStart()
+
+	handleCalculateCashDay()
+	// handleCalculateDownDay()
+	// isTradeDay := overarchIsTradeDay()
+	// fmt.Println("isTradeDay")
+	// fmt.Println(isTradeDay)
 
 	// insertTradeResultStore(TradeResultStore{StockSymbol: "BARK", Qty: "24"})
 	// trs := selectTradeResultStore("BARK")[0]

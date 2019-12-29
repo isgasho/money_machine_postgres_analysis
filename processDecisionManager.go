@@ -228,6 +228,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		//handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
 		handleCalculateCashDay()
 		handleCalculateDownDay()
+		// overarchIsTradeDay()
 		healthCheck()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
@@ -954,14 +955,13 @@ func systemStartProcesses() {
 func handleInsertMetricsConditionalAlteration() {
 	shortDayAnalysis := selectShortDayAnalysis()[0]
 	if shortDayAnalysis.IsShortDay == "true" {
-		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1057")
+		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".015", ".1", "1057")
 		return
 	}
 	if shortDayAnalysis.IsShortDay == "false" {
-		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".01", ".1", "1330")
+		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".015", ".1", "1330")
 		return
 	}
-
 }
 
 func storeBalanceValue() {

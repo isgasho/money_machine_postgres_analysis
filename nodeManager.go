@@ -1540,6 +1540,21 @@ func postNodeTSPAsyncFailureEmail() string {
 	return response
 }
 
+func postIsTradeDayEmail(isTradeDay string, isDownDay string, isUnsettledFunds string) string {
+	json := `{
+		"request_type": "postIsTradeDayEmail",
+		"data": {
+			`
+	json = json + "\"isTradeDay\":" + "\"" + isTradeDay + "\","
+	json = json + "\"isDownDay\":" + "\"" + isDownDay + "\","
+	json = json + "\"isUnsettledFunds\":" + "\"" + isUnsettledFunds + "\""
+	json = json + `}}`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func queryHistory() string {
 	json := `{
 		"request_type": "historyBrokerage",

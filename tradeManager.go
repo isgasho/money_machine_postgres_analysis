@@ -19,7 +19,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(desiredLimitPrice)
 	//
 	// dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-	dollarAmountToTrade := "500.00"
+	dollarAmountToTrade := "100.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
@@ -55,6 +55,14 @@ func calculateMaximumAmountOfMoneyAvailableToTrade() string {
 
 	amountToTrade = accountBrokerage.CashAvailable
 	return amountToTrade
+}
+func calculateIsUnsettledFunds() string {
+	amountUnsettledFunds := "0.0"
+	response := queryAccountBrokerage()
+	accountBrokerage := parseAccountBrokerage(response)
+
+	amountUnsettledFunds = accountBrokerage.UnsettledFunds
+	return amountUnsettledFunds
 }
 
 func monitorSell(params ...interface{}) {
@@ -940,6 +948,7 @@ func removeElementInt(listEntered []int, val int) []int {
 
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
+	isTradeDay = "true"
 	fmt.Println(dataList)
 	//handle no neo found..
 	// overarchTradeWisemen
@@ -962,7 +971,7 @@ func overarchTradeWisemen(dataList []string) {
 	}
 
 	if dataList[0] != "none chosen" {
-		if isTradeDay {
+		if isTradeDay == "true" {
 			//process trade.
 			fmt.Println("internal overarchTradeWisemen")
 			// dataList[0] = "GSX"
@@ -972,7 +981,7 @@ func overarchTradeWisemen(dataList []string) {
 			processCheckIsTradeBought(dataList[0])
 		}
 		//handle if not isTradeDay
-		if isTradeDay == false {
+		if isTradeDay == "false" {
 			//insert AltIntervalBuyWisemen
 			//interval 1
 			altIntervalList := selectAltIntervalBuyWisemen()

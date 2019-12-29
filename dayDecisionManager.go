@@ -145,14 +145,29 @@ func Abs(x int64) int64 {
 //
 
 func handleCalculateCashDay() {
+	isUnsettledFunds := "true"
 	//Reset dow day eval store before calculation
 	truncateCashDayEvaluation()
-	isUnsettledFunds := "true"
+
+	amountUnsettledFunds := calculateIsUnsettledFunds()
+	floatAmountUnsettledFunds := 0.0
+	if s, err := strconv.ParseFloat(amountUnsettledFunds, 64); err == nil {
+		floatAmountUnsettledFunds = s
+	}
+	if floatAmountUnsettledFunds <= 100.0 {
+		isUnsettledFunds = "false"
+	}
+
+	fmt.Println("amountUnsettledFunds")
+	fmt.Println(amountUnsettledFunds)
+
 	//query account
-	isUnsettledFunds = "false"
+
 	// }
 	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds}
-	insertCashDayEvaluation(cashDayEvaluation)
+	fmt.Println("cashDayEvaluation")
+	fmt.Println(cashDayEvaluation)
+	// insertCashDayEvaluation(cashDayEvaluation)
 }
 
 func handleCalculateDownDay() {
@@ -206,17 +221,22 @@ func handleCalculateDownDay() {
 	insertDownDayEvaluation(downDayEvaluation)
 }
 
-func overarchIsTradeDay() bool {
-	isTradeDay := false
+// handleDownDayEmail()
+
+func overarchIsTradeDay() string {
+	isTradeDay := "false"
 	//query down day eval
-	// downDayEvalList := selectDownDayEvaluation()
-	// //query cash day eval
-	// cashDayEvalList := selectCashDayEvaluation()
-	// if downDayEvalList[0].IsDownDay == "false" {
-	// if cashDayEvalList[0].IsUnsettledFunds == "false" {
-	isTradeDay = true
-	// }
-	// }
+	downDayEvalList := selectDownDayEvaluation()
+	//query cash day eval
+	cashDayEvalList := selectCashDayEvaluation()
+	isDownDay := downDayEvalList[0].IsDownDay
+	isUnsettledFunds := cashDayEvalList[0].IsUnsettledFunds
+	if isDownDay == "false" {
+		if isUnsettledFunds == "false" {
+			isTradeDay = "true"
+		}
+	}
+	postIsTradeDayEmail(isTradeDay, isDownDay, isUnsettledFunds)
 	return isTradeDay
 }
 
