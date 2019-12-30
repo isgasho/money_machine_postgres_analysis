@@ -264,6 +264,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 			//handle TRS where market closed.
 			createTradeResultStoreMarketClosed()
 		}
+		//End of day dow scrape for next day analytics
+		handleEndOfDayDowScrape()
 		//At some point in this hour reset the pools, and reset the timeline.
 		//clear cyclepool and reset timeline process
 		resetCyclePools()
@@ -271,6 +273,13 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		healthCheck()
 	}
 }
+
+func handleEndOfDayDowScrape() {
+	truncateEndOfDayDow()
+	dowValue := handleDowWebscrape()
+	insertEndOfDayDow(dowValue)
+}
+
 func createTradeResultStoreMarketClosed() {
 	tradeResultStore := TradeResultStore{Result: "Market closed"}
 	insertTradeResultStore(tradeResultStore)
@@ -1145,22 +1154,22 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 			floatSellHistoryValuePrice = s1
 		}
 
-		fmt.Println("floatBuyHistoryValuePrice")
-		fmt.Println(floatBuyHistoryValuePrice)
-		fmt.Println("floatSellHistoryValuePrice")
-		fmt.Println(floatSellHistoryValuePrice)
+		// fmt.Println("floatBuyHistoryValuePrice")
+		// fmt.Println(floatBuyHistoryValuePrice)
+		// fmt.Println("floatSellHistoryValuePrice")
+		// fmt.Println(floatSellHistoryValuePrice)
 		//calculate result
 		//if buy and sell, and if changeAmount meet delimiter,
 		changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
 
-		fmt.Println("changeAmount")
-		fmt.Println(changeAmount)
+		// fmt.Println("changeAmount")
+		// fmt.Println(changeAmount)
 
 		floatPercentageChangeAmount := changeAmount / floatBuyHistoryValuePrice
 		stringChangeAmount := fmt.Sprintf("%f", floatPercentageChangeAmount)
 
-		fmt.Println("floatPercentageChangeAmount")
-		fmt.Println(stringChangeAmount)
+		// fmt.Println("floatPercentageChangeAmount")
+		// fmt.Println(stringChangeAmount)
 
 		stringChangeAmount = transformPercentageToPercentageVisual(stringChangeAmount)
 		result := "negative"

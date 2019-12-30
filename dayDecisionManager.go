@@ -158,34 +158,32 @@ func handleCalculateCashDay() {
 		isUnsettledFunds = "false"
 	}
 
-	fmt.Println("amountUnsettledFunds")
-	fmt.Println(amountUnsettledFunds)
+	// fmt.Println("amountUnsettledFunds")
+	// fmt.Println(amountUnsettledFunds)
 
-	//query account
-
-	// }
 	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds}
-	fmt.Println("cashDayEvaluation")
-	fmt.Println(cashDayEvaluation)
-	// insertCashDayEvaluation(cashDayEvaluation)
+	// fmt.Println("cashDayEvaluation")
+	// fmt.Println(cashDayEvaluation)
+	insertCashDayEvaluation(cashDayEvaluation)
 }
 
 func handleCalculateDownDay() {
+	isDownDay := "true"
 	//Reset dow day eval store before calculation
 	truncateDownDayEvaluation()
-	isDownDay := "true"
 	//is dow in the red
 	//handle on dow...
 	dowValue := handleDowWebscrape()
-	tradeResultStoreList := getTradeResultStoreList()
+	endOfDayDowList := selectEndOfDayDow()
+
 	downDayEvaluation := DownDayEvaluation{}
 	//if TRS is not empty
-	if len(tradeResultStoreList) != 0 {
+	if len(endOfDayDowList) != 0 {
 		//get latest TRS
-		tradeResultStorePulled := tradeResultStoreList[len(tradeResultStoreList)-1]
-		listCalculationTradeResultStore := []TradeResultStore{tradeResultStorePulled}
+		endOfDayDowPulled := endOfDayDowList[len(endOfDayDowList)-1]
+		listEndOfDayDow := []EndOfDayDow{endOfDayDowPulled}
 
-		for i, tradeResultStore := range listCalculationTradeResultStore {
+		for i, endOfDayDow := range listEndOfDayDow {
 			if tradeResultStore.Dow6 != "" {
 				if dowValue > tradeResultStore.Dow6 {
 					isDownDay = "false"

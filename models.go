@@ -381,3 +381,7 @@ type ShortDayAnalysis struct {
 type ShortCalendarDay struct {
 	DateOfOccurance string
 }
+
+type EndOfDayDow struct {
+	EndOfDayDowValue string
+}

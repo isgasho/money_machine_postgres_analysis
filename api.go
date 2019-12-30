@@ -525,8 +525,21 @@ func main() {
 	go handleRequests()
 	// processTimelineStart()
 
-	handleCalculateCashDay()
+	// handleEndOfDayDowScrape()
+	// truncateEndOfDayDow()
+	// insertEndOfDayDow("26,000")
+	// endOfDayDow := selectEndOfDayDow()[0]
+	// fmt.Println("endOfDayDow")
+	// fmt.Println(endOfDayDow.EndOfDayDowValue)
+
+	//
+	//
+	// truncateTradeResultStore()
+	// handleCalculateCashDay()
+	//
+	// insertTradeResultStore(TradeResultStore{Dow1: "23,000.02", Dow2: "23,000.02", Dow3: "23,000.02", Dow4: "29,000.02"})
 	// handleCalculateDownDay()
+
 	// isTradeDay := overarchIsTradeDay()
 	// fmt.Println("isTradeDay")
 	// fmt.Println(isTradeDay)

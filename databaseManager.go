@@ -392,18 +392,41 @@ func selectDow() []Dow {
 		dow := Dow{CurrentDowValue: v.ListString[0]}
 		listDow = append(listDow, dow)
 
-		// for i, v := range container.ListStringFromDB {
-		// 	stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7], TimeCreated: v.ListString[8]}
-		// 	listStock = append(listStock, stock)
-		// 	i++
-		// }
-		// return listStock
 		i++
 	}
 	return listDow
 }
 func truncateDow() {
 	postCommandDBTruncate("TRUNCATE table dow")
+}
+
+// CREATE TABLE end_of_day_dow
+// (
+//    id SERIAL PRIMARY KEY,
+//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+//    end_of_day_dow_value VARCHAR
+// );
+
+//end_of_day_dow_value
+//dow_value
+func insertEndOfDayDow(end_of_day_dow_value string) {
+	listValues := []string{end_of_day_dow_value}
+	postCommandDBInsert("INSERT INTO end_of_day_dow (end_of_day_dow_value) VALUES (", listValues)
+}
+func selectEndOfDayDow() []EndOfDayDow {
+	listEndOfDayDow := []EndOfDayDow{}
+	response := postCommandDBSelect("SELECT end_of_day_dow_value FROM end_of_day_dow")
+	container := parseDBResponseDow(response)
+	for i, v := range container.ListStringFromDB {
+		endOfDayDow := EndOfDayDow{EndOfDayDowValue: v.ListString[0]}
+		listEndOfDayDow = append(listEndOfDayDow, endOfDayDow)
+
+		i++
+	}
+	return listEndOfDayDow
+}
+func truncateEndOfDayDow() {
+	postCommandDBTruncate("TRUNCATE table end_of_day_dow")
 }
 
 //MarketOpenAnalysis
