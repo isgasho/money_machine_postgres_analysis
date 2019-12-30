@@ -624,35 +624,24 @@ func calculateIndexMatchClosestToDelimiter(listSpanClasses []string, listIndexPo
 		//starting from span class
 		//iterate until delimiter met. Count distance traveled.
 		distanceInt := 0
-		// fmt.Println("new indexPossibleMatch")
-		// if indexIndexPossibleMatch > 4 {
 		for indexSpanClass, spanClass := range listSpanClasses {
 			if indexSpanClass >= indexPossibleMatch {
 				// fmt.Println("working spanClass")
 				// fmt.Println(spanClass)
 				if calculateIsMatchingDelimiterWebscrape(delimiterStringList, spanClass) {
-					// fmt.Println("spanClass")
-					// fmt.Println(spanClass)
-					// fmt.Println("distanceInt")
-					// fmt.Println(distanceInt)
-
 					//for wisemenMatchClosestToDelimiter
 					listWisemenMatchClosestToDelimiter = append(listWisemenMatchClosestToDelimiter, WisemenMatchClosestToDelimiter{SplitStringValue: indexPossibleMatch, DistanceFromDelimiter: distanceInt})
-
 					// containerForDistance = append(containerForDistance, distanceInt)
 					break
 				}
 				distanceInt++
 			}
 		}
-		// }
-
-		fmt.Println("indexIndexPossibleMatch")
-		fmt.Println(indexIndexPossibleMatch)
+		indexIndexPossibleMatch++
 	}
 
 	lowestIndex := 0
-	fmt.Println("v.DistanceFromDelimiter")
+	// fmt.Println("v.DistanceFromDelimiter")
 	for i, v := range listWisemenMatchClosestToDelimiter {
 		if i == 0 {
 			continue
@@ -670,13 +659,12 @@ func calculateIndexMatchClosestToDelimiter(listSpanClasses []string, listIndexPo
 		// }
 		i++
 	}
-	fmt.Println("lowestIndex")
-	fmt.Println(listWisemenMatchClosestToDelimiter[lowestIndex].DistanceFromDelimiter)
-	fmt.Println(listSpanClasses[listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue])
+	// fmt.Println("lowestIndex")
+	// fmt.Println(listWisemenMatchClosestToDelimiter[lowestIndex].DistanceFromDelimiter)
+	// fmt.Println(listSpanClasses[listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue])
 	// fmt.Println("listWisemenMatchClosestToDelimiter")
 	// fmt.Println(len(listWisemenMatchClosestToDelimiter))
 
-	// fmt.prin
 	return listSpanClasses[listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue] //listWisemenMatchClosestToDelimiter[lowestIndex].SplitStringValue
 }
 

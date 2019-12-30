@@ -948,7 +948,7 @@ func removeElementInt(listEntered []int, val int) []int {
 
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
-	isTradeDay = "true"
+	// isTradeDay = "true"
 	fmt.Println(dataList)
 	//handle no neo found..
 	// overarchTradeWisemen

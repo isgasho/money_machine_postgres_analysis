@@ -1641,7 +1641,13 @@ func postEmailTradeResultStore(tradeResultStore TradeResultStore) string {
 	json = json + "\"percentageChangeBalance\":" + "\"" + stringPercentageChangeBalance + "\","
 	json = json + "\"startStockPrice\":" + "\"" + tradeResultStore.BoughtPrice + "\","
 	json = json + "\"endStockPrice\":" + "\"" + tradeResultStore.SellPrice + "\","
+	json = json + "\"startStockTime\":" + "\"" + tradeResultStore.TimeTradeBuy + "\","
+	json = json + "\"endStockTime\":" + "\"" + tradeResultStore.TimeTradeSell + "\","
 	json = json + "\"qty\":" + "\"" + tradeResultStore.Qty + "\","
+	json = json + "\"highestPricePoint\":" + "\"" + tradeResultStore.HighestPricePointForDay + "\","
+	json = json + "\"timeHighestPricePoint\":" + "\"" + tradeResultStore.TimeHighestPricePoint + "\","
+	json = json + "\"lowestPricePoint\":" + "\"" + tradeResultStore.LowestPricePointForDay + "\","
+	json = json + "\"timeLowestPricePoint\":" + "\"" + tradeResultStore.TimeLowestPricePoint + "\","
 	json = json + "\"percentageChangeStock\":" + "\"" + tradeResultStore.ChangeAmount + "\","
 	json = json + "\"result\":" + "\"" + tradeResultStore.Result + "\""
 	json = json + `}}`

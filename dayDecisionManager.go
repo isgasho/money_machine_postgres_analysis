@@ -176,6 +176,7 @@ func handleCalculateDownDay() {
 	dowValue := handleDowWebscrape()
 	endOfDayDowList := selectEndOfDayDow()
 
+	fmt.Println()
 	downDayEvaluation := DownDayEvaluation{}
 	//if TRS is not empty
 	if len(endOfDayDowList) != 0 {
@@ -184,40 +185,47 @@ func handleCalculateDownDay() {
 		listEndOfDayDow := []EndOfDayDow{endOfDayDowPulled}
 
 		for i, endOfDayDow := range listEndOfDayDow {
-			if tradeResultStore.Dow6 != "" {
-				if dowValue > tradeResultStore.Dow6 {
+			if endOfDayDow.EndOfDayDowValue != "" {
+				fmt.Println("hit")
+				fmt.Println("dowValue")
+				fmt.Println(dowValue)
+				fmt.Println("endOfDayDow.EndOfDayDowValue")
+				fmt.Println(endOfDayDow.EndOfDayDowValue)
+				if dowValue > endOfDayDow.EndOfDayDowValue {
 					isDownDay = "false"
-					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "6"} //tradeResultStore.Dow6}
+					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: endOfDayDow.EndOfDayDowValue} //tradeResultStore.Dow4}
 					break
 				}
-			}
-			if tradeResultStore.Dow5 != "" {
-				if dowValue > tradeResultStore.Dow5 {
-					isDownDay = "false"
-					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "5"} //tradeResultStore.Dow5}
+				if dowValue <= endOfDayDow.EndOfDayDowValue {
+					isDownDay = "true"
+					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: endOfDayDow.EndOfDayDowValue} //tradeResultStore.Dow4}
 					break
 				}
-			}
-			if tradeResultStore.Dow4 != "" {
-				if dowValue > tradeResultStore.Dow4 {
-					isDownDay = "false"
-					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "4"} //tradeResultStore.Dow4}
-					break
-				}
-			}
-			if tradeResultStore.Dow4 == "" {
-				downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "3"} //tradeResultStore.Dow4}
-				break
 			}
 			i++
 		}
 	}
-	if len(tradeResultStoreList) == 0 {
+	if len(endOfDayDowList) == 0 {
 		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "does not exist"}
 	}
 	//store results in DB
 	insertDownDayEvaluation(downDayEvaluation)
 }
+
+// if tradeResultStore.Dow6 != "" {
+// 	if dowValue > tradeResultStore.Dow6 {
+// 		isDownDay = "false"
+// 		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "6"} //tradeResultStore.Dow6}
+// 		break
+// 	}
+// }
+// if tradeResultStore.Dow5 != "" {
+// 	if dowValue > tradeResultStore.Dow5 {
+// 		isDownDay = "false"
+// 		downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: "5"} //tradeResultStore.Dow5}
+// 		break
+// 	}
+// }
 
 // handleDownDayEmail()
 

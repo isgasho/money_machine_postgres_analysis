@@ -526,12 +526,19 @@ func main() {
 	// processTimelineStart()
 
 	// handleEndOfDayDowScrape()
+	// handleCalculateDownDay()
+	// handleCalculateCashDay()
+	// overarchIsTradeDay()
+
+	// truncateEndOfDayDow()
+	// handleEndOfDayDowScrape()
 	// truncateEndOfDayDow()
 	// insertEndOfDayDow("26,000")
 	// endOfDayDow := selectEndOfDayDow()[0]
 	// fmt.Println("endOfDayDow")
 	// fmt.Println(endOfDayDow.EndOfDayDowValue)
 
+	// handleCalculateDownDay()
 	//
 	//
 	// truncateTradeResultStore()
@@ -729,21 +736,28 @@ func main() {
 	// truncateInformationAtTrade()
 	// systemStartProcesses()
 	// // dowValue := handleDowWebscrape()
-	// dowValue := "26,300"
-	// insertDow(dowValue)
-	// insertDow(dowValue)
-	// // insertDow(dowValue)
-	// // insertDow(dowValue)
-	// // insertDow(dowValue)
-	// // insertDow(dowValue)
-	// truncateTradeResultStore()
-	// handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
-	// // // // handleInsertInformationAtTrade("HEPA", "limit", "sell", "1.00")
-	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.12"})
-	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.13"})
-	// insertStockWisemen(Stock{Symbol: "HEPA", Last: "5.15"})
-	// processMonitorSell("HEPA", "0.0", "1330")
 
+	// startDayBalance := insertAccountBalance("7,000.00")
+
+	// storeBalanceValue()
+	// dowValue := "26,300"
+	// // insertDow(dowValue)
+	// // insertDow(dowValue)
+	// truncateDow()
+	// insertDow(dowValue)
+	// insertDow(dowValue)
+	// insertDow(dowValue)
+	// insertDow(dowValue)
+	// // truncateTradeResultStore()
+	// // handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
+	// // // // // handleInsertInformationAtTrade("HEPA", "limit", "sell", "1.00")
+	// truncateStockWisemen()
+	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.12"})
+	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.13"})
+	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.15"})
+	// // processMonitorSell("HEPA", "0.0", "1330")
+
+	wrapUpWisemenOutcome(TransactionHistory{Symbol: "ZYNE"})
 	// truncateDownDayEvaluation()
 	// handleCalculateDownDay()
 	fmt.Scanln()

@@ -1047,8 +1047,9 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	//get although this is reset insertInformationAtTrade for buy and sell for day
 	listMatchingSymbolInformationAtTrade := handleInformationAtTradeDayListArbitration(alteredTransactionHistory.Symbol)
 
-	fmt.Println("listMatchingSymbolInformationAtTrade")
-	fmt.Println(listMatchingSymbolInformationAtTrade)
+	// fmt.Println("listMatchingSymbolInformationAtTrade")
+	// fmt.Println(listMatchingSymbolInformationAtTrade)
+	// listMatchingSymbolInformationAtTrade := []InformationAtTrade{}
 
 	fmt.Println("inside listMatchingSymbolInformationAtTrade")
 	//query stocks
@@ -1072,6 +1073,11 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	highestStock := stockList[highestLastIndex]
 	timeCreatedHigh := highestStock.TimeCreated
 
+	fmt.Println("highestStock")
+	fmt.Println(highestStock)
+	fmt.Println("timeCreatedHigh")
+	fmt.Println(timeCreatedHigh)
+
 	lowestLastIndex := 0
 	lowestLast := 0.0
 	//iterate through pchg list, find highest
@@ -1090,6 +1096,10 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	lowestStock := stockList[lowestLastIndex]
 	timeCreatedLow := lowestStock.TimeCreated
 	//
+	fmt.Println("lowestStock")
+	fmt.Println(lowestStock.Last)
+	fmt.Println("timeCreatedLow")
+	fmt.Println(timeCreatedLow)
 
 	dowList := selectDow()
 	//Should not be called if no trade completed
@@ -1144,6 +1154,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	if len(listMatchingSymbolInformationAtTrade) == 2 {
 		buyHistoryValuePrice := alteredTransactionHistory.HistoryValueList[0].Price
 		sellHistoryValuePrice := alteredTransactionHistory.HistoryValueList[1].Price
+		// buyHistoryValuePrice := "11.39"  //alteredTransactionHistory.HistoryValueList[0].Price
+		// sellHistoryValuePrice := "12.39" //alteredTransactionHistory.HistoryValueList[1].Price
 
 		floatBuyHistoryValuePrice := 0.0
 		floatSellHistoryValuePrice := 0.0
@@ -1153,11 +1165,6 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		if s1, err := strconv.ParseFloat(sellHistoryValuePrice, 64); err == nil {
 			floatSellHistoryValuePrice = s1
 		}
-
-		// fmt.Println("floatBuyHistoryValuePrice")
-		// fmt.Println(floatBuyHistoryValuePrice)
-		// fmt.Println("floatSellHistoryValuePrice")
-		// fmt.Println(floatSellHistoryValuePrice)
 		//calculate result
 		//if buy and sell, and if changeAmount meet delimiter,
 		changeAmount := floatSellHistoryValuePrice - floatBuyHistoryValuePrice
@@ -1186,6 +1193,9 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 		boughtTime := listMatchingSymbolInformationAtTrade[0].Hour + " " + listMatchingSymbolInformationAtTrade[0].Minute
 		sellTime := listMatchingSymbolInformationAtTrade[1].Hour + " " + listMatchingSymbolInformationAtTrade[1].Minute
 
+		// boughtTime := "13 14"
+		// sellTime := "14 15"
+
 		//getHoldingBuy
 
 		if len(dowList) == 6 {
@@ -1210,8 +1220,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				Dow5:                    dowList[4].CurrentDowValue,
 				Dow6:                    dowList[5].CurrentDowValue,
 			}
-			fmt.Println("tradeResultStore")
-			fmt.Println(tradeResultStore)
+			// fmt.Println("tradeResultStore")
+			// fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 			postEmailTradeResultStore(tradeResultStore)
 		}
@@ -1225,6 +1235,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				SellPrice:               sellHistoryValuePrice,
 				ChangeAmount:            stringChangeAmount,
 				StockSymbol:             alteredTransactionHistory.Symbol,
+				Qty:                     alteredTransactionHistory.HistoryValueList[0].Qty,
 				TimeTradeBuy:            boughtTime,
 				TimeTradeSell:           sellTime,
 				HighestPricePointForDay: highestStock.Last,
@@ -1237,8 +1248,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				Dow4:                    dowList[3].CurrentDowValue,
 				Dow5:                    dowList[4].CurrentDowValue,
 			}
-			fmt.Println("tradeResultStore")
-			fmt.Println(tradeResultStore)
+			// fmt.Println("tradeResultStore")
+			// fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 			postEmailTradeResultStore(tradeResultStore)
 		}
@@ -1251,6 +1262,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				SellPrice:               sellHistoryValuePrice,
 				ChangeAmount:            stringChangeAmount,
 				StockSymbol:             alteredTransactionHistory.Symbol,
+				Qty:                     alteredTransactionHistory.HistoryValueList[0].Qty,
 				TimeTradeBuy:            boughtTime,
 				TimeTradeSell:           sellTime,
 				HighestPricePointForDay: highestStock.Last,
@@ -1262,8 +1274,8 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				Dow3:                    dowList[2].CurrentDowValue,
 				Dow4:                    dowList[3].CurrentDowValue,
 			}
-			fmt.Println("tradeResultStore")
-			fmt.Println(tradeResultStore)
+			// fmt.Println("tradeResultStore")
+			// fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 			postEmailTradeResultStore(tradeResultStore)
 		}
@@ -1275,6 +1287,7 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				SellPrice:               sellHistoryValuePrice,
 				ChangeAmount:            stringChangeAmount,
 				StockSymbol:             alteredTransactionHistory.Symbol,
+				Qty:                     alteredTransactionHistory.HistoryValueList[0].Qty,
 				TimeTradeBuy:            boughtTime,
 				TimeTradeSell:           sellTime,
 				HighestPricePointForDay: highestStock.Last,
@@ -1282,8 +1295,6 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 				LowestPricePointForDay:  lowestStock.Last,
 				TimeLowestPricePoint:    timeCreatedLow,
 			}
-			fmt.Println("tradeResultStore")
-			fmt.Println(tradeResultStore)
 			insertTradeResultStore(tradeResultStore)
 			postEmailTradeResultStore(tradeResultStore)
 		}
