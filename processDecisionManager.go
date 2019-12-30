@@ -89,7 +89,7 @@ func processTimelineStart() {
 
 func processMonitorSell(symbol string, dropLoss string, timeToSell string) {
 	cycleMapPool = map[string]*Cycle{}
-	createCycle(10, 10000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
+	createCycle(15, 10000000, monitorSell, "monitorSell", []string{symbol, dropLoss, timeToSell})
 	operatingCycle := cycleMapPool["monitorSell"]
 	go startCycle(operatingCycle)
 }

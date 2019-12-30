@@ -523,268 +523,268 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	// processTimelineStart()
-
-	//
-	// tradeResultStore := TradeResultStore{
-	// 	AlgorithmUsed:           "wisemen",
-	// 	Result:                  "awesome good",
-	// 	BoughtPrice:             "12.23",
-	// 	SellPrice:               "13.31",
-	// 	ChangeAmount:            "1.08",
-	// 	StockSymbol:             "ZYNE",
-	// 	Qty:                     "39",
-	// 	TimeTradeBuy:            "12 13",
-	// 	TimeTradeSell:           "13 14",
-	// 	HighestPricePointForDay: "13.45",
-	// 	TimeHighestPricePoint:   "12 10",
-	// 	LowestPricePointForDay:  "10.13",
-	// 	TimeLowestPricePoint:    "8 45",
-	// 	Dow1:                    "24,000",
-	// 	Dow2:                    "24,000",
-	// 	Dow3:                    "24,000",
-	// 	Dow4:                    "24,000",
-	// }
-	// postEmailTradeResultStore(tradeResultStore)
-
-	// handleEndOfDayDowScrape()
-	// handleCalculateDownDay()
-	// handleCalculateCashDay()
-	// overarchIsTradeDay()
-
-	// truncateEndOfDayDow()
-	// handleEndOfDayDowScrape()
-	// truncateEndOfDayDow()
-	// insertEndOfDayDow("26,000")
-	// endOfDayDow := selectEndOfDayDow()[0]
-	// fmt.Println("endOfDayDow")
-	// fmt.Println(endOfDayDow.EndOfDayDowValue)
-
-	// handleCalculateDownDay()
-	//
-	//
-	// truncateTradeResultStore()
-	// handleCalculateCashDay()
-	//
-	// insertTradeResultStore(TradeResultStore{Dow1: "23,000.02", Dow2: "23,000.02", Dow3: "23,000.02", Dow4: "29,000.02"})
-	// handleCalculateDownDay()
-
-	// isTradeDay := overarchIsTradeDay()
-	// fmt.Println("isTradeDay")
-	// fmt.Println(isTradeDay)
-
-	// insertTradeResultStore(TradeResultStore{StockSymbol: "BARK", Qty: "24"})
-	// trs := selectTradeResultStore("BARK")[0]
-
-	// postEmailTradeResultStore(tradeResultStore)
-	// fmt.Println(trs.StockSymbol)
-	// fmt.Println(trs.Qty)
-	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: "RAD"})
-	// fmt.Println(alteredTransactionHistory.HistoryValueList[0].Qty)
-	// fmt.Println(alteredTransactionHistory.HistoryValueList[0].Side)
-	// processCheckIsTradeBought("TGTX")
-	// value := formatQtyHolding("1.00")
-	// fmt.Println(value)
-	// processMonitorSell("GSX", "21.85", "1330")
-
-	// dataList := []string{"1", "2", "3"}
-	// dataList[0] = "0"
-	// for i, v := range dataList {
-	// 	fmt.Println(v)
-	// 	i++
-	// }
-
-	// systemStartProcesses()
-	// symbol := "MBOT"
-	// stringQty := "1"
-	// handleInsertInformationAtTrade(symbol, "limit", "buy", stringQty)
-
-	// holdingWisemen := HoldingWisemen{Symbol: "default"}
-	// holdingList := getAllHolding()
-	// for i, v := range holdingList.ListHolding {
-	// 	if v.Symbol == symbol {
-	// 		holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: v.Qty, OrderStatus: "pending eval"}
-	// 	}
-	// 	i++
-	// }
-	// holdingWisemenReturned := calculateHoldingStatus(holdingWisemen)
-	// fmt.Println("holdingWisemenReturned")
-	// fmt.Println(holdingWisemenReturned)
-
-	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
-	// handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
-
-	//
-	// handleTradeWisemen("RAD", "16.14")
-	// listShortCalendarDay := selectShortCalendarDay()
-	// fmt.Println(listShortCalendarDay)
-	// fmt.Println("listShortCalendarDay")
-	// calculateShortDayAnalysis()
-	// shortDayAnalysis := selectShortDayAnalysis()[0]
-	// fmt.Println("shortDayAnalysis")
-	// fmt.Println(shortDayAnalysis)
-
-	// systemStartProcesses()
-	// metrics := selectMetricsWisemen()[0]
-	// // symbol := listStrings[0]
-	// // priceDrop := listStrings[1]
-	// timeDelimiter := metrics.SellTime
-
-	// fmt.Println("timeDelimiter")
-	// fmt.Println(timeDelimiter)
-	// fmt.Println("conditionNineteenMinute")
-	// fmt.Println(conditionNineteenMinute)
-	// fmt.Println("conditionNineteenHour")
-	// fmt.Println(conditionNineteenHour)
-
-	//
-	//
-	// insertShortDayAnalysis(ShortDayAnalysis{IsShortDay: "true"})
-	//ZYNE
-	// monitorSell()
-	// processMonitorSell("ZYNE", "6.06", "1130")
-
-	// processMonitorSell
-	// handleOverarchTopStock()
-	//
-	// limitPrice = strconv.FormatFloat(splitValue, 'f', -1, 64)
-	// fmt.Println(limitPrice)
-	// response := queryHistory()
-	// historyList := parseHistory(response)
-	// listHistoryValues := createListHistoryValuesForWisemen(historyList)
-
-	// historyValue := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "1", Qty: "1", Price: "10.1"}
-	// historyValue1 := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "2", Qty: "-1", Price: "10.3"}
-
-	// listHistoryValues = append(listHistoryValues, historyValue)
-	// listHistoryValues = append(listHistoryValues, historyValue1)
-
-	// fmt.Println(listHistoryValues)
-	// transactionHistory := TransactionHistory{Symbol: "RAD"}
-	// calculateTransactionHistory(transactionHistory)
-
-	// truncateInformationAtTrade()
-	// // informationAtTrade := InformationAtTrade{}
-	// handleInsertInformationAtTrade("RAD", "limit", "buy", "2.00")
-	// //
-	// handleInsertInformationAtTrade("RAD", "limit", "sell", "2.00")
-
-	// insertInformationAtTrade(informationAtTrade)
-	// insertInformationAtTrade(informationAtTrade1)
-
-	// truncateTradeResultStore()
-	// transactionHistory := TransactionHistory{Symbol: "RAD"}
-	// wrapUpWisemenOutcome(transactionHistory)
-
-	// dowList := selectDow()
-	// fmt.Println(dowList)
-
-	// listResults := handleHistoryDayListArbitration("VNCE")
-	// fmt.Println(listResults)
-
-	// processOverarchTopStock()
-
-	// processCheckIsTradeBought("QYNE")
-
-	// holdingList := getAllHolding()
-	// fmt.Println(holdingList)
-
-	//Work
-
-	// truncateInformationAtTrade()
-	// handleInsertInformationAtTrade("TGTX", "limit", "buy", "1.00")
-
-	// holdingWisemen := HoldingWisemen{Symbol: "TGTX", Price: "10.28", OrderStatus: "completedFull"}
-	// postNeoBuyOrderResponse(holdingWisemen)
-	// holdings := getAllHolding()
-	// fmt.Println(holdings)
-
-	// processMonitorSellMarket("TGTX")
-
-	// orderList := getAllOrders()
-	// fmt.Println("len(orderList.ListOrders)")
-	// fmt.Println(len(orderList.ListOrders))
-	// order := Order{}
-	// for i, v := range orderList.ListOrders {
-	// 	if v.Symbol == "TGTX" {
-	// 		order = v
-	// 		break
-	// 	}
-	// 	i++
-	// }
-	// // operatingCycle := cycleMapPool["monitorSell"]
-	// // cancelCycle(operatingCycle)
-
-	// fmt.Println(order.SVI)
-	// queryCancelOrder(order.SVI)
-
-	// fmt.Println("sell time")
-	// fmt.Println(metrics)
-	// metrics := "1211"
-	// metrics := selectMetricsWisemen()[0].SellTime
-
-	// boolTest := calculateIsTimeDelimiterMetSell(metrics)
-	// if boolTest {
-	// 	println("success")
-	// }
-
-	// if boolTest == false {
-	// 	println("false")
-	// }
-
-	// stock := Stock{Symbol: "TGTX", Last: "10.28"}
-	// insertStockWisemen(stock)
-	// select
-	// postNodeTSPFailureEmail()
-	// storeBalanceValue()
-	// metrics := selectMetricsWisemen()
-	// fmt.Println(metrics)
-	// twiWebscrape()
-	// dowValue := handleDowWebscrape()
-	// fmt.Println(dowValue)
-	// parseDowWebscrape()
-	// fmt.Println("Init")
-	// systemStartProcesses()
-	// handleOverarchTopStock()
-	// handleDowWebscrape()
-	// handleCalculateDownDay()
-
-	// handleOverarchTopStock()
-	// //handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
-	// handleCalculateCashDay()
-	// handleCalculateDownDay()
-	// healthCheck()
-
-	// truncateInformationAtTrade()
-	// systemStartProcesses()
-	// // dowValue := handleDowWebscrape()
-
-	// startDayBalance := insertAccountBalance("7,000.00")
-
-	// storeBalanceValue()
-	// dowValue := "26,300"
-	// // insertDow(dowValue)
-	// // insertDow(dowValue)
-	// truncateDow()
-	// insertDow(dowValue)
-	// insertDow(dowValue)
-	// insertDow(dowValue)
-	// insertDow(dowValue)
-	// // truncateTradeResultStore()
-	// // handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
-	// // // // // handleInsertInformationAtTrade("HEPA", "limit", "sell", "1.00")
-	// truncateStockWisemen()
-	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.12"})
-	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.13"})
-	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.15"})
-	// // processMonitorSell("HEPA", "0.0", "1330")
-
-	// wrapUpWisemenOutcome(TransactionHistory{Symbol: "ZYNE"})
-	// truncateDownDayEvaluation()
-	// handleCalculateDownDay()
+	processTimelineStart()
 	fmt.Scanln()
 	fmt.Println("done")
 }
+
+//
+// tradeResultStore := TradeResultStore{
+// 	AlgorithmUsed:           "wisemen",
+// 	Result:                  "awesome good",
+// 	BoughtPrice:             "12.23",
+// 	SellPrice:               "13.31",
+// 	ChangeAmount:            "1.08",
+// 	StockSymbol:             "ZYNE",
+// 	Qty:                     "39",
+// 	TimeTradeBuy:            "12 13",
+// 	TimeTradeSell:           "13 14",
+// 	HighestPricePointForDay: "13.45",
+// 	TimeHighestPricePoint:   "12 10",
+// 	LowestPricePointForDay:  "10.13",
+// 	TimeLowestPricePoint:    "8 45",
+// 	Dow1:                    "24,000",
+// 	Dow2:                    "24,000",
+// 	Dow3:                    "24,000",
+// 	Dow4:                    "24,000",
+// }
+// postEmailTradeResultStore(tradeResultStore)
+
+// handleEndOfDayDowScrape()
+// handleCalculateDownDay()
+// handleCalculateCashDay()
+// overarchIsTradeDay()
+
+// truncateEndOfDayDow()
+// handleEndOfDayDowScrape()
+// truncateEndOfDayDow()
+// insertEndOfDayDow("26,000")
+// endOfDayDow := selectEndOfDayDow()[0]
+// fmt.Println("endOfDayDow")
+// fmt.Println(endOfDayDow.EndOfDayDowValue)
+
+// handleCalculateDownDay()
+//
+//
+// truncateTradeResultStore()
+// handleCalculateCashDay()
+//
+// insertTradeResultStore(TradeResultStore{Dow1: "23,000.02", Dow2: "23,000.02", Dow3: "23,000.02", Dow4: "29,000.02"})
+// handleCalculateDownDay()
+
+// isTradeDay := overarchIsTradeDay()
+// fmt.Println("isTradeDay")
+// fmt.Println(isTradeDay)
+
+// insertTradeResultStore(TradeResultStore{StockSymbol: "BARK", Qty: "24"})
+// trs := selectTradeResultStore("BARK")[0]
+
+// postEmailTradeResultStore(tradeResultStore)
+// fmt.Println(trs.StockSymbol)
+// fmt.Println(trs.Qty)
+// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: "RAD"})
+// fmt.Println(alteredTransactionHistory.HistoryValueList[0].Qty)
+// fmt.Println(alteredTransactionHistory.HistoryValueList[0].Side)
+// processCheckIsTradeBought("TGTX")
+// value := formatQtyHolding("1.00")
+// fmt.Println(value)
+// processMonitorSell("GSX", "21.85", "1330")
+
+// dataList := []string{"1", "2", "3"}
+// dataList[0] = "0"
+// for i, v := range dataList {
+// 	fmt.Println(v)
+// 	i++
+// }
+
+// systemStartProcesses()
+// symbol := "MBOT"
+// stringQty := "1"
+// handleInsertInformationAtTrade(symbol, "limit", "buy", stringQty)
+
+// holdingWisemen := HoldingWisemen{Symbol: "default"}
+// holdingList := getAllHolding()
+// for i, v := range holdingList.ListHolding {
+// 	if v.Symbol == symbol {
+// 		holdingWisemen = HoldingWisemen{Symbol: symbol, Price: v.Price, Qty: v.Qty, OrderStatus: "pending eval"}
+// 	}
+// 	i++
+// }
+// holdingWisemenReturned := calculateHoldingStatus(holdingWisemen)
+// fmt.Println("holdingWisemenReturned")
+// fmt.Println(holdingWisemenReturned)
+
+// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: symbol})
+// handleInsertInformationAtTrade(symbol, "limit", "sell", alteredTransactionHistory.HistoryValueList[1].Qty)
+
+//
+// handleTradeWisemen("RAD", "16.14")
+// listShortCalendarDay := selectShortCalendarDay()
+// fmt.Println(listShortCalendarDay)
+// fmt.Println("listShortCalendarDay")
+// calculateShortDayAnalysis()
+// shortDayAnalysis := selectShortDayAnalysis()[0]
+// fmt.Println("shortDayAnalysis")
+// fmt.Println(shortDayAnalysis)
+
+// systemStartProcesses()
+// metrics := selectMetricsWisemen()[0]
+// // symbol := listStrings[0]
+// // priceDrop := listStrings[1]
+// timeDelimiter := metrics.SellTime
+
+// fmt.Println("timeDelimiter")
+// fmt.Println(timeDelimiter)
+// fmt.Println("conditionNineteenMinute")
+// fmt.Println(conditionNineteenMinute)
+// fmt.Println("conditionNineteenHour")
+// fmt.Println(conditionNineteenHour)
+
+//
+//
+// insertShortDayAnalysis(ShortDayAnalysis{IsShortDay: "true"})
+//ZYNE
+// monitorSell()
+// processMonitorSell("ZYNE", "6.06", "1130")
+
+// processMonitorSell
+// handleOverarchTopStock()
+//
+// limitPrice = strconv.FormatFloat(splitValue, 'f', -1, 64)
+// fmt.Println(limitPrice)
+// response := queryHistory()
+// historyList := parseHistory(response)
+// listHistoryValues := createListHistoryValuesForWisemen(historyList)
+
+// historyValue := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "1", Qty: "1", Price: "10.1"}
+// historyValue1 := HistoryValue{Symbol: "RAD", Date: "2019 12 19", Side: "2", Qty: "-1", Price: "10.3"}
+
+// listHistoryValues = append(listHistoryValues, historyValue)
+// listHistoryValues = append(listHistoryValues, historyValue1)
+
+// fmt.Println(listHistoryValues)
+// transactionHistory := TransactionHistory{Symbol: "RAD"}
+// calculateTransactionHistory(transactionHistory)
+
+// truncateInformationAtTrade()
+// // informationAtTrade := InformationAtTrade{}
+// handleInsertInformationAtTrade("RAD", "limit", "buy", "2.00")
+// //
+// handleInsertInformationAtTrade("RAD", "limit", "sell", "2.00")
+
+// insertInformationAtTrade(informationAtTrade)
+// insertInformationAtTrade(informationAtTrade1)
+
+// truncateTradeResultStore()
+// transactionHistory := TransactionHistory{Symbol: "RAD"}
+// wrapUpWisemenOutcome(transactionHistory)
+
+// dowList := selectDow()
+// fmt.Println(dowList)
+
+// listResults := handleHistoryDayListArbitration("VNCE")
+// fmt.Println(listResults)
+
+// processOverarchTopStock()
+
+// processCheckIsTradeBought("QYNE")
+
+// holdingList := getAllHolding()
+// fmt.Println(holdingList)
+
+//Work
+
+// truncateInformationAtTrade()
+// handleInsertInformationAtTrade("TGTX", "limit", "buy", "1.00")
+
+// holdingWisemen := HoldingWisemen{Symbol: "TGTX", Price: "10.28", OrderStatus: "completedFull"}
+// postNeoBuyOrderResponse(holdingWisemen)
+// holdings := getAllHolding()
+// fmt.Println(holdings)
+
+// processMonitorSellMarket("TGTX")
+
+// orderList := getAllOrders()
+// fmt.Println("len(orderList.ListOrders)")
+// fmt.Println(len(orderList.ListOrders))
+// order := Order{}
+// for i, v := range orderList.ListOrders {
+// 	if v.Symbol == "TGTX" {
+// 		order = v
+// 		break
+// 	}
+// 	i++
+// }
+// // operatingCycle := cycleMapPool["monitorSell"]
+// // cancelCycle(operatingCycle)
+
+// fmt.Println(order.SVI)
+// queryCancelOrder(order.SVI)
+
+// fmt.Println("sell time")
+// fmt.Println(metrics)
+// metrics := "1211"
+// metrics := selectMetricsWisemen()[0].SellTime
+
+// boolTest := calculateIsTimeDelimiterMetSell(metrics)
+// if boolTest {
+// 	println("success")
+// }
+
+// if boolTest == false {
+// 	println("false")
+// }
+
+// stock := Stock{Symbol: "TGTX", Last: "10.28"}
+// insertStockWisemen(stock)
+// select
+// postNodeTSPFailureEmail()
+// storeBalanceValue()
+// metrics := selectMetricsWisemen()
+// fmt.Println(metrics)
+// twiWebscrape()
+// dowValue := handleDowWebscrape()
+// fmt.Println(dowValue)
+// parseDowWebscrape()
+// fmt.Println("Init")
+// systemStartProcesses()
+// handleOverarchTopStock()
+// handleDowWebscrape()
+// handleCalculateDownDay()
+
+// handleOverarchTopStock()
+// //handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
+// handleCalculateCashDay()
+// handleCalculateDownDay()
+// healthCheck()
+
+// truncateInformationAtTrade()
+// systemStartProcesses()
+// // dowValue := handleDowWebscrape()
+
+// startDayBalance := insertAccountBalance("7,000.00")
+
+// storeBalanceValue()
+// dowValue := "26,300"
+// // insertDow(dowValue)
+// // insertDow(dowValue)
+// truncateDow()
+// insertDow(dowValue)
+// insertDow(dowValue)
+// insertDow(dowValue)
+// insertDow(dowValue)
+// // truncateTradeResultStore()
+// // handleInsertInformationAtTrade("HEPA", "limit", "buy", "1.00")
+// // // // // handleInsertInformationAtTrade("HEPA", "limit", "sell", "1.00")
+// truncateStockWisemen()
+// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.12"})
+// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.13"})
+// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.15"})
+// // processMonitorSell("HEPA", "0.0", "1330")
+
+// wrapUpWisemenOutcome(TransactionHistory{Symbol: "ZYNE"})
+// truncateDownDayEvaluation()
+// handleCalculateDownDay()
 
 func initTimeMonitoring() {
 	// time excution process looped on regular basis
