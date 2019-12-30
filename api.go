@@ -525,6 +525,28 @@ func main() {
 	go handleRequests()
 	// processTimelineStart()
 
+	//
+	// tradeResultStore := TradeResultStore{
+	// 	AlgorithmUsed:           "wisemen",
+	// 	Result:                  "awesome good",
+	// 	BoughtPrice:             "12.23",
+	// 	SellPrice:               "13.31",
+	// 	ChangeAmount:            "1.08",
+	// 	StockSymbol:             "ZYNE",
+	// 	Qty:                     "39",
+	// 	TimeTradeBuy:            "12 13",
+	// 	TimeTradeSell:           "13 14",
+	// 	HighestPricePointForDay: "13.45",
+	// 	TimeHighestPricePoint:   "12 10",
+	// 	LowestPricePointForDay:  "10.13",
+	// 	TimeLowestPricePoint:    "8 45",
+	// 	Dow1:                    "24,000",
+	// 	Dow2:                    "24,000",
+	// 	Dow3:                    "24,000",
+	// 	Dow4:                    "24,000",
+	// }
+	// postEmailTradeResultStore(tradeResultStore)
+
 	// handleEndOfDayDowScrape()
 	// handleCalculateDownDay()
 	// handleCalculateCashDay()
@@ -757,7 +779,7 @@ func main() {
 	// insertStockWisemen(Stock{Symbol: "ZYNE", Last: "5.15"})
 	// // processMonitorSell("HEPA", "0.0", "1330")
 
-	wrapUpWisemenOutcome(TransactionHistory{Symbol: "ZYNE"})
+	// wrapUpWisemenOutcome(TransactionHistory{Symbol: "ZYNE"})
 	// truncateDownDayEvaluation()
 	// handleCalculateDownDay()
 	fmt.Scanln()
