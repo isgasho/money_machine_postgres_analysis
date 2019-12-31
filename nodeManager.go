@@ -1463,15 +1463,28 @@ func queryTradeChangeLimit(origID string, symbol string, limitPrice string, qty 
 	return response
 }
 
-func queryCancelOrder(svi string) string {
+func queryCancelOrder(svi string, symbol string) string {
 	json := `{
 		"request_type": "cancel_order",
 		"data": {
 		`
-	json = json + "\"order\":" + "\"" + svi + "\""
+	json = json + "\"order\":" + "\"" + svi + "\","
+	json = json + "\"symbol\":" + "\"" + symbol + "\""
 	json = json + `}}`
 
-	// fmt.Println(json)
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
+func postCancellationBuyOrderEmail(symbol string) string {
+	json := `{
+		"request_type": "postCancellationBuyOrderEmail",
+		"data": {
+			`
+	json = json + "\"symbol\":" + "\"" + symbol + "\""
+	json = json + `}}`
+
 	url := "http://localhost:3000/api/brokerage"
 	response := post(url, json)
 	return response

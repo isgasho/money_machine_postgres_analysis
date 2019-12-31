@@ -33,7 +33,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
 	//
-	// stringQty = "1"
+	stringQty = "1"
 	//move to handleCheckIsTradeBought to when trade actually occurs.
 	// handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
 	stringQtyIAT := stringQty + ".00"
@@ -43,7 +43,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(stringQty)
 
 	stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
-	fmt.Println(stringLimitPrice)
+	// fmt.Println(stringLimitPrice)
 	// queryTradeBuyLimit(symbol, stringLimitPrice, "2")
 	queryTradeBuyLimit(symbol, stringLimitPrice, stringQty)
 }
@@ -112,7 +112,7 @@ func monitorSell(params ...interface{}) {
 		fmt.Println(len(orderList.ListOrders))
 		order := Order{}
 		for i, v := range orderList.ListOrders {
-			if v.Symbol == "TGTX" {
+			if v.Symbol == symbol {
 				order = v
 				break
 			}
@@ -122,7 +122,7 @@ func monitorSell(params ...interface{}) {
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
 
-		queryCancelOrder(order.SVI)
+		queryCancelOrder(order.SVI, symbol)
 		//cancel order, pause 10 seconds
 		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
@@ -148,7 +148,7 @@ func monitorSell(params ...interface{}) {
 		fmt.Println(len(orderList.ListOrders))
 		order := Order{}
 		for i, v := range orderList.ListOrders {
-			if v.Symbol == "TGTX" {
+			if v.Symbol == symbol {
 				order = v
 				break
 			}
@@ -158,14 +158,14 @@ func monitorSell(params ...interface{}) {
 		operatingCycle := cycleMapPool["monitorSell"]
 		cancelCycle(operatingCycle)
 
-		queryCancelOrder(order.SVI)
+		queryCancelOrder(order.SVI, symbol)
 		//cancel order, pause 10 seconds
 		time.Sleep(time.Duration(10) * time.Second)
 		queryTradeSellMarket(holding)
 		//handle on holding
 		handleInsertInformationAtTrade(symbol, "drop loss", "sell", holding.Qty)
 		time.Sleep(time.Duration(10) * time.Second)
-		fmt.Println("selling timeeee")
+		// fmt.Println("selling timeeee")
 		processMonitorSellMarket(symbol)
 	}
 }
@@ -948,7 +948,7 @@ func removeElementInt(listEntered []int, val int) []int {
 
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
-	// isTradeDay = "true"
+	isTradeDay = "true"
 	fmt.Println(dataList)
 	//handle no neo found..
 	// overarchTradeWisemen

@@ -523,7 +523,64 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	handleEndOfDayDowScrape()
 	processTimelineStart()
+
+	// handleEndOfDayDowScrape()
+	// dataList := []string{"NVCN", "5.46"}
+	// handleTradeWisemen(dataList[0], dataList[1])
+
+	// symbol := "NVCN"
+	// orderList := getAllOrders()
+	// fmt.Println("len(orderList.ListOrders)")
+	// fmt.Println(len(orderList.ListOrders))
+	// order := Order{}
+	// for i, v := range orderList.ListOrders {
+	// 	if v.Symbol == symbol {
+	// 		order = v
+	// 		break
+	// 	}
+	// 	i++
+	// }
+	// queryCancelOrder(order.SVI, symbol)
+
+	//
+	// processTimelineStart()
+	// handleEndOfDayDowScrape()
+	// handleCalculateDownDay()
+	//
+	// dataList := []string{"NVCN", "5.46"}
+	// handleTradeWisemen(dataList[0], dataList[1])
+	//
+	// symbol := "NVCN"
+	// orderList := getAllOrders()
+	// fmt.Println("len(orderList.ListOrders)")
+	// fmt.Println(len(orderList.ListOrders))
+	// order := Order{}
+	// for i, v := range orderList.ListOrders {
+	// 	if v.Symbol == symbol {
+	// 		order = v
+	// 		break
+	// 	}
+	// 	i++
+	// }
+
+	// fmt.Println(order.SVI)
+	//
+
+	// postCancellationBuyOrderEmail(symbol)
+
+	// queryCancelOrder(order.SVI)
+
+	// time.Sleep(time.Duration(10) * time.Second)
+	// // //Begin process monitoring for buy fulfilled.
+	// processCheckIsTradeBought(dataList[0])
+
+	// timeDelimiter := "1101"
+	// isBool := calculateIsTimeDelimiterMetSell(timeDelimiter)
+	// fmt.Println("isBool")
+	// fmt.Println(isBool)
+
 	fmt.Scanln()
 	fmt.Println("done")
 }

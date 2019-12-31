@@ -171,12 +171,17 @@ func handleCalculateDownDay() {
 	isDownDay := "true"
 	//Reset dow day eval store before calculation
 	truncateDownDayEvaluation()
-	//is dow in the red
-	//handle on dow...
+	//
 	dowValue := handleDowWebscrape()
 	endOfDayDowList := selectEndOfDayDow()
 
-	fmt.Println()
+	//clear end of day dow if list not empty
+	if len(endOfDayDowList) != 0 {
+		truncateEndOfDayDow()
+	}
+	//if it equals 0
+
+	//
 	downDayEvaluation := DownDayEvaluation{}
 	//if TRS is not empty
 	if len(endOfDayDowList) != 0 {

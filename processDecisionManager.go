@@ -326,6 +326,32 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		response := postNeoBuyOrderResponse(holdingWisemen)
 		fmt.Println(response)
 	}
+
+	//handle time delmiter
+	timeDelimiter := "1100"
+	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
+
+	if isTimeDelimiterMet {
+		//cancel cycle
+		cancelCycle(cycleMapPool["handleCheckIsTradeBought"])
+
+		//cancel order
+		orderList := getAllOrders()
+		// fmt.Println("len(orderList.ListOrders)")
+		// fmt.Println(len(orderList.ListOrders))
+		order := Order{}
+		for i, v := range orderList.ListOrders {
+			if v.Symbol == symbol {
+				order = v
+				break
+			}
+			i++
+		}
+		queryCancelOrder(order.SVI, symbol)
+
+		//send email
+		postCancellationBuyOrderEmail(symbol)
+	}
 }
 
 func formatQtyHolding(qty string) string {
