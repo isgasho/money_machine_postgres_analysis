@@ -385,3 +385,12 @@ type ShortCalendarDay struct {
 type EndOfDayDow struct {
 	EndOfDayDowValue string
 }
+
+type DayReviewStatement struct {
+	DowValues           string
+	IsMarketClosed      string
+	IsDownDay           string
+	IsCashDay           string
+	PrevEndDow          string
+	WisemenSymbolValues string
+}

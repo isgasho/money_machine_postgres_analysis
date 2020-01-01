@@ -690,6 +690,50 @@ func truncateTempSymbolHoldselectAltIntervalBuyWisemenLow() {
 	postCommandDBTruncate("TRUNCATE table temp_symbol_hold_low")
 }
 
+// type DayReviewStatement struct {
+// 	DowValues           string
+// 	IsMarketClosed      string
+// 	IsDownDay           string
+// 	IsCashDay           string
+// 	PrevEndDow          string
+// 	WisemenSymbolValues string
+// }
+
+// CREATE TABLE day_review_statement
+// (
+//    id SERIAL PRIMARY KEY,
+//    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+//    dow_values VARCHAR,
+//    is_market_closed VARCHAR,
+//    is_down_day VARCHAR,
+//    is_cash_day VARCHAR,
+//    prev_end_dow VARCHAR,
+//    wisemen_symbol_values VARCHAR
+// );
+
+//DayReviewStatement
+//day_review_statement
+func insertDayReviewStatement(dayReviewStatement DayReviewStatement) {
+	listValues := []string{dayReviewStatement.DowValues, dayReviewStatement.IsMarketClosed, dayReviewStatement.IsDownDay, dayReviewStatement.IsCashDay, dayReviewStatement.PrevEndDow, dayReviewStatement.WisemenSymbolValues}
+	postCommandDBInsert("INSERT INTO day_review_statement (dow_values, is_market_closed, is_down_day, is_cash_day, prev_end_dow, wisemen_symbol_values) VALUES (", listValues)
+}
+func selectDayReviewStatement() []DayReviewStatement {
+	dayReviewStatementList := []DayReviewStatement{}
+	response := postCommandDBSelect("SELECT dow_values, is_market_closed, is_down_day, is_cash_day, prev_end_dow, wisemen_symbol_values FROM day_review_statement")
+	container := parseDBResponse(response)
+	fmt.Println(container.ListStringFromDB)
+	fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		dayReviewStatement := DayReviewStatement{DowValues: v.ListString[0], IsMarketClosed: v.ListString[1], IsDownDay: v.ListString[2], IsCashDay: v.ListString[3], PrevEndDow: v.ListString[4], WisemenSymbolValues: v.ListString[5]}
+		dayReviewStatementList = append(dayReviewStatementList, dayReviewStatement)
+		i++
+	}
+	return dayReviewStatementList
+}
+func truncateDayReviewStatement() {
+	postCommandDBTruncate("TRUNCATE table day_review_statement")
+}
+
 //down_day_evaluation
 func insertDownDayEvaluation(downDayEvaluation DownDayEvaluation) {
 	listValues := []string{downDayEvaluation.IsDownDay, downDayEvaluation.Dow, downDayEvaluation.PreviousDow, downDayEvaluation.GreatestPchg}
