@@ -198,8 +198,10 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		conditionMarketClosed := selectMarketOpenAnalysis()
 		if conditionMarketClosed[0].IsMarketClosed == "true" {
 			setTimelineOperationsFalse()
+			postMarketClosedEmail()
 			fmt.Println("inside hit12")
 		}
+		// if
 		checkIsMarketOpenBool = false
 		boolOperate19 = true
 	}
@@ -263,6 +265,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		if isMarketClosed == "true" {
 			//handle TRS where market closed.
 			createTradeResultStoreMarketClosed()
+			fmt.Println("market closed")
 		}
 		//End of day dow scrape for next day analytics
 		handleEndOfDayDowScrape()
@@ -271,7 +274,84 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		resetCyclePools()
 		handleDayReset()
 		healthCheck()
+		// resetTimeOperations()
 	}
+}
+
+func resetTimeOperations() {
+	startMinute := getCurrentMinute()
+	startHour := getCurrentHour()
+
+	//7:49
+	checkIsMarketOpenMinute = startMinute
+	checkIsMarketOpenHour = startHour
+	fmt.Println("checkIsMarketOpenMinute")
+	fmt.Println(checkIsMarketOpenMinute)
+	fmt.Println("checkIsMarketOpenHour")
+	fmt.Println(checkIsMarketOpenHour)
+
+	//7:50
+	conditionOneMinute = startMinute + 1
+	conditionOneHour = startHour
+
+	fmt.Println("conditionOneMinute")
+	fmt.Println(conditionOneMinute)
+	fmt.Println("conditionOneHour")
+	fmt.Println(conditionOneHour)
+
+	//8:00
+	conditionTwoMinute = startMinute + 2
+	conditionTwoHour = startHour
+
+	fmt.Println("conditionTwoMinute")
+	fmt.Println(conditionTwoMinute)
+	fmt.Println("conditionTwoHour")
+	fmt.Println(conditionTwoHour)
+
+	//conditionMinuteHandleCalculateDownDay1 8:27 engage
+	conditionMinuteHandleCalculateDownDay1 = startMinute + 3
+	conditionHourHandleCalculateDownDay1 = startHour
+
+	fmt.Println("conditionMinuteHandleCalculateDownDay1")
+	fmt.Println(conditionMinuteHandleCalculateDownDay1)
+	fmt.Println("conditionHourHandleCalculateDownDay1")
+	fmt.Println(conditionHourHandleCalculateDownDay1)
+
+	//9:00
+	conditionFourMinute = startMinute + 4
+	conditionFourHour = startHour
+
+	fmt.Println("conditionFourMinute")
+	fmt.Println(conditionFourMinute)
+	fmt.Println("conditionFourHour")
+	fmt.Println(conditionFourHour)
+
+	//9:30
+	conditionFiveMinute = startMinute + 5
+	conditionFiveHour = startHour
+
+	fmt.Println("conditionFiveMinute")
+	fmt.Println(conditionFiveMinute)
+	fmt.Println("conditionFiveHour")
+	fmt.Println(conditionFiveHour)
+
+	//9:44
+	conditionSixMinute = startMinute + 6
+	conditionSixHour = startHour
+
+	fmt.Println("conditionSixMinute")
+	fmt.Println(conditionSixMinute)
+	fmt.Println("conditionSixHour")
+	fmt.Println(conditionSixHour)
+
+	//1:30
+	conditionNineteenMinute = startMinute + 7
+	conditionNineteenHour = startHour
+
+	fmt.Println("conditionNineteenMinute")
+	fmt.Println(conditionNineteenMinute)
+	fmt.Println("conditionNineteenHour")
+	fmt.Println(conditionNineteenHour)
 }
 
 func handleEndOfDayDowScrape() {
@@ -291,7 +371,7 @@ func resetCyclePools() {
 		fmt.Println(i)
 	}
 	cycleMapPool = make(map[string]*Cycle)
-	// processTimelineStart()
+	processTimelineStart()
 }
 func handleCheckIsTradeBought(params ...interface{}) {
 	listVal := reflect.ValueOf(params[0])
@@ -363,12 +443,20 @@ func formatQtyHolding(qty string) string {
 func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
 	//if stocklist is 0 after several attempts then restart TSP process async
+	fmt.Println(twiStockList)
+	fmt.Println("overarch after twi")
 	if len(twiStockList) == 0 {
 		go handleOverarchTopStockAync()
 		return
 	}
+
+	for i, v := range twiStockList {
+		fmt.Println(v.Symbol)
+		fmt.Println(v.Pchg)
+		i++
+	}
 	//High process for wisemen and whale
-	highTransferanceProcess(twiStockList)
+	// highTransferanceProcess(twiStockList)
 	// // // // //Low process for whale
 	// lowTransferanceProcess(twiStockList)
 }
@@ -393,6 +481,7 @@ func highTransferanceProcess(twiStockList []Stock) {
 	positiveTwiStockList := []Stock{}
 	isDuplicate := false
 	isDuplicateTemp := false
+	// for i,v := range topStockPullStockList()
 
 	for i, v := range twiStockList {
 		if v.IsCurrentPriceHigherThanPreviousClose == "true" {
@@ -896,7 +985,7 @@ func twiWebscrape() []Stock {
 	//keep trying
 	for indexTwiWebscrape < 10 {
 		response2 = queryWebscrapeTwi()
-
+		fmt.Println("inside twi")
 		if response2 != "try again failure" {
 			break
 		}
@@ -910,11 +999,26 @@ func twiWebscrape() []Stock {
 			return []Stock{}
 		}
 	}
-	// catch response2 failure
+	fmt.Println("twiWebscrape")
 	symbolList := parseTwiWebscrape(response2)
+	fmt.Println("symbolList")
+	fmt.Println(symbolList)
+	// symbolList := []string{"AAPL", "MX.A", "MAX.O", "NVCN", "TOY.A"}
+	// formattedSymbolList := filterTwiSymbolList(symbolList)
 	responseSymbolList := queryMultiStockPull(symbolList)
 	stockList := parseStockSetQuery(responseSymbolList)
 	return stockList
+}
+
+func filterTwiSymbolList(symbolListToFilter []string) []string {
+	symbolList := []string{}
+	for i, v := range symbolListToFilter {
+		if strings.Contains(v, ".") == false {
+			symbolList = append(symbolList, v)
+		}
+		i++
+	}
+	return symbolList
 }
 
 // func twiWebscrapeAync(params ...interface{}) {

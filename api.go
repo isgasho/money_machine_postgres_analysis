@@ -523,8 +523,38 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	handleEndOfDayDowScrape()
+	// handleEndOfDayDowScrape()
 	processTimelineStart()
+
+	//
+	// resetTimeOperations()
+	// systemStartProcesses()
+	// truncateWisemenSymbolHold()
+	// processOverarchTopStock()
+	// handleOverarchTopStock()
+	// symbolList := []string{"AAPL", "SNE"}
+	// response := queryMultiStockPull(symbolList)
+	// stockList := parseStockSetQuery(response)
+
+	// for i, v := range stockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+
+	// twiStockList := twiWebscrape()
+	// for i, v := range twiStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
+	//
+	// topStockPullStockList := topStockPull()
+	// for i, v := range topStockPullStockList {
+	// 	fmt.Println(v.Symbol)
+	// 	fmt.Println(v.Pchg)
+	// 	i++
+	// }
 
 	// handleEndOfDayDowScrape()
 	// dataList := []string{"NVCN", "5.46"}

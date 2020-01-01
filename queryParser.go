@@ -77,6 +77,13 @@ func parseStockSetQuery(queryString string) []Stock {
 
 	var stockList = []Stock{}
 
+	//
+	// fmt.Println("parseList")
+	// for i, v := range parseList {
+	// 	fmt.Println(v)
+	// 	i++
+	// }
+
 	for i, v := range parseList {
 		//Create stock and append to composite
 		// fmt.Println(i, v)
@@ -96,6 +103,8 @@ func parseStockSetQuery(queryString string) []Stock {
 
 		pchgUnparsed := strings.Split(v, "<pchg>")[1]
 		pchg := strings.Split(pchgUnparsed, "</pchg>")[0]
+		// fmt.Println("pchg")
+		// fmt.Println(pchg)
 
 		pclsUnparsed := strings.Split(v, "<pcls>")[1]
 		pcls := strings.Split(pclsUnparsed, "</pcls>")[0]
