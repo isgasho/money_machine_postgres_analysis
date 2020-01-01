@@ -524,14 +524,15 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	// handleEndOfDayDowScrape()
-	// processTimelineStart()
+	processTimelineStart()
+	// twiWebscrape()
 
 	// insertDayReviewStatement(DayReviewStatement{DowValues: "DowValues", IsMarketClosed: "IsMarketClosed", IsDownDay: "IsDownDay", IsCashDay: "IsCashDay", PrevEndDow: "PrevEndDow", WisemenSymbolValues: "WisemenSymbolValues"})
 
-	truncateDayReviewStatement()
-	dayReviewStatement := selectDayReviewStatement()
-	fmt.Println("dayReviewStatement")
-	fmt.Println(dayReviewStatement)
+	// truncateDayReviewStatement()
+	// dayReviewStatement := selectDayReviewStatement()
+	// fmt.Println("dayReviewStatement")
+	// fmt.Println(dayReviewStatement)
 
 	//
 	// resetTimeOperations()

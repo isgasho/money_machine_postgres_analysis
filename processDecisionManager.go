@@ -982,6 +982,7 @@ func handleDowWebscrape() string {
 func twiWebscrape() []Stock {
 	indexTwiWebscrape := 0
 	response2 := ""
+	stockList := []Stock{}
 	//keep trying
 	for indexTwiWebscrape < 10 {
 		response2 = queryWebscrapeTwi()
@@ -1003,10 +1004,13 @@ func twiWebscrape() []Stock {
 	symbolList := parseTwiWebscrape(response2)
 	fmt.Println("symbolList")
 	fmt.Println(symbolList)
+	//
 	// symbolList := []string{"AAPL", "MX.A", "MAX.O", "NVCN", "TOY.A"}
 	// formattedSymbolList := filterTwiSymbolList(symbolList)
-	responseSymbolList := queryMultiStockPull(symbolList)
-	stockList := parseStockSetQuery(responseSymbolList)
+	if len(symbolList) != 0 {
+		responseSymbolList := queryMultiStockPull(symbolList)
+		stockList = parseStockSetQuery(responseSymbolList)
+	}
 	return stockList
 }
 
