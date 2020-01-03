@@ -1232,14 +1232,17 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 
 	fmt.Println("inside listMatchingSymbolInformationAtTrade")
 	//query stocks
-	stockList := selectStockWisemen()
+	stockList := selectStockWisemenBySymbol(transactionHistory.Symbol)
 
 	highestLastIndex := 0
 	highestLast := 0.0
 	//iterate through pchg list, find highest
 	for i, stock := range stockList {
-		floatLast, err := strconv.ParseFloat(stock.Last, 64)
-		fmt.Println(err)
+		floatLast := 0.0
+		if s, err := strconv.ParseFloat(stock.Last, 64); err == nil {
+			floatLast = s
+		}
+
 		if i == 0 {
 			highestLast = floatLast
 			continue
@@ -1251,18 +1254,23 @@ func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {
 	}
 	highestStock := stockList[highestLastIndex]
 	timeCreatedHigh := highestStock.TimeCreated
+	fmt.Println(highestStock.Last)
+	fmt.Println(timeCreatedHigh)
 
 	fmt.Println("highestStock")
-	fmt.Println(highestStock)
+	fmt.Println(highestStock.Last)
 	fmt.Println("timeCreatedHigh")
 	fmt.Println(timeCreatedHigh)
+	//
 
 	lowestLastIndex := 0
 	lowestLast := 0.0
 	//iterate through pchg list, find highest
 	for i, stock := range stockList {
-		floatLast, err := strconv.ParseFloat(stock.Last, 64)
-		fmt.Println(err)
+		floatLast := 0.0
+		if s, err := strconv.ParseFloat(stock.Last, 64); err == nil {
+			floatLast = s
+		}
 		if i == 0 {
 			lowestLast = floatLast
 			continue

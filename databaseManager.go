@@ -484,6 +484,23 @@ func selectStockWisemen() []Stock {
 	}
 	return listStock
 }
+func selectStockWisemenBySymbol(symbol string) []Stock {
+	listStock := []Stock{}
+	stringCMD := "SELECT symbol, bid, ask, last, pchg, pcls, opn, vl, time_created FROM stock_wisemen WHERE symbol = '" + symbol + "'"
+	response := postCommandDBSelectByMultiple(stringCMD)
+	// fmt.Println("response")
+	// fmt.Println(response)
+
+	container := parseDBResponse(response)
+	// fmt.Println(container.ListStringFromDB)
+	// fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		stock := Stock{Symbol: v.ListString[0], Bid: v.ListString[1], Ask: v.ListString[2], Last: v.ListString[3], Pchg: v.ListString[4], Pcls: v.ListString[5], Opn: v.ListString[6], Vl: v.ListString[7], TimeCreated: v.ListString[8]}
+		listStock = append(listStock, stock)
+		i++
+	}
+	return listStock
+}
 func truncateStockWisemen() {
 	postCommandDBTruncate("TRUNCATE table stock_wisemen")
 }
@@ -1105,5 +1122,13 @@ func postNeoTradeDayResult(symbol string, tradeDayResult string) string {
 
 	url := "http://localhost:11000/databaseQuery"
 	response := post(url, json)
+	return response
+}
+
+func postCommandDBSelectByMultiple(commandQuery string) string {
+	json := "{ \"requestType\": \"dbSelectByMultiple\",\"cmd\": \"" + commandQuery + "\"}"
+	url := "http://0.0.0.0:4440/api"
+	response := post(url, json)
+	fmt.Println(response)
 	return response
 }

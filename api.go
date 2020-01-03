@@ -530,6 +530,19 @@ func main() {
 	// processCheckIsTradeBought("SES")
 	// twiWebscrape()
 
+	// for i, v := range stockList {
+	// 	// [fmt.Println(v.Symbol)
+	// 	i++
+	// }
+	// fmt.Println(len(stockList))
+
+	// i := 0
+	// for i < 100 {
+	// 	fmt.Println(stockList[i])
+	// 	i++
+	// }
+	// stockList := selectStockWisemen()
+
 	// insertDayReviewStatement(DayReviewStatement{DowValues: "DowValues", IsMarketClosed: "IsMarketClosed", IsDownDay: "IsDownDay", IsCashDay: "IsCashDay", PrevEndDow: "PrevEndDow", WisemenSymbolValues: "WisemenSymbolValues"})
 
 	// truncateDayReviewStatement()
