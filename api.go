@@ -524,7 +524,10 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	// handleEndOfDayDowScrape()
-	// processTimelineStart()
+	// handleNoBuyOnTradeDay()
+	// resetTimeOperations()
+	processTimelineStart()
+	// processCheckIsTradeBought("SES")
 	// twiWebscrape()
 
 	// insertDayReviewStatement(DayReviewStatement{DowValues: "DowValues", IsMarketClosed: "IsMarketClosed", IsDownDay: "IsDownDay", IsCashDay: "IsCashDay", PrevEndDow: "PrevEndDow", WisemenSymbolValues: "WisemenSymbolValues"})
@@ -539,7 +542,7 @@ func main() {
 	// systemStartProcesses()
 	// truncateWisemenSymbolHold()
 	// processOverarchTopStock()
-	handleOverarchTopStock()
+	// handleOverarchTopStock()
 	// symbolList := []string{"AAPL", "SNE"}
 	// response := queryMultiStockPull(symbolList)
 	// stockList := parseStockSetQuery(response)

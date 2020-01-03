@@ -36,6 +36,10 @@ var conditionFiveHour = 9
 var conditionSixMinute = 44
 var conditionSixHour = 9
 
+//11:00
+var conditionSevenMinute = 0
+var conditionSevenHour = 11
+
 //1:30
 var conditionNineteenMinute = 30
 var conditionNineteenHour = 13
@@ -260,6 +264,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
 		boolOperate19 = false
+		listInformationAtTrade := selectInformationAtTrade()
+
 		//handle ifMarketClosed with information about TRS.
 		isMarketClosed := selectMarketOpenAnalysis()[0].IsMarketClosed
 		if isMarketClosed == "true" {
@@ -267,6 +273,14 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 			createTradeResultStoreMarketClosed()
 			fmt.Println("market closed")
 		}
+		if isMarketClosed != "true" {
+			if len(listInformationAtTrade) != 2 {
+				handleOverarchTopStock()
+				handleNoBuyOnTradeDay()
+				fmt.Println("No buy")
+			}
+		}
+
 		//End of day dow scrape for next day analytics
 		handleEndOfDayDowScrape()
 		//At some point in this hour reset the pools, and reset the timeline.
@@ -344,8 +358,12 @@ func resetTimeOperations() {
 	fmt.Println("conditionSixHour")
 	fmt.Println(conditionSixHour)
 
+	//11:00
+	conditionSevenMinute = startMinute + 7
+	conditionSevenHour = startHour
+
 	//1:30
-	conditionNineteenMinute = startMinute + 7
+	conditionNineteenMinute = startMinute + 8
 	conditionNineteenHour = startHour
 
 	fmt.Println("conditionNineteenMinute")
@@ -363,6 +381,12 @@ func handleEndOfDayDowScrape() {
 func createTradeResultStoreMarketClosed() {
 	tradeResultStore := TradeResultStore{Result: "Market closed"}
 	insertTradeResultStore(tradeResultStore)
+}
+
+func handleNoBuyOnTradeDay() {
+	tradeResultStore := TradeResultStore{Result: "No buy on trade day"}
+	insertTradeResultStore(tradeResultStore)
+	postNoBuyOnTradeDayEmail()
 }
 
 func resetCyclePools() {
@@ -407,8 +431,20 @@ func handleCheckIsTradeBought(params ...interface{}) {
 		fmt.Println(response)
 	}
 
-	//handle time delmiter
-	timeDelimiter := "1100"
+	//handle time delmiter 11
+	// convert number delimiters to time
+	// if minute is len 1, add 0
+	// create time delimiter
+	hourDelimiter := strconv.Itoa(conditionSevenHour)
+	minuteDelimiter := strconv.Itoa(conditionSevenMinute)
+	if len(minuteDelimiter) == 1 {
+		minuteDelimiter = "0" + minuteDelimiter
+	}
+	//
+	timeDelimiter := hourDelimiter + minuteDelimiter
+	fmt.Println("created timeDelimiter")
+	fmt.Println(timeDelimiter)
+	//update
 	isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
 
 	if isTimeDelimiterMet {
@@ -470,7 +506,7 @@ func handleOverarchTopStockAync() {
 	}
 	postNodeTSPAsyncSuccessEmail()
 	//High process for wisemen and whale
-	highTransferanceProcess(twiStockList)
+	// highTransferanceProcess(twiStockList)
 }
 
 func highTransferanceProcess(twiStockList []Stock) {
@@ -983,12 +1019,19 @@ func twiWebscrape() []Stock {
 	indexTwiWebscrape := 0
 	response2 := ""
 	stockList := []Stock{}
+	symbolList := []string{}
 	//keep trying
 	for indexTwiWebscrape < 10 {
 		response2 = queryWebscrapeTwi()
 		fmt.Println("inside twi")
 		if response2 != "try again failure" {
-			break
+			// containsSymbolsTwiScrape
+			symbolList = parseTwiWebscrape(response2)
+			fmt.Println("symbolList internal")
+			fmt.Println(symbolList)
+			if len(symbolList) != 0 {
+				break
+			}
 		}
 		postNodeTSPFailureEmail()
 
@@ -1001,9 +1044,11 @@ func twiWebscrape() []Stock {
 		}
 	}
 	fmt.Println("twiWebscrape")
-	symbolList := parseTwiWebscrape(response2)
-	fmt.Println("symbolList")
-	fmt.Println(symbolList)
+	if len(symbolList) == 0 {
+		symbolList = parseTwiWebscrape(response2)
+		fmt.Println("symbolList")
+		fmt.Println(symbolList)
+	}
 	//
 	// symbolList := []string{"AAPL", "MX.A", "MAX.O", "NVCN", "TOY.A"}
 	// formattedSymbolList := filterTwiSymbolList(symbolList)

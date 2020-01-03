@@ -1565,6 +1565,17 @@ func postMarketClosedEmail() string {
 	return response
 }
 
+func postNoBuyOnTradeDayEmail() string {
+	json := `{
+		"request_type": "postNoBuyOnTradeDayEmail",
+		"data": {}}
+		`
+
+	url := "http://localhost:3000/api/brokerage"
+	response := post(url, json)
+	return response
+}
+
 func postIsTradeDayEmail(isTradeDay string, isDownDay string, isUnsettledFunds string) string {
 	json := `{
 		"request_type": "postIsTradeDayEmail",
