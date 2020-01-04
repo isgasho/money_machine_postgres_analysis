@@ -526,7 +526,9 @@ func main() {
 	// handleEndOfDayDowScrape()
 	// handleNoBuyOnTradeDay()
 	// resetTimeOperations()
-	processTimelineStart()
+	// processTimelineStart()
+
+	postEmailTradeResultStore(TradeResultStore{})
 	// processCheckIsTradeBought("SES")
 	// twiWebscrape()
 
