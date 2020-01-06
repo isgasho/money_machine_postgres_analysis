@@ -19,7 +19,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(desiredLimitPrice)
 	//
 	// dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-	dollarAmountToTrade := "50.00"
+	dollarAmountToTrade := "1000.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
@@ -33,7 +33,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	// stringQty := fmt.Sprintf("%f", qtyInt)
 	stringQty := strconv.Itoa(qtyInt)
 	//
-	stringQty = "1"
+	// stringQty = "1"
 	//move to handleCheckIsTradeBought to when trade actually occurs.
 	// handleInsertInformationAtTrade(symbol, "limit", "buy", "2.00")
 	stringQtyIAT := stringQty + ".00"
@@ -44,7 +44,6 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 
 	stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
 	// fmt.Println(stringLimitPrice)
-	// queryTradeBuyLimit(symbol, stringLimitPrice, "2")
 	queryTradeBuyLimit(symbol, stringLimitPrice, stringQty)
 }
 
@@ -948,7 +947,7 @@ func removeElementInt(listEntered []int, val int) []int {
 
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
-	isTradeDay = "true"
+	// isTradeDay = "true"
 	fmt.Println(dataList)
 	//handle no neo found..
 	// overarchTradeWisemen
@@ -998,6 +997,18 @@ func overarchTradeWisemen(dataList []string) {
 			}
 		}
 	}
+}
+
+func formatDowListRemoveCommaValues(dowList []Dow) []Dow {
+	formattedDowList := []Dow{}
+	for i, v := range dowList {
+		copyDow := v
+		stringSlice := strings.Split(v.CurrentDowValue, ",")
+		copyDow.CurrentDowValue = stringSlice[0] + stringSlice[1]
+		formattedDowList = append(formattedDowList, copyDow)
+		i++
+	}
+	return formattedDowList
 }
 
 // func FloatToString(input_num float64) string {

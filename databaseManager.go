@@ -926,6 +926,28 @@ func truncateAccountBalance() {
 	postCommandDBTruncate("TRUNCATE table account_balance")
 }
 
+//TSPCollectionStatement
+func insertTSPCollectionStatement(tspCollectionStatement TSPCollectionStatement) {
+	listValues := []string{tspCollectionStatement.DataCache}
+	postCommandDBInsert("INSERT INTO tsp_collection_statement (data_cache) VALUES (", listValues)
+}
+func selectTSPCollectionStatement() []TSPCollectionStatement {
+	tspCollectionStatementList := []TSPCollectionStatement{}
+	response := postCommandDBSelect("SELECT data_cache FROM tsp_collection_statement")
+	container := parseDBResponse(response)
+	// fmt.Println(container.ListStringFromDB)
+	// fmt.Println(len(container.ListStringFromDB))
+	for i, v := range container.ListStringFromDB {
+		tspCollectionStatement := TSPCollectionStatement{DataCache: v.ListString[0]}
+		tspCollectionStatementList = append(tspCollectionStatementList, tspCollectionStatement)
+		i++
+	}
+	return tspCollectionStatementList
+}
+func truncateTSPCollectionStatement() {
+	postCommandDBTruncate("TRUNCATE table tsp_collection_statement")
+}
+
 // insertAccountBalance
 
 // sqlStatement := `

@@ -6,6 +6,8 @@ type fn func(params ...interface{})
 
 var cycleMapPool = make(map[string]*Cycle)
 
+var globalTSPCollectionStatementCache = []string{}
+
 var intervalTradeMonitorDelimiter = 0
 
 // var dayID = 3
@@ -393,4 +395,8 @@ type DayReviewStatement struct {
 	IsCashDay           string
 	PrevEndDow          string
 	WisemenSymbolValues string
+}
+
+type TSPCollectionStatement struct {
+	DataCache string
 }

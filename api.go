@@ -523,10 +523,44 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	// processTimelineStart()
 	// handleEndOfDayDowScrape()
 	// handleNoBuyOnTradeDay()
 	// resetTimeOperations()
-	processTimelineStart()
+
+	// dowList := selectDow()
+	// formattedDowList := formatDowListRemoveCommaValues(dowList)
+
+	// fmt.Println("formattedDowList")
+	// fmt.Println(formattedDowList)
+	//
+
+	truncateTSPCollectionStatement()
+
+	handleTSPCollectionStatementPhase1()
+	handleTSPCollectionStatementPhase2()
+
+	// truncateTSPCollectionStatement()
+
+	tspCollectionStatement := selectTSPCollectionStatement()[0]
+
+	fmt.Println("tspCollectionStatement")
+	fmt.Println(tspCollectionStatement.DataCache)
+
+	//
+
+	// handleTSPCollectionStatementPhase1()
+	// handleTSPCollectionStatementPhase2()
+
+	// // truncateTSPCollectionStatement()
+
+	// tspCollectionStatement1 := selectTSPCollectionStatement()[0]
+
+	// fmt.Println("tspCollectionStatement1")
+	// fmt.Println(tspCollectionStatement1.DataCache)
+
+	//
+	// handleTradeWisemen("ZYNE", "2.00")
 
 	// postEmailTradeResultStore(TradeResultStore{})
 	// processCheckIsTradeBought("SES")

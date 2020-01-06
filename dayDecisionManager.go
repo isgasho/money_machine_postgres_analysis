@@ -281,6 +281,78 @@ func calculateShortDayAnalysis() {
 	}
 }
 
+func handleTSPCollectionStatementPhase1() {
+	//This is at a certain time after dow and wisemen selection.
+	//
+	stringTSPCollectionStatementCache := calculateTSPCollectionStatementString()
+
+	//write to cache
+	globalTSPCollectionStatementCache = append(globalTSPCollectionStatementCache, stringTSPCollectionStatementCache)
+}
+func handleTSPCollectionStatementPhase2() {
+	//retrieve from cache
+	stringTSPCollectionStatementCache := globalTSPCollectionStatementCache[0]
+
+	stringTSPCollectionStatementCache1 := calculateTSPCollectionStatementString()
+
+	stringTSPCollectionStatementCache += stringTSPCollectionStatementCache1
+	//clear cache
+	globalTSPCollectionStatementCache = []string{}
+	fmt.Println("globalTSPCollectionStatementCache cleared")
+	fmt.Println(globalTSPCollectionStatementCache)
+	//persist
+	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCache}
+	fmt.Println(instanceTSPCollectionStatement)
+	insertTSPCollectionStatement(instanceTSPCollectionStatement)
+}
+
+func calculateTSPCollectionStatementString() string {
+	stringTSPCollectionStatementCache := ""
+
+	marketOpenAnalysis := selectMarketOpenAnalysis()[0]
+	stringTSPCollectionStatementCache += marketOpenAnalysis.IsMarketClosed + "~"
+	//
+	dowList := selectDow()
+
+	formatedDowList := formatDowListRemoveCommaValues(dowList)
+
+	for i, v := range formatedDowList {
+		stringTSPCollectionStatementCache += v.CurrentDowValue
+
+		if i == (len(dowList) - 1) {
+			stringTSPCollectionStatementCache += "~"
+			break
+		}
+		stringTSPCollectionStatementCache += " "
+	}
+
+	wisemenSymbolList := selectWisemenSymbolHold()
+
+	//retrieve symbol values
+	stocKResponse := queryMultiStockPull(wisemenSymbolList)
+	stockList := parseStockSetQuery(stocKResponse)
+
+	for i, v := range stockList {
+		stockSymbol := v.Symbol
+		stockLast := v.Last
+		stockPchg := v.Pchg
+		stringTSPCollectionStatementCache += stockSymbol + " " + stockLast + " " + stockPchg
+
+		if i == (len(stockList) - 1) {
+			stringTSPCollectionStatementCache += "~"
+			break
+		}
+		stringTSPCollectionStatementCache += " "
+		i++
+	}
+
+	fmt.Println("stringTSPCollectionStatementCache")
+	fmt.Println(stringTSPCollectionStatementCache)
+	return stringTSPCollectionStatementCache
+}
+
+//
+
 // currentDay :=
 // for i, v := range listShortCalendarDay {
 
