@@ -220,6 +220,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		boolOperate1 = false
 		handleOverarchTopStock()
 		processWisemenQueryStockSet()
+		handleTSPCollectionStatementPhase()
 		// processWhaleQueryStockSet()
 	}
 	if currentTime.Minute() == conditionTwoMinute && currentTime.Hour() == conditionTwoHour && boolOperate2 {
@@ -234,7 +235,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		//handle down day calculation, later to be queried and checked by overarchIsTradeDay before purchases
 		handleCalculateCashDay()
 		handleCalculateDownDay()
-		// overarchIsTradeDay()
+
+		handleTSPCollectionStatementPhase1()
 		healthCheck()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
@@ -366,6 +368,24 @@ func resetTimeOperations() {
 	conditionNineteenMinute = startMinute + 8
 	conditionNineteenHour = startHour
 
+	conditionTimeMinuteDow1 = checkIsMarketOpenMinute
+	conditionTimeHourDow1 = checkIsMarketOpenHour
+
+	conditionTimeMinuteDow2 = conditionOneMinute
+	conditionTimeHourDow2 = conditionOneHour
+
+	conditionTimeMinuteDow3 = conditionTwoMinute
+	conditionTimeHourDow3 = conditionTwoHour
+
+	conditionTimeMinuteDow4 = conditionMinuteHandleCalculateDownDay1
+	conditionTimeHourDow4 = conditionHourHandleCalculateDownDay1
+
+	conditionTimeMinuteDow5 = conditionSixMinute
+	conditionTimeHourDow5 = conditionSixHour
+
+	conditionTimeMinuteDow6 = conditionSevenMinute
+	conditionTimeHourDow6 = conditionSevenHour
+
 	fmt.Println("conditionNineteenMinute")
 	fmt.Println(conditionNineteenMinute)
 	fmt.Println("conditionNineteenHour")
@@ -375,6 +395,8 @@ func resetTimeOperations() {
 func handleEndOfDayDowScrape() {
 	truncateEndOfDayDow()
 	dowValue := handleDowWebscrape()
+	// dowValue := "28,701.38"
+
 	insertEndOfDayDow(dowValue)
 }
 
@@ -1011,8 +1033,10 @@ func processAppendDayOfWeekToStock(stock Stock) Stock {
 
 func handleDowWebscrape() string {
 	response := queryWebscrape()
-	currentDowValue := parseDowWebscrape(response)
-	return currentDowValue
+	dowValue := parseDowWebscrape(response)
+	dowList := []Dow{Dow{CurrentDowValue: dowValue}}
+	dowValue = formatDowListRemoveCommaValues(dowList)[0].CurrentDowValue
+	return dowValue
 }
 
 func twiWebscrape() []Stock {

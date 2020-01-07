@@ -45,6 +45,7 @@ func checKIsBrokerageResponding() {
 	if isMarketClosed == true {
 		fmt.Println("marketClosed is true")
 		marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "true"}
+		// marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "false"}
 		insertMarketOpenAnalysis(marketOpenAnalysis)
 	}
 }
@@ -173,12 +174,14 @@ func handleCalculateDownDay() {
 	truncateDownDayEvaluation()
 	//
 	dowValue := handleDowWebscrape()
+	// dowList := []Dow{Dow{CurrentDowValue: dowValue}}
+	// dowValue = formatDowListRemoveCommaValues(dowList)[0].CurrentDowValue
 	endOfDayDowList := selectEndOfDayDow()
 
-	//clear end of day dow if list not empty
-	if len(endOfDayDowList) != 0 {
-		truncateEndOfDayDow()
-	}
+	// //clear end of day dow if list not empty
+	// if len(endOfDayDowList) != 0 {
+	// 	truncateEndOfDayDow()
+	// }
 	//if it equals 0
 
 	//
@@ -191,11 +194,13 @@ func handleCalculateDownDay() {
 
 		for i, endOfDayDow := range listEndOfDayDow {
 			if endOfDayDow.EndOfDayDowValue != "" {
-				fmt.Println("hit")
-				fmt.Println("dowValue")
-				fmt.Println(dowValue)
-				fmt.Println("endOfDayDow.EndOfDayDowValue")
-				fmt.Println(endOfDayDow.EndOfDayDowValue)
+				// fmt.Println("hit")
+				// fmt.Println("dowValue")
+				// fmt.Println(dowValue)
+				// fmt.Println("endOfDayDow.EndOfDayDowValue")
+				// fmt.Println(endOfDayDow.EndOfDayDowValue)
+				// formattedEndOfDayDow := endOfDayDow.EndOfDayDowValue
+
 				if dowValue > endOfDayDow.EndOfDayDowValue {
 					isDownDay = "false"
 					downDayEvaluation = DownDayEvaluation{IsDownDay: isDownDay, Dow: dowValue, PreviousDow: endOfDayDow.EndOfDayDowValue} //tradeResultStore.Dow4}
@@ -281,7 +286,7 @@ func calculateShortDayAnalysis() {
 	}
 }
 
-func handleTSPCollectionStatementPhase1() {
+func handleTSPCollectionStatementPhase() {
 	//This is at a certain time after dow and wisemen selection.
 	//
 	stringTSPCollectionStatementCache := calculateTSPCollectionStatementString()
@@ -289,20 +294,20 @@ func handleTSPCollectionStatementPhase1() {
 	//write to cache
 	globalTSPCollectionStatementCache = append(globalTSPCollectionStatementCache, stringTSPCollectionStatementCache)
 }
-func handleTSPCollectionStatementPhase2() {
+func handleTSPCollectionStatementPhase1() {
 	//retrieve from cache
 	stringTSPCollectionStatementCache := globalTSPCollectionStatementCache[0]
 
-	stringTSPCollectionStatementCache1 := calculateTSPCollectionStatementString()
+	stringTSPCollectionStatementCache1 := calculateTSPCollectionStatementString1()
 
 	stringTSPCollectionStatementCache += stringTSPCollectionStatementCache1
 	//clear cache
 	globalTSPCollectionStatementCache = []string{}
-	fmt.Println("globalTSPCollectionStatementCache cleared")
-	fmt.Println(globalTSPCollectionStatementCache)
+	// fmt.Println("globalTSPCollectionStatementCache cleared")
+	// fmt.Println(globalTSPCollectionStatementCache)
 	//persist
 	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCache}
-	fmt.Println(instanceTSPCollectionStatement)
+	// fmt.Println(instanceTSPCollectionStatement)
 	insertTSPCollectionStatement(instanceTSPCollectionStatement)
 }
 
@@ -310,13 +315,66 @@ func calculateTSPCollectionStatementString() string {
 	stringTSPCollectionStatementCache := ""
 
 	marketOpenAnalysis := selectMarketOpenAnalysis()[0]
-	stringTSPCollectionStatementCache += marketOpenAnalysis.IsMarketClosed + "~"
+	stringTSPCollectionStatementCache += "IsMarketClosed" + " " + marketOpenAnalysis.IsMarketClosed + "~"
+
+	// downDayEvaluation := selectDownDayEvaluation()[0]
+	// stringTSPCollectionStatementCache += "IsDownDay" + " " + downDayEvaluation.IsDownDay + " prevDow " + downDayEvaluation.PreviousDow + " current Dow " + downDayEvaluation.Dow + "~"
+
 	//
 	dowList := selectDow()
 
-	formatedDowList := formatDowListRemoveCommaValues(dowList)
+	// formatedDowList := formatDowListRemoveCommaValues(dowList)
 
-	for i, v := range formatedDowList {
+	for i, v := range dowList {
+		stringTSPCollectionStatementCache += v.CurrentDowValue
+
+		if i == (len(dowList) - 1) {
+			stringTSPCollectionStatementCache += "~"
+			break
+		}
+		stringTSPCollectionStatementCache += " "
+	}
+
+	wisemenSymbolList := selectWisemenSymbolHold()
+
+	//retrieve symbol values
+	stocKResponse := queryMultiStockPull(wisemenSymbolList)
+	stockList := parseStockSetQuery(stocKResponse)
+
+	for i, v := range stockList {
+		stockSymbol := v.Symbol
+		stockLast := v.Last
+		stockPchg := v.Pchg
+		stringTSPCollectionStatementCache += stockSymbol + " " + stockLast + " " + stockPchg
+
+		if i == (len(stockList) - 1) {
+			stringTSPCollectionStatementCache += "~"
+			break
+		}
+		stringTSPCollectionStatementCache += " "
+		i++
+	}
+
+	// fmt.Println("stringTSPCollectionStatementCache")
+	// fmt.Println(stringTSPCollectionStatementCache)
+	return stringTSPCollectionStatementCache
+}
+
+func calculateTSPCollectionStatementString1() string {
+	stringTSPCollectionStatementCache := ""
+
+	marketOpenAnalysis := selectMarketOpenAnalysis()[0]
+	stringTSPCollectionStatementCache += "IsMarketClosed" + " " + marketOpenAnalysis.IsMarketClosed + "~"
+
+	downDayEvaluation := selectDownDayEvaluation()[0]
+	stringTSPCollectionStatementCache += "IsDownDay" + " " + downDayEvaluation.IsDownDay + " prevDow " + downDayEvaluation.PreviousDow + " current Dow " + downDayEvaluation.Dow + "~"
+
+	//
+	dowList := selectDow()
+
+	// formatedDowList := formatDowListRemoveCommaValues(dowList)
+
+	for i, v := range dowList {
 		stringTSPCollectionStatementCache += v.CurrentDowValue
 
 		if i == (len(dowList) - 1) {

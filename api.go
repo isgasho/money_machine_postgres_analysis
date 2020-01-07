@@ -523,6 +523,7 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+	resetTimeOperations()
 	// processTimelineStart()
 	// handleEndOfDayDowScrape()
 	// handleNoBuyOnTradeDay()
@@ -535,17 +536,38 @@ func main() {
 	// fmt.Println(formattedDowList)
 	//
 
-	truncateTSPCollectionStatement()
+	// truncateDownDayEvaluation()
 
-	handleTSPCollectionStatementPhase1()
-	handleTSPCollectionStatementPhase2()
+	// selectDownDayEvaluation()
 
+	// dow := handleDowWebscrape()
+	// insertDow(dow)
+	// dowVal := selectDow()
+	// fmt.Println(dowVal)
+	// insertEndOfDayDow("28,703.38")
+	// truncateDow()
+
+	// dowValue := handleDowWebscrape()
+	// insertDow(dowValue)
+
+	// insertDow(dowValue)
+
+	// insertDow(dowValue)
+
+	// insertDow(dowValue)
+
+	// handleEndOfDayDowScrape()
+	// handleCalculateDownDay()
+	// truncateDownDayEvaluation()
 	// truncateTSPCollectionStatement()
+	// truncateTSPCollectionStatement()
+	// handleTSPCollectionStatementPhase1()
+	// handleTSPCollectionStatementPhase2()
 
-	tspCollectionStatement := selectTSPCollectionStatement()[0]
+	// tspCollectionStatement := selectTSPCollectionStatement()[0]
 
-	fmt.Println("tspCollectionStatement")
-	fmt.Println(tspCollectionStatement.DataCache)
+	// fmt.Println("tspCollectionStatement")
+	// fmt.Println(tspCollectionStatement.DataCache)
 
 	//
 
