@@ -781,7 +781,9 @@ func parseTwiWebscrape(queryString string) []string {
 	for i, v := range listSymbols {
 		// fmt.Println(v)
 		if strings.Contains(v, ".") == false {
-			filterDotList = append(filterDotList, v)
+			if strings.Contains(v, "'") == false {
+				filterDotList = append(filterDotList, v)
+			}
 		}
 		i++
 	}

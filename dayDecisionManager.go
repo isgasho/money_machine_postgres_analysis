@@ -45,8 +45,8 @@ func checKIsBrokerageResponding() {
 	if isMarketClosed == true {
 		fmt.Println("marketClosed is true")
 		marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "true"}
-		// marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "false"}
 		insertMarketOpenAnalysis(marketOpenAnalysis)
+		postMarketClosedEmail()
 	}
 }
 
@@ -295,18 +295,19 @@ func handleTSPCollectionStatementPhase() {
 	globalTSPCollectionStatementCache = append(globalTSPCollectionStatementCache, stringTSPCollectionStatementCache)
 }
 func handleTSPCollectionStatementPhase1() {
+	stringTSPCollectionStatementCache := ""
 	//retrieve from cache
-	stringTSPCollectionStatementCache := globalTSPCollectionStatementCache[0]
+	if len(globalTSPCollectionStatementCache) != 0 {
+		stringTSPCollectionStatementCache = globalTSPCollectionStatementCache[0]
+	}
 
 	stringTSPCollectionStatementCache1 := calculateTSPCollectionStatementString1()
 
-	stringTSPCollectionStatementCache += stringTSPCollectionStatementCache1
+	stringTSPCollectionStatementCache1 += stringTSPCollectionStatementCache
 	//clear cache
 	globalTSPCollectionStatementCache = []string{}
-	// fmt.Println("globalTSPCollectionStatementCache cleared")
-	// fmt.Println(globalTSPCollectionStatementCache)
 	//persist
-	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCache}
+	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCache1}
 	// fmt.Println(instanceTSPCollectionStatement)
 	insertTSPCollectionStatement(instanceTSPCollectionStatement)
 }

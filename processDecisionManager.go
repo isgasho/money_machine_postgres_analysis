@@ -365,8 +365,8 @@ func resetTimeOperations() {
 	conditionSevenHour = startHour
 
 	//1:30
-	conditionNineteenMinute = startMinute + 8
-	conditionNineteenHour = startHour
+	// conditionNineteenMinute = startMinute + 8
+	// conditionNineteenHour = startHour
 
 	conditionTimeMinuteDow1 = checkIsMarketOpenMinute
 	conditionTimeHourDow1 = checkIsMarketOpenHour
@@ -457,8 +457,13 @@ func handleCheckIsTradeBought(params ...interface{}) {
 	// convert number delimiters to time
 	// if minute is len 1, add 0
 	// create time delimiter
-	hourDelimiter := strconv.Itoa(conditionSevenHour)
-	minuteDelimiter := strconv.Itoa(conditionSevenMinute)
+	// hourDelimiter := strconv.Itoa(conditionSevenHour)
+	// minuteDelimiter := strconv.Itoa(conditionSevenMinute)
+
+	//set static apart...
+	hourDelimiter := "8"
+	minuteDelimiter := "50"
+
 	if len(minuteDelimiter) == 1 {
 		minuteDelimiter = "0" + minuteDelimiter
 	}
@@ -500,24 +505,25 @@ func formatQtyHolding(qty string) string {
 // func handleOverarchTopStock(params ...interface{}) {
 func handleOverarchTopStock() {
 	twiStockList := twiWebscrape()
-	//if stocklist is 0 after several attempts then restart TSP process async
-	fmt.Println(twiStockList)
-	fmt.Println("overarch after twi")
-	if len(twiStockList) == 0 {
-		go handleOverarchTopStockAync()
-		return
-	}
-
-	// for i, v := range twiStockList {
-	// 	fmt.Println(v.Symbol)
-	// 	fmt.Println(v.Pchg)
-	// 	i++
-	// }
+	// fmt.Println(twiStockList)
+	// fmt.Println("overarch after twi")
+	// twiStockList := []Stock{}
 	//High process for wisemen and whale
 	highTransferanceProcess(twiStockList)
-	// // // // //Low process for whale
-	// lowTransferanceProcess(twiStockList)
 }
+
+// if len(twiStockList) == 0 {
+// 	go handleOverarchTopStockAync()
+// 	return
+// }
+
+// for i, v := range twiStockList {
+// 	fmt.Println(v.Symbol)
+// 	fmt.Println(v.Pchg)
+// 	i++
+// }
+// // // // //Low process for whale
+// lowTransferanceProcess(twiStockList)
 
 func handleOverarchTopStockAync() {
 	fmt.Println("async operation activated")
@@ -595,6 +601,8 @@ func highTransferanceProcess(twiStockList []Stock) {
 	for i < 3 {
 		// 	// remove highest index 3 times, to get top stocks.
 		// 	//Pop top stock each iteration
+		fmt.Println("len(listTempDuplicantFiltered)")
+		fmt.Println(len(listTempDuplicantFiltered))
 		highestStockIndex := 0
 		for indexTempDuplicantFiltered, tempDuplicantFiltered := range listTempDuplicantFiltered {
 			if indexTempDuplicantFiltered == 0 {
@@ -621,6 +629,7 @@ func highTransferanceProcess(twiStockList []Stock) {
 		}
 		i++
 	}
+
 	for i, v := range topStockList {
 		insertTempSymbolHoldHigh(v.Symbol)
 		i++
@@ -710,8 +719,13 @@ func topStockPull() []Stock {
 	stockList := parseTopStockQuery(queryResponse)
 	filteredStockList := []Stock{}
 	for i, v := range stockList {
+		// if strings.Contains(v.Symbol, ".") == false {
+		// 	filteredStockList = append(filteredStockList, v)
+		// }
 		if strings.Contains(v.Symbol, ".") == false {
-			filteredStockList = append(filteredStockList, v)
+			if strings.Contains(v.Symbol, "'") == false {
+				filteredStockList = append(filteredStockList, v)
+			}
 		}
 		i++
 	}
@@ -1053,7 +1067,7 @@ func twiWebscrape() []Stock {
 			symbolList = parseTwiWebscrape(response2)
 			fmt.Println("symbolList internal")
 			fmt.Println(symbolList)
-			if len(symbolList) != 0 {
+			if len(symbolList) > 3 {
 				break
 			}
 		}
@@ -1070,7 +1084,7 @@ func twiWebscrape() []Stock {
 	fmt.Println("twiWebscrape")
 	if len(symbolList) == 0 {
 		symbolList = parseTwiWebscrape(response2)
-		fmt.Println("symbolList")
+		fmt.Println("symbolList == 0")
 		fmt.Println(symbolList)
 	}
 	//

@@ -11,15 +11,20 @@ import (
 func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println("limitPrice")
 	fmt.Println(limitPrice)
+
+	//formulate limit price here.
+	calculatedLimitPrice := calculateLimitPriceForBuy(symbol)
+
+	//float
 	desiredLimitPrice := 0.0
-	if s, err := strconv.ParseFloat(limitPrice, 64); err == nil {
+	if s, err := strconv.ParseFloat(calculatedLimitPrice, 64); err == nil {
 		desiredLimitPrice = s
 	}
 	fmt.Println("desiredLimitPrice")
 	fmt.Println(desiredLimitPrice)
 	//
 	// dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-	dollarAmountToTrade := "1000.00"
+	dollarAmountToTrade := "2000.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
@@ -43,8 +48,18 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(stringQty)
 
 	stringLimitPrice := floatToString(splitFloatAfterSecondDecimalPlace(stringToFloat(stringPrice)))
+	// fmt.Println("stringLimitPrice")
 	// fmt.Println(stringLimitPrice)
 	queryTradeBuyLimit(symbol, stringLimitPrice, stringQty)
+}
+
+func calculateLimitPriceForBuy(symbol string) string {
+	symbolList := []string{symbol}
+	response := queryMultiStockPull(symbolList)
+	stockList := parseStockSetQuery(response)
+	stock := stockList[0]
+	limitPrice := stock.Last
+	return limitPrice
 }
 
 func calculateMaximumAmountOfMoneyAvailableToTrade() string {

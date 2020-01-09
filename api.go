@@ -523,8 +523,40 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-	resetTimeOperations()
-	// processTimelineStart()
+	// resetTimeOperations()
+	// postMarketClosedEmail()
+
+	processTimelineStart()
+	// limitPrice := calculateLimitPriceForBuy("AGTC")
+	// fmt.Println("limitPrice")
+	// fmt.Println(limitPrice)
+
+	// handleTradeWisemen("AGTC", "0.0")
+	// hourDelimiter := "22"
+	// minuteDelimiter := "11"
+
+	// if len(minuteDelimiter) == 1 {
+	// 	minuteDelimiter = "0" + minuteDelimiter
+	// }
+	// //
+	// timeDelimiter := hourDelimiter + minuteDelimiter
+	// fmt.Println("created timeDelimiter")
+	// fmt.Println(timeDelimiter)
+	// //update
+	// isTimeDelimiterMet := calculateIsTimeDelimiterMetSell(timeDelimiter)
+
+	// fmt.Println("isTimeDelimiterMet")
+	// fmt.Println(isTimeDelimiterMet)
+
+	// truncateTempSymbolHoldHigh()
+	// truncateWisemenSymbolHold()
+	// intervalTest := 0
+	// for intervalTest < 100 {
+	// 	handleOverarchTopStock()
+	// 	time.Sleep(time.Duration(5) * time.Second)
+	// 	intervalTest++
+	// }
+	// handleOverarchTopStock()
 	// handleEndOfDayDowScrape()
 	// handleNoBuyOnTradeDay()
 	// resetTimeOperations()
@@ -544,6 +576,7 @@ func main() {
 	// insertDow(dow)
 	// dowVal := selectDow()
 	// fmt.Println(dowVal)
+
 	// insertEndOfDayDow("28,703.38")
 	// truncateDow()
 
