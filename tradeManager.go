@@ -24,7 +24,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(desiredLimitPrice)
 	//
 	// dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-	dollarAmountToTrade := "2000.00"
+	dollarAmountToTrade := "5000.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
@@ -70,7 +70,7 @@ func calculateMaximumAmountOfMoneyAvailableToTrade() string {
 	amountToTrade = accountBrokerage.CashAvailable
 	return amountToTrade
 }
-func calculateIsUnsettledFunds() string {
+func calculateAmountUnsettledFunds() string {
 	amountUnsettledFunds := "0.0"
 	response := queryAccountBrokerage()
 	accountBrokerage := parseAccountBrokerage(response)

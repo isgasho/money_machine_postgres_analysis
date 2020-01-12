@@ -527,6 +527,7 @@ func main() {
 	// postMarketClosedEmail()
 
 	processTimelineStart()
+	// handleCalculateCashDay()
 	// limitPrice := calculateLimitPriceForBuy("AGTC")
 	// fmt.Println("limitPrice")
 	// fmt.Println(limitPrice)

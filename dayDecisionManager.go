@@ -150,21 +150,17 @@ func handleCalculateCashDay() {
 	//Reset dow day eval store before calculation
 	truncateCashDayEvaluation()
 
-	amountUnsettledFunds := calculateIsUnsettledFunds()
+	amountUnsettledFunds := calculateAmountUnsettledFunds()
 	floatAmountUnsettledFunds := 0.0
 	if s, err := strconv.ParseFloat(amountUnsettledFunds, 64); err == nil {
 		floatAmountUnsettledFunds = s
 	}
-	if floatAmountUnsettledFunds <= 100.0 {
+	//
+	if floatAmountUnsettledFunds <= 2000.0 {
 		isUnsettledFunds = "false"
 	}
 
-	// fmt.Println("amountUnsettledFunds")
-	// fmt.Println(amountUnsettledFunds)
-
 	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds}
-	// fmt.Println("cashDayEvaluation")
-	// fmt.Println(cashDayEvaluation)
 	insertCashDayEvaluation(cashDayEvaluation)
 }
 
