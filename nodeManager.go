@@ -1576,14 +1576,15 @@ func postNoBuyOnTradeDayEmail() string {
 	return response
 }
 
-func postIsTradeDayEmail(isTradeDay string, isDownDay string, isUnsettledFunds string) string {
+func postIsTradeDayEmail(isTradeDay string, isDownDay string, isUnsettledFunds string, amountUnsettledFunds string) string {
 	json := `{
 		"request_type": "postIsTradeDayEmail",
 		"data": {
 			`
 	json = json + "\"isTradeDay\":" + "\"" + isTradeDay + "\","
 	json = json + "\"isDownDay\":" + "\"" + isDownDay + "\","
-	json = json + "\"isUnsettledFunds\":" + "\"" + isUnsettledFunds + "\""
+	json = json + "\"isUnsettledFunds\":" + "\"" + isUnsettledFunds + "\","
+	json = json + "\"amountUnsettledFunds\":" + "\"" + amountUnsettledFunds + "\""
 	json = json + `}}`
 
 	url := "http://localhost:3000/api/brokerage"

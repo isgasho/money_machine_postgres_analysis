@@ -160,7 +160,7 @@ func handleCalculateCashDay() {
 		isUnsettledFunds = "false"
 	}
 
-	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds}
+	cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: isUnsettledFunds, AmountUnsettledFunds: amountUnsettledFunds}
 	insertCashDayEvaluation(cashDayEvaluation)
 }
 
@@ -243,12 +243,14 @@ func overarchIsTradeDay() string {
 	cashDayEvalList := selectCashDayEvaluation()
 	isDownDay := downDayEvalList[0].IsDownDay
 	isUnsettledFunds := cashDayEvalList[0].IsUnsettledFunds
+	amountUnsettledFunds := cashDayEvalList[0].AmountUnsettledFunds
+
 	if isDownDay == "false" {
 		if isUnsettledFunds == "false" {
 			isTradeDay = "true"
 		}
 	}
-	postIsTradeDayEmail(isTradeDay, isDownDay, isUnsettledFunds)
+	postIsTradeDayEmail(isTradeDay, isDownDay, isUnsettledFunds, amountUnsettledFunds)
 	return isTradeDay
 }
 

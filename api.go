@@ -527,6 +527,11 @@ func main() {
 	// postMarketClosedEmail()
 
 	processTimelineStart()
+
+	//
+	// handleCalculateCashDay()
+	// overarchIsTradeDay()
+	// postIsTradeDayEmail()
 	// handleCalculateCashDay()
 	// limitPrice := calculateLimitPriceForBuy("AGTC")
 	// fmt.Println("limitPrice")

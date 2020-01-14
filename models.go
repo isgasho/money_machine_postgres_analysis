@@ -173,8 +173,9 @@ type DownDayEvaluation struct {
 
 //cash_day_evaluation
 type CashDayEvaluation struct {
-	CreatedAt        string
-	IsUnsettledFunds string
+	CreatedAt            string
+	IsUnsettledFunds     string
+	AmountUnsettledFunds string
 }
 
 // CREATE TABLE alt_interval_buy_wisemen

@@ -775,17 +775,17 @@ func truncateDownDayEvaluation() {
 
 //cash_day_evaluation
 func insertCashDayEvaluation(cashDayEvaluation CashDayEvaluation) {
-	listValues := []string{cashDayEvaluation.IsUnsettledFunds}
-	postCommandDBInsert("INSERT INTO cash_day_evaluation (is_unsettled_funds) VALUES (", listValues)
+	listValues := []string{cashDayEvaluation.IsUnsettledFunds, cashDayEvaluation.AmountUnsettledFunds}
+	postCommandDBInsert("INSERT INTO cash_day_evaluation (is_unsettled_funds, amount_unsettled_funds) VALUES (", listValues)
 }
 func selectCashDayEvaluation() []CashDayEvaluation {
 	cashDayEvaluationList := []CashDayEvaluation{}
-	response := postCommandDBSelect("SELECT is_unsettled_funds FROM cash_day_evaluation")
+	response := postCommandDBSelect("SELECT is_unsettled_funds, amount_unsettled_funds FROM cash_day_evaluation")
 	container := parseDBResponse(response)
-	fmt.Println(container.ListStringFromDB)
-	fmt.Println(len(container.ListStringFromDB))
+	// fmt.Println(container.ListStringFromDB)
+	// fmt.Println(len(container.ListStringFromDB))
 	for i, v := range container.ListStringFromDB {
-		cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: v.ListString[0]}
+		cashDayEvaluation := CashDayEvaluation{IsUnsettledFunds: v.ListString[0], AmountUnsettledFunds: v.ListString[1]}
 		cashDayEvaluationList = append(cashDayEvaluationList, cashDayEvaluation)
 		i++
 	}
