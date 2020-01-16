@@ -8,6 +8,8 @@ var cycleMapPool = make(map[string]*Cycle)
 
 var globalTSPCollectionStatementCache = []string{}
 
+var globalCacheStockWisemenTopTier = []string{}
+
 var intervalTradeMonitorDelimiter = 0
 
 // var dayID = 3

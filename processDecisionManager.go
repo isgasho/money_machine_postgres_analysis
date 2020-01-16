@@ -236,7 +236,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		handleCalculateCashDay()
 		handleCalculateDownDay()
 
-		handleTSPCollectionStatementPhase1()
+		// handleTSPCollectionStatementPhase1()
 		healthCheck()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
@@ -246,6 +246,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		if len(listInformationAtTrade) == 0 {
 			handleOverarchTopStock()
 		}
+		handleTSPCollectionStatementPhase1()
 	}
 	if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate5 {
 		fmt.Println("hit5")
@@ -1153,6 +1154,9 @@ func filterTwiSymbolList(symbolListToFilter []string) []string {
 func systemStartProcesses() {
 	//reset procedures
 
+	//reset global cache.
+	globalCacheStockWisemenTopTier = []string{}
+
 	//Handle short day analysis
 	truncateShortDayAnalysis()
 	calculateShortDayAnalysis()
@@ -1568,14 +1572,14 @@ func wrapUpWisemenOutcomeNoBuy(transactionHistory TransactionHistory) {
 		}
 	}
 	//store time
-	dowList := selectDow()
+	// dowList := selectDow()
 	tradeResultStore := TradeResultStore{
 		AlgorithmUsed: "wisemen",
 		Result:        reason,
-		Dow1:          dowList[0].CurrentDowValue,
-		Dow2:          dowList[1].CurrentDowValue,
-		Dow3:          dowList[2].CurrentDowValue,
-		Dow4:          dowList[3].CurrentDowValue,
+		// Dow1:          dowList[0].CurrentDowValue,
+		// Dow2:          dowList[1].CurrentDowValue,
+		// Dow3:          dowList[2].CurrentDowValue,
+		// Dow4:          dowList[3].CurrentDowValue,
 	}
 	insertTradeResultStore(tradeResultStore)
 }

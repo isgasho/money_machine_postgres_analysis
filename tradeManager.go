@@ -962,26 +962,34 @@ func removeElementInt(listEntered []int, val int) []int {
 
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
-	// isTradeDay = "true"
+	// isTradeDay := "true"
+	fmt.Println("dataList")
 	fmt.Println(dataList)
+
+	globalCacheStockWisemenTopTier = append(globalCacheStockWisemenTopTier, dataList[2])
+	fmt.Println("globalCacheStockWisemenTopTier")
+	fmt.Println(globalCacheStockWisemenTopTier)
+	//persist cache stock
+
 	//handle no neo found..
 	// overarchTradeWisemen
 	if dataList[0] == "none chosen" {
 		fmt.Println("none chosen")
 		//persist none chosen, in ReasonCancelation in AIB
 		//proceed to alt interval.
-		altIntervalList := selectAltIntervalBuyWisemen()
-		if len(altIntervalList) == 0 {
-			//Support for isTradeDay in returned response, for multi cancelation scenarios.
-			altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "Neo none chosen"}
-			insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
-		}
-		if len(altIntervalList) != 0 {
-			altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "Neo none chosen"}
-			insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
-			transactionHistory := TransactionHistory{Symbol: dataList[0]}
-			wrapUpWisemenOutcomeNoBuy(transactionHistory)
-		}
+
+		// altIntervalList := selectAltIntervalBuyWisemen()
+		// if len(altIntervalList) == 0 {
+		//Support for isTradeDay in returned response, for multi cancelation scenarios.
+		// altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "Neo none chosen"}
+		// insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+		// }
+		// if len(altIntervalList) != 0 {
+		// altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "Neo none chosen"}
+		// insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+		transactionHistory := TransactionHistory{Symbol: dataList[0]}
+		wrapUpWisemenOutcomeNoBuy(transactionHistory)
+		// }
 	}
 
 	if dataList[0] != "none chosen" {

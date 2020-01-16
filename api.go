@@ -130,7 +130,11 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 	// }
 
 	if requestType == "selectStockWisemen" {
-		stockList := selectStockWisemen()
+		// stockList := selectStockWisemen()
+		symbolList := selectWisemenSymbolHold()
+		responseList := queryMultiStockPull(symbolList)
+		stockList := parseStockSetQuery(responseList)
+		//
 		stockListResponse := DatabaseStockListResponse{stockList}
 		js, err := json.Marshal(stockListResponse)
 		if err != nil {
@@ -523,9 +527,12 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
+
+	// handleCalculateDownDay()
+	// handleCalculateCashDay()
+	// globalCacheStockWisemenTopTier()
 	// resetTimeOperations()
 	// postMarketClosedEmail()
-
 	processTimelineStart()
 
 	//

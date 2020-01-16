@@ -301,9 +301,10 @@ func handleTSPCollectionStatementPhase1() {
 
 	stringTSPCollectionStatementCache1 := calculateTSPCollectionStatementString1()
 
-	stringTSPCollectionStatementCache1 += stringTSPCollectionStatementCache
+	stringTSPCollectionStatementCache1 += stringTSPCollectionStatementCache + " " + globalCacheStockWisemenTopTier[0]
 	//clear cache
 	globalTSPCollectionStatementCache = []string{}
+	globalCacheStockWisemenTopTier = []string{}
 	//persist
 	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCache1}
 	// fmt.Println(instanceTSPCollectionStatement)
