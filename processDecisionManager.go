@@ -366,8 +366,8 @@ func resetTimeOperations() {
 	conditionSevenHour = startHour
 
 	//1:30
-	// conditionNineteenMinute = startMinute + 8
-	// conditionNineteenHour = startHour
+	conditionNineteenMinute = startMinute + 8
+	conditionNineteenHour = startHour
 
 	conditionTimeMinuteDow1 = checkIsMarketOpenMinute
 	conditionTimeHourDow1 = checkIsMarketOpenHour
@@ -1152,32 +1152,8 @@ func filterTwiSymbolList(symbolListToFilter []string) []string {
 // }
 
 func systemStartProcesses() {
-	//reset procedures
-
-	//reset global cache.
-	globalCacheStockWisemenTopTier = []string{}
-
-	//Handle short day analysis
-	truncateShortDayAnalysis()
 	calculateShortDayAnalysis()
-
-	truncateMarketOpenAnalysis()
-	//
-	truncateMetricsWisemen()
 	handleInsertMetricsConditionalAlteration()
-	//
-	truncateDow()
-	//
-	resetTempSymbolHold()
-	//
-	resetStockWisemenSymbolHold()
-	//
-	resetStockWisemen()
-	//
-	resetAltIntervalBuyWisemen()
-	//
-	resetInformationAtTrade()
-
 	//get balance begining of day
 	storeBalanceValue()
 
@@ -1185,11 +1161,11 @@ func systemStartProcesses() {
 func handleInsertMetricsConditionalAlteration() {
 	shortDayAnalysis := selectShortDayAnalysis()[0]
 	if shortDayAnalysis.IsShortDay == "true" {
-		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".015", ".1", "1057")
+		insertMetricsWisemen("20.00", "4.0", "20.0", "0", ".015", ".1", "1057")
 		return
 	}
 	if shortDayAnalysis.IsShortDay == "false" {
-		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".015", ".1", "1330")
+		insertMetricsWisemen("20.00", "4.0", "20.0", "0", ".015", ".1", "1330")
 		return
 	}
 }
@@ -1243,6 +1219,19 @@ func handleDayReset() {
 	// boolOperate17 = true
 	// boolOperate18 = true
 	checkIsMarketOpenBool = true
+
+	//reset global cache.
+	// globalCacheStockWisemenTopTier = []string{}
+
+	truncateShortDayAnalysis()
+	truncateMarketOpenAnalysis()
+	truncateMetricsWisemen()
+	truncateDow()
+	resetTempSymbolHold()
+	resetStockWisemenSymbolHold()
+	resetStockWisemen()
+	resetAltIntervalBuyWisemen()
+	resetInformationAtTrade()
 }
 
 func setTimelineOperationsFalse() {

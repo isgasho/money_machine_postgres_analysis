@@ -23,8 +23,8 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println("desiredLimitPrice")
 	fmt.Println(desiredLimitPrice)
 	//
-	// dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-	dollarAmountToTrade := "5000.00"
+	dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
+	// dollarAmountToTrade := "2000.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
@@ -962,7 +962,7 @@ func removeElementInt(listEntered []int, val int) []int {
 
 func overarchTradeWisemen(dataList []string) {
 	isTradeDay := overarchIsTradeDay()
-	// isTradeDay := "true"
+	// isTradeDay = "true"
 	fmt.Println("dataList")
 	fmt.Println(dataList)
 

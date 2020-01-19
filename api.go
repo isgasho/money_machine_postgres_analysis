@@ -430,7 +430,7 @@ func databaseQuery(w http.ResponseWriter, req *http.Request) {
 		//process trade
 		//
 		truncateMetricsWisemen()
-		insertMetricsWisemen("20.00", "4.0", "8.0", "0", ".02", ".1", "1330")
+		insertMetricsWisemen("20.00", "4.0", "20.0", "0", ".02", ".1", "1330")
 		js, err := json.Marshal("success")
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -531,10 +531,19 @@ func main() {
 	// handleCalculateDownDay()
 	// handleCalculateCashDay()
 	// globalCacheStockWisemenTopTier()
+	//
+
+	// handleDayReset()
 	// resetTimeOperations()
+	// truncateMarketOpenAnalysis()
 	// postMarketClosedEmail()
 	processTimelineStart()
 
+	// handleTSPCollectionStatementPhase()
+	// handleTSPCollectionStatementPhase1()
+	// amount := calculateMaximumAmountOfMoneyAvailableToTrade()
+	// fmt.Println("amount")
+	// fmt.Println(amount)
 	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: "IMBI"})
 	// fmt.Println("alteredTransactionHistory")
 	// fmt.Println(alteredTransactionHistory)

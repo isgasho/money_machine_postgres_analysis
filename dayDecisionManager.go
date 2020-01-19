@@ -301,12 +301,13 @@ func handleTSPCollectionStatementPhase1() {
 
 	stringTSPCollectionStatementCache1 := calculateTSPCollectionStatementString1()
 
-	stringTSPCollectionStatementCache1 += stringTSPCollectionStatementCache + " " + globalCacheStockWisemenTopTier[0]
+	// stringTSPCollectionStatementCache1 += stringTSPCollectionStatementCache //+ " " + globalCacheStockWisemenTopTier[0]
+	stringTSPCollectionStatementCacheEntering := stringTSPCollectionStatementCache + " break " + stringTSPCollectionStatementCache1
 	//clear cache
 	globalTSPCollectionStatementCache = []string{}
 	globalCacheStockWisemenTopTier = []string{}
 	//persist
-	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCache1}
+	instanceTSPCollectionStatement := TSPCollectionStatement{DataCache: stringTSPCollectionStatementCacheEntering}
 	// fmt.Println(instanceTSPCollectionStatement)
 	insertTSPCollectionStatement(instanceTSPCollectionStatement)
 }
