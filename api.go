@@ -527,7 +527,7 @@ func calculateIsResetDayRecord() {
 
 func main() {
 	go handleRequests()
-
+	processTimelineStart()
 	// handleCalculateDownDay()
 	// handleCalculateCashDay()
 	// globalCacheStockWisemenTopTier()
@@ -537,7 +537,6 @@ func main() {
 	// resetTimeOperations()
 	// truncateMarketOpenAnalysis()
 	// postMarketClosedEmail()
-	processTimelineStart()
 
 	// handleTSPCollectionStatementPhase()
 	// handleTSPCollectionStatementPhase1()
