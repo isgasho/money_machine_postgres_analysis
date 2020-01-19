@@ -429,7 +429,7 @@ func handleHistoryDayListArbitration(symbol string) []HistoryValue {
 
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
-	// dayCurrent = 24
+	// dayCurrent = 17
 	//sort values by day...
 	//store values of today only...
 	fmt.Println("hit3")
@@ -474,7 +474,7 @@ func handleInformationAtTradeDayListArbitration(symbol string) []InformationAtTr
 	//date
 	yearCurrent, monthCurrent, dayCurrent := getDate()
 
-	// dayCurrent = 17
+	dayCurrent = 17
 	//dayCurrent = 8
 	//sort values by day...
 	//store values of today only...

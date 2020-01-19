@@ -535,9 +535,27 @@ func main() {
 	// postMarketClosedEmail()
 	processTimelineStart()
 
+	// alteredTransactionHistory := calculateTransactionHistory(TransactionHistory{Symbol: "IMBI"})
+	// fmt.Println("alteredTransactionHistory")
+	// fmt.Println(alteredTransactionHistory)
+
+	// resultList := handleHistoryDayListArbitration("IMBI")
+	// fmt.Println(resultList)
+
+	// tHistory := calculateTransactionHistory(TransactionHistory{Symbol: "IMBI"})
+	// fmt.Println("tHistory")
+	// fmt.Println(tHistory)
+	// response := queryHistory()
+	// historyList := parseHistory(response)
+	// // fmt.Println(historyList[0])
+	// // fmt.Println(historyList[1])
+	// // fmt.Println(historyList[2])
+	// fmt.Println(historyList[len(historyList)-1])
+	// fmt.Println(historyList[len(historyList)-2])
+	// fmt.Println(historyList[len(historyList)-3])
 	//
 	// handleCalculateCashDay()
-	// overarchIsTradeDay()
+	// overarchIsTradeDay()``
 	// postIsTradeDayEmail()
 	// handleCalculateCashDay()
 	// limitPrice := calculateLimitPriceForBuy("AGTC")
