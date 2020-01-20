@@ -528,6 +528,9 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 	processTimelineStart()
+
+	handleEndOfDayDowScrape()
+	handleDayReset()
 	// handleCalculateDownDay()
 	// handleCalculateCashDay()
 	// globalCacheStockWisemenTopTier()
@@ -596,7 +599,7 @@ func main() {
 	// 	intervalTest++
 	// }
 	// handleOverarchTopStock()
-	// handleEndOfDayDowScrape()
+
 	// handleNoBuyOnTradeDay()
 	// resetTimeOperations()
 

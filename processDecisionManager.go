@@ -1232,6 +1232,7 @@ func handleDayReset() {
 	resetStockWisemen()
 	resetAltIntervalBuyWisemen()
 	resetInformationAtTrade()
+	fmt.Println("reset completed")
 }
 
 func setTimelineOperationsFalse() {

@@ -303,6 +303,9 @@ func handleTSPCollectionStatementPhase1() {
 
 	// stringTSPCollectionStatementCache1 += stringTSPCollectionStatementCache //+ " " + globalCacheStockWisemenTopTier[0]
 	stringTSPCollectionStatementCacheEntering := stringTSPCollectionStatementCache + " break " + stringTSPCollectionStatementCache1
+	if len(globalCacheStockWisemenTopTier) != 0 {
+		stringTSPCollectionStatementCacheEntering += " " + globalCacheStockWisemenTopTier[0]
+	}
 	//clear cache
 	globalTSPCollectionStatementCache = []string{}
 	globalCacheStockWisemenTopTier = []string{}
