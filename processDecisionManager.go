@@ -194,6 +194,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 
 	//Conditional operate
 	if currentTime.Minute() == checkIsMarketOpenMinute && currentTime.Hour() == checkIsMarketOpenHour && checkIsMarketOpenBool {
+		checkIsMarketOpenBool = false
+		boolOperate19 = true
 		systemStartProcesses()
 		checKIsBrokerageResponding()
 		healthCheck()
@@ -205,9 +207,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 			postMarketClosedEmail()
 			fmt.Println("inside hit12")
 		}
-		// if
-		checkIsMarketOpenBool = false
-		boolOperate19 = true
+
 	}
 
 	//dow store periodic
@@ -242,27 +242,27 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
 		boolOperate4 = false
-		listInformationAtTrade := selectInformationAtTrade()
-		if len(listInformationAtTrade) == 0 {
-			handleOverarchTopStock()
-		}
+		// listInformationAtTrade := selectInformationAtTrade()
+		// if len(listInformationAtTrade) == 0 {
+		// 	handleOverarchTopStock()
+		// }
 		handleTSPCollectionStatementPhase1()
 	}
 	if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate5 {
 		fmt.Println("hit5")
 		boolOperate5 = false
-		listInformationAtTrade := selectInformationAtTrade()
-		if len(listInformationAtTrade) == 0 {
-			handleOverarchTopStock()
-		}
+		// listInformationAtTrade := selectInformationAtTrade()
+		// if len(listInformationAtTrade) == 0 {
+		// 	handleOverarchTopStock()
+		// }
 	}
 	if currentTime.Minute() == conditionSixMinute && currentTime.Hour() == conditionSixHour && boolOperate6 {
 		fmt.Println("hit6")
 		boolOperate6 = false
-		listInformationAtTrade := selectInformationAtTrade()
-		if len(listInformationAtTrade) == 0 {
-			handleOverarchTopStock()
-		}
+		// listInformationAtTrade := selectInformationAtTrade()
+		// if len(listInformationAtTrade) == 0 {
+		// 	handleOverarchTopStock()
+		// }
 	}
 	if currentTime.Minute() == conditionNineteenMinute && currentTime.Hour() == conditionNineteenHour && boolOperate19 {
 		fmt.Println("hit19")
@@ -291,7 +291,8 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		resetCyclePools()
 		handleDayReset()
 		healthCheck()
-		// resetTimeOperations()
+		healthCheck()
+		resetTimeOperations()
 	}
 }
 
@@ -368,6 +369,8 @@ func resetTimeOperations() {
 	//1:30
 	conditionNineteenMinute = startMinute + 8
 	conditionNineteenHour = startHour
+
+	//
 
 	conditionTimeMinuteDow1 = checkIsMarketOpenMinute
 	conditionTimeHourDow1 = checkIsMarketOpenHour
