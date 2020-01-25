@@ -37,7 +37,7 @@ func checKIsBrokerageResponding() {
 	// fmt.Println("asktime is:", askTime)
 	//Conditional if Ask time set to 0
 	isMarketClosed = checkConditionalIsAskTime(askTime)
-	isMarketClosed = false
+	// isMarketClosed = false
 	if isMarketClosed == false {
 		fmt.Println("isMarketClosed is false")
 		marketOpenAnalysis := MarketOpenAnalysis{IsMarketClosed: "false"}
@@ -251,7 +251,7 @@ func overarchIsTradeDay() string {
 			isTradeDay = "true"
 		}
 	}
-	isTradeDay = "false"
+	// isTradeDay = "false"
 	postIsTradeDayEmail(isTradeDay, isDownDay, isUnsettledFunds, amountUnsettledFunds)
 	return isTradeDay
 }
