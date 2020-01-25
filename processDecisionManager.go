@@ -292,7 +292,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		handleDayReset()
 		healthCheck()
 		healthCheck()
-		resetTimeOperations()
+		// resetTimeOperations()
 	}
 }
 

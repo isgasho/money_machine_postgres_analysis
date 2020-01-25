@@ -528,10 +528,14 @@ func calculateIsResetDayRecord() {
 func main() {
 	go handleRequests()
 
-	processTimelineStart()
-
+	resetTimeOperations()
 	handleEndOfDayDowScrape()
 	handleDayReset()
+	processTimelineStart()
+
+	//
+
+	//
 	// resetTimeOperations()
 	// handleCalculateDownDay()
 	// handleCalculateCashDay()

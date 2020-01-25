@@ -1006,18 +1006,18 @@ func overarchTradeWisemen(dataList []string) {
 		if isTradeDay == "false" {
 			//insert AltIntervalBuyWisemen
 			//interval 1
-			altIntervalList := selectAltIntervalBuyWisemen()
-			if len(altIntervalList) == 0 {
-				//Support for isTradeDay in returned response, for multi cancelation scenarios.
-				altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "isTradeDayFalse"}
-				insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
-			}
-			if len(altIntervalList) != 0 {
-				altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "isTradeDayFalse"}
-				insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
-				transactionHistory := TransactionHistory{Symbol: dataList[0]}
-				wrapUpWisemenOutcomeNoBuy(transactionHistory)
-			}
+			// altIntervalList := selectAltIntervalBuyWisemen()
+			// if len(altIntervalList) == 0 {
+			// 	//Support for isTradeDay in returned response, for multi cancelation scenarios.
+			// 	altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "isTradeDayFalse"}
+			// 	insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+			// }
+			// if len(altIntervalList) != 0 {
+			altIntervalBuyWisemen := AltIntervalBuyWisemen{Symbol: dataList[0], IsAltIntervalOperation: "true", ReasonCancelation: "isTradeDayFalse"}
+			insertAltIntervalBuyWisemen(altIntervalBuyWisemen)
+			transactionHistory := TransactionHistory{Symbol: dataList[0]}
+			wrapUpWisemenOutcomeNoBuy(transactionHistory)
+			// }
 		}
 	}
 }
