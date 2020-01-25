@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"os"
 	"reflect"
 	"strconv"
 	"strings"
@@ -227,6 +228,7 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		fmt.Println("hit2")
 		boolOperate2 = false
 		handleOverarchTopStock()
+		os.Exit(0)
 	}
 	if currentTime.Minute() == conditionMinuteHandleCalculateDownDay1 && currentTime.Hour() == conditionHourHandleCalculateDownDay1 && boolOperateHandleCalculateDownDay1 {
 		fmt.Println("handleCalculateDownDay1")
@@ -286,13 +288,17 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 
 		//End of day dow scrape for next day analytics
 		handleEndOfDayDowScrape()
-		//At some point in this hour reset the pools, and reset the timeline.
-		//clear cyclepool and reset timeline process
+		//
 		resetCyclePools()
 		handleDayReset()
 		healthCheck()
 		healthCheck()
+		//
 		// resetTimeOperations()
+		//
+		//quit system
+		os.Exit(0)
+		healthCheck()
 	}
 }
 
