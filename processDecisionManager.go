@@ -228,7 +228,6 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		fmt.Println("hit2")
 		boolOperate2 = false
 		handleOverarchTopStock()
-		os.Exit(0)
 	}
 	if currentTime.Minute() == conditionMinuteHandleCalculateDownDay1 && currentTime.Hour() == conditionHourHandleCalculateDownDay1 && boolOperateHandleCalculateDownDay1 {
 		fmt.Println("handleCalculateDownDay1")
