@@ -237,16 +237,11 @@ func handleTimelineConditionalTriggers(params ...interface{}) {
 		handleCalculateCashDay()
 		handleCalculateDownDay()
 
-		// handleTSPCollectionStatementPhase1()
 		healthCheck()
 	}
 	if currentTime.Minute() == conditionFourMinute && currentTime.Hour() == conditionFourHour && boolOperate4 {
 		fmt.Println("hit4")
 		boolOperate4 = false
-		// listInformationAtTrade := selectInformationAtTrade()
-		// if len(listInformationAtTrade) == 0 {
-		// 	handleOverarchTopStock()
-		// }
 		handleTSPCollectionStatementPhase1()
 	}
 	if currentTime.Minute() == conditionFiveMinute && currentTime.Hour() == conditionFiveHour && boolOperate5 {
@@ -405,6 +400,8 @@ func handleEndOfDayDowScrape() {
 	truncateEndOfDayDow()
 	dowValue := handleDowWebscrape()
 	// dowValue := "28,701.38"
+	// dowValue = "28500.00"
+	// dowValue = "28900.00"
 
 	insertEndOfDayDow(dowValue)
 }
@@ -1203,7 +1200,6 @@ func resetInformationAtTrade() {
 func handleDayReset() {
 	boolOperate1 = true
 	boolOperate2 = true
-	// boolOperate3 = true
 	boolOperateHandleCalculateDownDay1 = true
 	boolOperate4 = true
 	boolOperate5 = true
@@ -1214,22 +1210,7 @@ func handleDayReset() {
 	boolOperateDow4 = true
 	boolOperateDow5 = true
 	boolOperateDow6 = true
-	// boolOperate7 = true
-	// boolOperate8 = true
-	// boolOperate9 = true
-	// boolOperate10 = true
-	// boolOperate11 = true
-	// boolOperate12 = true
-	// boolOperate13 = true
-	// boolOperate14 = true
-	// boolOperate15 = true
-	// boolOperate16 = true
-	// boolOperate17 = true
-	// boolOperate18 = true
 	checkIsMarketOpenBool = true
-
-	//reset global cache.
-	// globalCacheStockWisemenTopTier = []string{}
 
 	truncateShortDayAnalysis()
 	truncateMarketOpenAnalysis()
@@ -1257,7 +1238,7 @@ func setTimelineOperationsFalse() {
 	boolOperateDow4 = false
 	boolOperateDow5 = false
 	boolOperateDow6 = false
-	boolOperateHandleCalculateDownDay1 = false
+	// boolOperateHandleCalculateDownDay1 = false
 }
 
 func wrapUpWisemenOutcome(transactionHistory TransactionHistory) {

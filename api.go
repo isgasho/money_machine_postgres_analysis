@@ -529,8 +529,10 @@ func main() {
 	go handleRequests()
 
 	// resetTimeOperations()
+	//Supposed to be handled in the evening.
 	handleEndOfDayDowScrape()
 	handleDayReset()
+	//
 	processTimelineStart()
 
 	fmt.Scanln()

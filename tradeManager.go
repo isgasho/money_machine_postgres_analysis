@@ -24,7 +24,7 @@ func handleTradeWisemen(symbol string, limitPrice string) {
 	fmt.Println(desiredLimitPrice)
 	//
 	dollarAmountToTrade := calculateMaximumAmountOfMoneyAvailableToTrade()
-	// dollarAmountToTrade := "2000.00"
+	// dollarAmountToTrade := "40.00"
 	floatDollarAmountToTrade := stringToFloat(dollarAmountToTrade)
 	//calculate qty to buy
 	qty := calculateAmountOfStockToBuy(desiredLimitPrice, floatDollarAmountToTrade)
