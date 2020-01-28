@@ -530,8 +530,8 @@ func main() {
 
 	// resetTimeOperations()
 	//Supposed to be handled in the evening.
-	handleEndOfDayDowScrape()
-	handleDayReset()
+	// handleEndOfDayDowScrape()
+	// handleDayReset()
 	//
 	processTimelineStart()
 
